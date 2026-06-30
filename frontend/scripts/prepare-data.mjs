@@ -169,13 +169,24 @@ function main() {
   });
 
   safe("feature_importance.json", () => {
-    // Permutation importance: teragregasi ke fitur asal & lebih robust untuk
-    // interpretabilitas (dibanding gain yang bias ke fitur kardinalitas tinggi).
-    const perm = readCsv(resolve(REPO, "krediPin/hasil_evaluasi/feature_importance_permutation.csv"))
-      .map((r) => ({ fitur: r.fitur, importance: r.perm_importance }))
-      .filter((r) => typeof r.importance === "number")
-      .sort((a, b) => b.importance - a.importance);
-    writeOut("feature_importance.json", perm);
+    // Dua sudut pandang — KONSISTEN dengan notebook Tahap 1 (bagian 7):
+    // (a) permutation importance (teragregasi ke fitur asal, lebih robust)
+    // (b) gain importance bawaan XGBoost (per kolom one-hot).
+    const norm = (rows, key) =>
+      rows
+        .map((r) => ({ fitur: r.fitur, importance: r[key] }))
+        .filter((r) => typeof r.importance === "number")
+        .sort((a, b) => b.importance - a.importance);
+
+    const permutation = norm(
+      readCsv(resolve(REPO, "krediPin/hasil_evaluasi/feature_importance_permutation.csv")),
+      "perm_importance",
+    );
+    const gain = norm(
+      readCsv(resolve(REPO, "krediPin/hasil_evaluasi/feature_importance_gain.csv")),
+      "gain_importance",
+    );
+    writeOut("feature_importance.json", { permutation, gain });
   });
 
   safe("eksplorasi.json", () => {

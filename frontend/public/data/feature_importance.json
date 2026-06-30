@@ -1,82 +1,206 @@
-[
-  {
-    "fitur": "rasio_hutang_terhadap_pendapatan",
-    "importance": 0.12615698742876086
-  },
-  {
-    "fitur": "skor_kredit",
-    "importance": 0.11938480843080265
-  },
-  {
-    "fitur": "tujuan_pinjaman",
-    "importance": 0.03733550347090666
-  },
-  {
-    "fitur": "gagal_bayar_tercatat",
-    "importance": 0.03452696153461456
-  },
-  {
-    "fitur": "tunggakan_2thn_terakhir",
-    "importance": 0.027027111565075312
-  },
-  {
-    "fitur": "lama_riwayat_kredit_tahun",
-    "importance": 0.023903402610024882
-  },
-  {
-    "fitur": "rasio_pinjaman_terhadap_pendapatan",
-    "importance": 0.012688507464646937
-  },
-  {
-    "fitur": "lama_bekerja_tahun",
-    "importance": 0.011624845044296905
-  },
-  {
-    "fitur": "tipe_produk",
-    "importance": 0.007533864956420411
-  },
-  {
-    "fitur": "jumlah_pinjaman",
-    "importance": 0.004818424750883854
-  },
-  {
-    "fitur": "rasio_pembayaran_terhadap_pendapatan",
-    "importance": 0.004477927336762333
-  },
-  {
-    "fitur": "catatan_negatif",
-    "importance": 0.0034064855591892317
-  },
-  {
-    "fitur": "usia",
-    "importance": 0.000639774338022181
-  },
-  {
-    "fitur": "aset_tabungan",
-    "importance": 0.0005512836444571123
-  },
-  {
-    "fitur": "pendapatan_tahunan",
-    "importance": 0.0003642719380400061
-  },
-  {
-    "fitur": "status_pekerjaan",
-    "importance": 0.00022140656840432537
-  },
-  {
-    "fitur": "suku_bunga",
-    "importance": 0.00010642968926024565
-  },
-  {
-    "fitur": "hutang_saat_ini",
-    "importance": 0.000020731481846336663
-  },
-  {
-    "fitur": "tenor_bulan",
-    "importance": 0.0000069468649695592076
-  },
-  {
-    "fitur": "jaminan",
-    "importance": -0.000008163273553440931
-  }
-]
+{
+  "permutation": [
+    {
+      "fitur": "rasio_hutang_terhadap_pendapatan",
+      "importance": 0.12615698742876086
+    },
+    {
+      "fitur": "skor_kredit",
+      "importance": 0.11938480843080265
+    },
+    {
+      "fitur": "tujuan_pinjaman",
+      "importance": 0.03733550347090666
+    },
+    {
+      "fitur": "gagal_bayar_tercatat",
+      "importance": 0.03452696153461456
+    },
+    {
+      "fitur": "tunggakan_2thn_terakhir",
+      "importance": 0.027027111565075312
+    },
+    {
+      "fitur": "lama_riwayat_kredit_tahun",
+      "importance": 0.023903402610024882
+    },
+    {
+      "fitur": "rasio_pinjaman_terhadap_pendapatan",
+      "importance": 0.012688507464646937
+    },
+    {
+      "fitur": "lama_bekerja_tahun",
+      "importance": 0.011624845044296905
+    },
+    {
+      "fitur": "tipe_produk",
+      "importance": 0.007533864956420411
+    },
+    {
+      "fitur": "jumlah_pinjaman",
+      "importance": 0.004818424750883854
+    },
+    {
+      "fitur": "rasio_pembayaran_terhadap_pendapatan",
+      "importance": 0.004477927336762333
+    },
+    {
+      "fitur": "catatan_negatif",
+      "importance": 0.0034064855591892317
+    },
+    {
+      "fitur": "usia",
+      "importance": 0.000639774338022181
+    },
+    {
+      "fitur": "aset_tabungan",
+      "importance": 0.0005512836444571123
+    },
+    {
+      "fitur": "pendapatan_tahunan",
+      "importance": 0.0003642719380400061
+    },
+    {
+      "fitur": "status_pekerjaan",
+      "importance": 0.00022140656840432537
+    },
+    {
+      "fitur": "suku_bunga",
+      "importance": 0.00010642968926024565
+    },
+    {
+      "fitur": "hutang_saat_ini",
+      "importance": 0.000020731481846336663
+    },
+    {
+      "fitur": "tenor_bulan",
+      "importance": 0.0000069468649695592076
+    },
+    {
+      "fitur": "jaminan",
+      "importance": -0.000008163273553440931
+    }
+  ],
+  "gain": [
+    {
+      "fitur": "skor_kredit",
+      "importance": 0.1408585
+    },
+    {
+      "fitur": "gagal_bayar_tercatat",
+      "importance": 0.115127824
+    },
+    {
+      "fitur": "rasio_hutang_terhadap_pendapatan",
+      "importance": 0.09312114
+    },
+    {
+      "fitur": "tunggakan_2thn_terakhir",
+      "importance": 0.07891645
+    },
+    {
+      "fitur": "tujuan_pinjaman_Konsolidasi Hutang",
+      "importance": 0.058207236
+    },
+    {
+      "fitur": "tipe_produk_Kartu Kredit",
+      "importance": 0.057521965
+    },
+    {
+      "fitur": "tujuan_pinjaman_Pribadi",
+      "importance": 0.047532365
+    },
+    {
+      "fitur": "tujuan_pinjaman_Pendidikan",
+      "importance": 0.046748105
+    },
+    {
+      "fitur": "tujuan_pinjaman_Bisnis",
+      "importance": 0.046048608
+    },
+    {
+      "fitur": "rasio_pembayaran_terhadap_pendapatan",
+      "importance": 0.04415433
+    },
+    {
+      "fitur": "lama_riwayat_kredit_tahun",
+      "importance": 0.04045284
+    },
+    {
+      "fitur": "rasio_pinjaman_terhadap_pendapatan",
+      "importance": 0.03574523
+    },
+    {
+      "fitur": "catatan_negatif",
+      "importance": 0.03381969
+    },
+    {
+      "fitur": "lama_bekerja_tahun",
+      "importance": 0.025060598
+    },
+    {
+      "fitur": "tipe_produk_Kredit Berjalan",
+      "importance": 0.016512493
+    },
+    {
+      "fitur": "suku_bunga",
+      "importance": 0.016368534
+    },
+    {
+      "fitur": "jumlah_pinjaman",
+      "importance": 0.013396515
+    },
+    {
+      "fitur": "usia",
+      "importance": 0.012756857
+    },
+    {
+      "fitur": "status_pekerjaan_Mahasiswa",
+      "importance": 0.011223993
+    },
+    {
+      "fitur": "status_pekerjaan_Wiraswasta",
+      "importance": 0.008055926
+    },
+    {
+      "fitur": "hutang_saat_ini",
+      "importance": 0.007991018
+    },
+    {
+      "fitur": "pendapatan_tahunan",
+      "importance": 0.0075654667
+    },
+    {
+      "fitur": "aset_tabungan",
+      "importance": 0.0075329402
+    },
+    {
+      "fitur": "tipe_produk_Pinjaman Pribadi",
+      "importance": 0.007386186
+    },
+    {
+      "fitur": "tujuan_pinjaman_Renovasi Rumah",
+      "importance": 0.006015027
+    },
+    {
+      "fitur": "status_pekerjaan_Bekerja",
+      "importance": 0.0058421893
+    },
+    {
+      "fitur": "tujuan_pinjaman_Medis",
+      "importance": 0.004772738
+    },
+    {
+      "fitur": "tenor_bulan",
+      "importance": 0.0042409105
+    },
+    {
+      "fitur": "jaminan_Ada Jaminan",
+      "importance": 0.003583152
+    },
+    {
+      "fitur": "jaminan_Tanpa Jaminan",
+      "importance": 0.0034411328
+    }
+  ]
+}

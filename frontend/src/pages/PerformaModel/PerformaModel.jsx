@@ -39,12 +39,8 @@ export default function PerformaModel() {
   const fi = useResource(fiFetcher);
   const colors = getChartColors();
 
-  const topFeatures = useMemo(() => {
-    if (!fi.data) return [];
-    return [...fi.data]
-      .sort((a, b) => b.importance - a.importance)
-      .slice(0, 12);
-  }, [fi.data]);
+  const topPerm = useMemo(() => (fi.data?.permutation || []).slice(0, 12), [fi.data]);
+  const topGain = useMemo(() => (fi.data?.gain || []).slice(0, 12), [fi.data]);
 
   if (model.loading || fi.loading) {
     return (
@@ -133,22 +129,42 @@ export default function PerformaModel() {
       </div>
 
       <Card
-        title="Feature Importance (Permutation)"
-        subtitle="Rata-rata penurunan skor model saat nilai fitur diacak — 12 teratas"
+        title="Feature Importance — Permutation"
+        subtitle="Rata-rata penurunan skor model saat nilai fitur diacak (lebih robust) — 12 teratas"
         icon="trending-up"
       >
         <BarChart
-          labels={topFeatures.map((f) => prettifyFeature(f.fitur))}
+          labels={topPerm.map((f) => prettifyFeature(f.fitur))}
           datasets={[
             {
               label: "Permutation importance",
-              data: topFeatures.map((f) => f.importance),
+              data: topPerm.map((f) => f.importance),
               color: colors.primary,
             },
           ]}
           horizontal
-          height={Math.max(280, topFeatures.length * 34 + 40)}
+          height={Math.max(280, topPerm.length * 34 + 40)}
           valueFormatter={(v) => v.toFixed(3)}
+        />
+      </Card>
+
+      <Card
+        title="Feature Importance — Gain (bawaan XGBoost)"
+        subtitle="Kontribusi rata-rata pada pemecahan pohon, per kolom — 12 teratas"
+        icon="bar-chart"
+      >
+        <BarChart
+          labels={topGain.map((f) => prettifyFeature(f.fitur))}
+          datasets={[
+            {
+              label: "Gain importance",
+              data: topGain.map((f) => f.importance),
+              color: colors.success,
+            },
+          ]}
+          horizontal
+          height={Math.max(280, topGain.length * 34 + 40)}
+          valueFormatter={(v) => formatPercent(v)}
         />
       </Card>
 
