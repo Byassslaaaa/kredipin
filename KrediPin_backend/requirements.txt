@@ -13,10 +13,13 @@ SQLAlchemy==2.0.51
 
 # Inferensi model (HARUS cocok dengan versi saat training di Tahap 1)
 scikit-learn==1.8.0
+scipy==1.13.1
 xgboost==3.3.0
 joblib==1.5.3
 pandas==3.0.2
-numpy==2.4.4
+# numpy 2.0.2 (bukan 2.4.x): wheel baseline SSE3 sehingga jalan di CPU lama/VPS
+# tanpa x86-64-v2 (SSE4.2). Tetap di lini numpy 2.x agar ABI cocok dgn pandas/sklearn.
+numpy==2.0.2
 
 # Pengujian (opsional)
 httpx==0.28.1
