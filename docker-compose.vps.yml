@@ -1,0 +1,41 @@
+# KrediPin — deployment di VPS yang SUDAH punya reverse proxy (Apache/Nginx).
+#
+# Backend & frontend HANYA listen di localhost (tidak ekspos publik); reverse
+# proxy host (Apache) yang melayani domain + HTTPS. Tidak menyentuh port 80/443.
+#
+# Jalankan:
+#   docker compose -f docker-compose.vps.yml up -d --build
+#
+# Port host (localhost):
+#   - frontend : 127.0.0.1:8090
+#   - backend  : 127.0.0.1:8091
+# Lihat deploy/kredipin-apache.conf untuk VirtualHost-nya.
+
+services:
+  backend:
+    build: ./KrediPin_backend
+    image: kredipin-backend
+    container_name: kredipin-backend
+    environment:
+      THRESHOLD: "0.5"
+      CORS_ORIGINS: "https://kredipin.my.id"
+    volumes:
+      - kredipin_db:/app/database
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8091:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Same-origin: browser memanggil https://kredipin.my.id/api/* (di-proxy Apache).
+        VITE_API_BASE_URL: "/api"
+    image: kredipin-frontend
+    container_name: kredipin-frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:80"
+
+volumes:
+  kredipin_db:

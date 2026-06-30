@@ -130,6 +130,40 @@ docker compose -f docker-compose.prod.yml down           # hentikan
 
 ---
 
+## Deployment ke VPS yang sudah punya Apache/Nginx (reverse proxy bersama)
+
+Jika VPS sudah menjalankan situs lain di port 80/443 (mis. via Apache), **jangan**
+pakai Caddy di atas. KrediPin dijalankan di **port localhost** dan reverse proxy
+yang ada (Apache) melayani `kredipin.my.id`. Berkas:
+[`docker-compose.vps.yml`](docker-compose.vps.yml) + [`deploy/kredipin-apache.conf`](deploy/kredipin-apache.conf).
+
+```bash
+# 1) DNS: A record kredipin.my.id -> IP VPS (lakukan lebih dulu)
+
+# 2) Clone & jalankan container di localhost (8090 frontend, 8091 backend)
+git clone https://github.com/Byassslaaaa/kredipin.git
+cd kredipin
+docker compose -f docker-compose.vps.yml up -d --build
+
+# 3) Verifikasi lokal
+curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8090        # 200 frontend
+curl -s http://127.0.0.1:8091/health                                  # status ok backend
+
+# 4) Pasang VirtualHost Apache
+cp deploy/kredipin-apache.conf /etc/apache2/sites-available/kredipin.conf
+a2ensite kredipin
+apache2ctl configtest && systemctl reload apache2
+
+# 5) Terbitkan HTTPS (mengikuti certbot yang sudah ada)
+certbot --apache -d kredipin.my.id
+```
+
+Akses: **https://kredipin.my.id** · API: **https://kredipin.my.id/api/docs**.
+Same-origin (`/api` di-proxy ke backend) → tanpa CORS. Tidak ada situs lain yang
+terganggu karena port 80/443 tetap dikelola Apache.
+
+---
+
 ## Membersihkan Port (bila tersangkut)
 
 Jika port 8000/5173 masih dipegang proses lama (PowerShell):
