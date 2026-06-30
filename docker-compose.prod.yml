@@ -1,0 +1,61 @@
+# KrediPin — orkestrasi PRODUKSI (VPS + domain + HTTPS via Caddy).
+#
+# Pakai file ini SENDIRI (bukan override):
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Backend & frontend TIDAK mengekspos port publik — hanya Caddy yang membuka
+# 80/443 dan mem-proxy ke keduanya lewat jaringan internal Docker.
+#
+# Set domain & email di file .env (lihat .env.prod.example):
+#   DOMAIN=kredipin.contoh.com
+#   TLS_EMAIL=anda@contoh.com
+
+services:
+  backend:
+    build: ./KrediPin_backend
+    image: kredipin-backend
+    container_name: kredipin-backend
+    environment:
+      THRESHOLD: "0.5"
+      # Same-origin via Caddy; diisi untuk keamanan/eksplisit.
+      CORS_ORIGINS: "https://${DOMAIN}"
+    volumes:
+      - kredipin_db:/app/database
+    restart: unless-stopped
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Relatif: browser memanggil https://DOMAIN/api/* (di-proxy Caddy).
+        VITE_API_BASE_URL: "/api"
+    image: kredipin-frontend
+    container_name: kredipin-frontend
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: kredipin-caddy
+    depends_on:
+      - backend
+      - frontend
+    environment:
+      DOMAIN: "${DOMAIN}"
+      TLS_EMAIL: "${TLS_EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  kredipin_db:
+  caddy_data:
+  caddy_config:

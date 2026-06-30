@@ -79,6 +79,57 @@ Python 3.12) sehingga konsisten dengan versi training — tanpa warning versi.
 
 ---
 
+## Deployment ke VPS (produksi · domain + HTTPS otomatis)
+
+Memakai **Caddy** sebagai reverse proxy: satu domain melayani frontend dan
+mem-proxy `/api/*` ke backend (same-origin, **tanpa CORS**), TLS otomatis dari
+Let's Encrypt. Berkas: [`Caddyfile`](Caddyfile) + [`docker-compose.prod.yml`](docker-compose.prod.yml).
+
+### 1) Arahkan domain
+Buat **A record** `kredipin.contoh.com` → **IP VPS** (tunggu propagasi DNS).
+
+### 2) Pasang Docker di VPS (Ubuntu/Debian)
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER && newgrp docker   # agar bisa tanpa sudo
+docker --version && docker compose version
+```
+
+### 3) Buka firewall
+```bash
+sudo ufw allow OpenSSH
+sudo ufw allow 80,443/tcp
+sudo ufw enable
+```
+
+### 4) Clone & konfigurasi
+```bash
+git clone https://github.com/Byassslaaaa/kredipin.git
+cd kredipin
+cp .env.prod.example .env
+nano .env        # isi DOMAIN dan TLS_EMAIL
+```
+
+### 5) Jalankan
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+Caddy otomatis menerbitkan sertifikat HTTPS. Akses: **https://DOMAIN**
+(dok API: **https://DOMAIN/api/docs**).
+
+### Operasional
+```bash
+docker compose -f docker-compose.prod.yml logs -f        # lihat log
+git pull && docker compose -f docker-compose.prod.yml up -d --build   # update
+docker compose -f docker-compose.prod.yml down           # hentikan
+```
+
+> Riwayat prediksi (SQLite) persisten di volume `kredipin_db`. Disarankan VPS
+> RAM **≥2GB** (XGBoost/scikit-learn). Frontend memanggil API lewat path relatif
+> `/api`, sehingga tidak perlu mengubah kode untuk domain berbeda.
+
+---
+
 ## Membersihkan Port (bila tersangkut)
 
 Jika port 8000/5173 masih dipegang proses lama (PowerShell):

@@ -1,0 +1,25 @@
+# Caddy reverse proxy untuk KrediPin (produksi, satu domain + HTTPS otomatis).
+#
+# - https://DOMAIN/         -> frontend (SPA React/Nginx)
+# - https://DOMAIN/api/*    -> backend FastAPI (prefix /api di-strip)
+#
+# Karena frontend & API berbagi origin yang sama, TIDAK ada masalah CORS.
+# DOMAIN & TLS_EMAIL dibaca dari environment (lihat .env.prod.example).
+
+{
+	email {$TLS_EMAIL}
+}
+
+{$DOMAIN} {
+	encode gzip
+
+	# API: teruskan ke backend, hilangkan prefix /api.
+	handle_path /api/* {
+		reverse_proxy backend:8000
+	}
+
+	# Selain itu: layani frontend (SPA).
+	handle {
+		reverse_proxy frontend:80
+	}
+}
