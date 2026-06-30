@@ -126,7 +126,7 @@ export default function HasilPrediksi({ data, loading, error }) {
         <div className={styles.section}>
           <div className={styles.sectionHead}>
             <h4 className={styles.sectionTitle}>Faktor Penilaian Utama</h4>
-            <span className={styles.sectionHint}>5 fitur paling berpengaruh</span>
+            <span className={styles.sectionHint}>Kontribusi terbesar pada keputusan ini (SHAP)</span>
           </div>
           <FaktorList faktor={data.faktor} />
         </div>
