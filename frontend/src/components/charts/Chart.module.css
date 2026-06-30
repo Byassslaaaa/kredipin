@@ -1,0 +1,32 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Label tengah untuk DoughnutChart */
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+/* Saat legend bottom aktif, geser sedikit ke atas agar pas di lubang donat */
+.centerValue {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.centerCaption {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}

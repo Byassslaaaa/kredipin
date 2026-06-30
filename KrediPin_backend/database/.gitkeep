@@ -1,0 +1,2 @@
+# Folder ini menyimpan file SQLite saat runtime (krediPin_history.db).
+# File .db tidak di-commit (lihat .gitignore). File ini hanya menjaga folder tetap ada.

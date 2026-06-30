@@ -1,0 +1,18 @@
+[
+  {
+    "keputusan": "Layak",
+    "jumlah_nasabah": 27929,
+    "rata_pendapatan_tahunan_idr": 985737692.29,
+    "rata_jumlah_pinjaman_idr": 584231766.26,
+    "rata_suku_bunga": 14.79,
+    "rata_aset_tabungan_idr": 84526550.54
+  },
+  {
+    "keputusan": "Tidak Layak",
+    "jumlah_nasabah": 22071,
+    "rata_pendapatan_tahunan_idr": 794070718.5,
+    "rata_jumlah_pinjaman_idr": 608068397.44,
+    "rata_suku_bunga": 16.39,
+    "rata_aset_tabungan_idr": 39659074.35
+  }
+]

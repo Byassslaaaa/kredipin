@@ -1,0 +1,38 @@
+# ---- Dependencies ----
+node_modules/
+
+# ---- Build output ----
+dist/
+dist-ssr/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ---- Runtime database (SQLite) ----
+*.db
+*.sqlite
+*.sqlite3
+
+# ---- Environment files (gunakan .env.example) ----
+.env
+.env.local
+.env.*.local
+
+# ---- Arsip (tidak diikutkan ke repo) ----
+*.zip
+
+# ---- Logs ----
+*.log
+npm-debug.log*
+
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

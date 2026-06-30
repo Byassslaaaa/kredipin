@@ -1,0 +1,44 @@
+# KrediPin — orkestrasi Backend (FastAPI) + Frontend (React/Nginx).
+#
+# Jalankan:
+#   docker compose up --build
+#
+# Akses:
+#   Frontend : http://localhost:5173
+#   Backend  : http://localhost:8000  (dok: /docs)
+#
+# Browser memuat frontend dari :5173 dan memanggil backend di :8000 (origin
+# :5173 sudah diizinkan CORS default). Untuk produksi, set CORS_ORIGINS &
+# bangun ulang frontend dengan VITE_API_BASE_URL yang sesuai.
+
+services:
+  backend:
+    build: ./KrediPin_backend
+    image: kredipin-backend
+    container_name: kredipin-backend
+    ports:
+      - "8000:8000"
+    environment:
+      THRESHOLD: "0.5"
+      # Tambahkan origin produksi bila perlu (koma atau JSON list):
+      CORS_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173"
+    volumes:
+      - kredipin_db:/app/database
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # URL backend yang dipanggil browser. Sesuaikan untuk deployment.
+        VITE_API_BASE_URL: "http://localhost:8000"
+    image: kredipin-frontend
+    container_name: kredipin-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  kredipin_db:

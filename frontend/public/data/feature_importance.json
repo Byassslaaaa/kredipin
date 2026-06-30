@@ -1,0 +1,122 @@
+[
+  {
+    "fitur": "skor_kredit",
+    "gain_importance": 0.1408585
+  },
+  {
+    "fitur": "gagal_bayar_tercatat",
+    "gain_importance": 0.115127824
+  },
+  {
+    "fitur": "rasio_hutang_terhadap_pendapatan",
+    "gain_importance": 0.09312114
+  },
+  {
+    "fitur": "tunggakan_2thn_terakhir",
+    "gain_importance": 0.07891645
+  },
+  {
+    "fitur": "tujuan_pinjaman_Konsolidasi Hutang",
+    "gain_importance": 0.058207236
+  },
+  {
+    "fitur": "tipe_produk_Kartu Kredit",
+    "gain_importance": 0.057521965
+  },
+  {
+    "fitur": "tujuan_pinjaman_Pribadi",
+    "gain_importance": 0.047532365
+  },
+  {
+    "fitur": "tujuan_pinjaman_Pendidikan",
+    "gain_importance": 0.046748105
+  },
+  {
+    "fitur": "tujuan_pinjaman_Bisnis",
+    "gain_importance": 0.046048608
+  },
+  {
+    "fitur": "rasio_pembayaran_terhadap_pendapatan",
+    "gain_importance": 0.04415433
+  },
+  {
+    "fitur": "lama_riwayat_kredit_tahun",
+    "gain_importance": 0.04045284
+  },
+  {
+    "fitur": "rasio_pinjaman_terhadap_pendapatan",
+    "gain_importance": 0.03574523
+  },
+  {
+    "fitur": "catatan_negatif",
+    "gain_importance": 0.03381969
+  },
+  {
+    "fitur": "lama_bekerja_tahun",
+    "gain_importance": 0.025060598
+  },
+  {
+    "fitur": "tipe_produk_Kredit Berjalan",
+    "gain_importance": 0.016512493
+  },
+  {
+    "fitur": "suku_bunga",
+    "gain_importance": 0.016368534
+  },
+  {
+    "fitur": "jumlah_pinjaman",
+    "gain_importance": 0.013396515
+  },
+  {
+    "fitur": "usia",
+    "gain_importance": 0.012756857
+  },
+  {
+    "fitur": "status_pekerjaan_Mahasiswa",
+    "gain_importance": 0.011223993
+  },
+  {
+    "fitur": "status_pekerjaan_Wiraswasta",
+    "gain_importance": 0.008055926
+  },
+  {
+    "fitur": "hutang_saat_ini",
+    "gain_importance": 0.007991018
+  },
+  {
+    "fitur": "pendapatan_tahunan",
+    "gain_importance": 0.0075654667
+  },
+  {
+    "fitur": "aset_tabungan",
+    "gain_importance": 0.0075329402
+  },
+  {
+    "fitur": "tipe_produk_Pinjaman Pribadi",
+    "gain_importance": 0.007386186
+  },
+  {
+    "fitur": "tujuan_pinjaman_Renovasi Rumah",
+    "gain_importance": 0.006015027
+  },
+  {
+    "fitur": "status_pekerjaan_Bekerja",
+    "gain_importance": 0.0058421893
+  },
+  {
+    "fitur": "tujuan_pinjaman_Medis",
+    "gain_importance": 0.004772738
+  },
+  {
+    "fitur": "tenor_bulan",
+    "gain_importance": 0.0042409105
+  },
+  {
+    "fitur": "jaminan_Ada Jaminan",
+    "gain_importance": 0.003583152
+  },
+  {
+    "fitur": "jaminan_Tanpa Jaminan",
+    "gain_importance": 0.0034411328
+  }
+]

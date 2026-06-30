@@ -1,0 +1,23 @@
+{
+  "nama_sistem": "KrediPin - Sistem Pendukung Keputusan Kelayakan Pinjaman Digital",
+  "total_data": 50000,
+  "kurs_usd_idr": 18000,
+  "ambang_keputusan": 0.5,
+  "distribusi_keputusan": {
+    "Layak": 27929,
+    "Tidak Layak": 22071
+  },
+  "persentase_layak": 55.86,
+  "evaluasi_model": {
+    "accuracy": 0.9274,
+    "precision": 0.9253,
+    "recall": 0.9444,
+    "f1": 0.9347,
+    "roc_auc": 0.9843
+  },
+  "fitur_sintetik": [
+    "tenor_bulan",
+    "jaminan"
+  ],
+  "efek_literatur": 0.35
+}

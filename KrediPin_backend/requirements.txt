@@ -1,0 +1,23 @@
+# KrediPin Backend — dependensi inferensi (FastAPI + XGBoost)
+# Versi scikit-learn & xgboost DIPIN agar artefak .pkl Tahap 1 dapat dimuat
+# tanpa peringatan/inkonsistensi versi.
+#
+# PENTING: butuh Python >=3.12 (xgboost==3.3.0 tidak punya wheel untuk Python 3.11).
+# Dockerfile memakai python:3.12-slim. Untuk run native, gunakan Python 3.12.
+
+fastapi==0.138.2
+uvicorn[standard]==0.49.0
+pydantic==2.13.4
+pydantic-settings==2.14.2
+SQLAlchemy==2.0.51
+
+# Inferensi model (HARUS cocok dengan versi saat training di Tahap 1)
+scikit-learn==1.8.0
+xgboost==3.3.0
+joblib==1.5.3
+pandas==3.0.2
+numpy==2.4.4
+
+# Pengujian (opsional)
+httpx==0.28.1
+pytest==9.1.1

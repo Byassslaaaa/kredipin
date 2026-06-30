@@ -1,0 +1,58 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+}
+
+.sm {
+  font-size: 0.6875rem;
+  padding: 3px 8px;
+}
+.md {
+  font-size: var(--text-xs);
+  padding: 5px 10px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+/* ---------- Variants ---------- */
+.neutral {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+}
+.primary {
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-border);
+}
+.success {
+  color: var(--color-accent);
+  background: var(--color-success-soft);
+  border-color: var(--color-success-border);
+}
+.danger {
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger-border);
+}
+.warning {
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+  border-color: var(--color-warning-border);
+}
+.info {
+  color: var(--color-info);
+  background: var(--color-info-soft);
+  border-color: var(--color-primary-border);
+}

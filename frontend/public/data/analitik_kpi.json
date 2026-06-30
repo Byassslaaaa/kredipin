@@ -1,0 +1,20 @@
+[
+  {
+    "keputusan": "Layak",
+    "jumlah_nasabah": 27929,
+    "rata_skor_kredit": 673.29,
+    "persen_gagal_bayar_tercatat": 0,
+    "rata_rasio_hutang_terhadap_pendapatan": 0.24,
+    "rata_tunggakan_2thn_terakhir": 0.31,
+    "rata_probabilitas_layak": 0.93
+  },
+  {
+    "keputusan": "Tidak Layak",
+    "jumlah_nasabah": 22071,
+    "rata_skor_kredit": 606.07,
+    "persen_gagal_bayar_tercatat": 12.12,
+    "rata_rasio_hutang_terhadap_pendapatan": 0.34,
+    "rata_tunggakan_2thn_terakhir": 0.86,
+    "rata_probabilitas_layak": 0.08
+  }
+]

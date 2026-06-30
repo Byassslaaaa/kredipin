@@ -1,0 +1,70 @@
+.track {
+  position: relative;
+  width: 100%;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.sm {
+  height: 8px;
+}
+.md {
+  height: 12px;
+}
+.lg {
+  height: 16px;
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.primary {
+  background: var(--color-primary);
+}
+.success {
+  background: var(--color-accent);
+}
+.danger {
+  background: var(--color-danger);
+}
+.warning {
+  background: var(--color-warning);
+}
+
+/* Penanda ambang */
+.threshold {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.thresholdLine {
+  display: block;
+  width: 2px;
+  height: 100%;
+  margin: 0 auto;
+  background: var(--color-text);
+  opacity: 0.55;
+  border-radius: var(--radius-full);
+}
+
+.thresholdLabelRow {
+  position: relative;
+  height: 1.2rem;
+  margin-top: 4px;
+}
+
+.thresholdLabel {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}

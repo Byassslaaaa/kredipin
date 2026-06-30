@@ -1,0 +1,22 @@
+# Lingkungan & rahasia
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Database SQLite (data runtime, bukan source)
+database/*.db
+database/*.sqlite3
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
