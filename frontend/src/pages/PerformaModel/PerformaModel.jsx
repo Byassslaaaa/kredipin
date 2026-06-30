@@ -42,7 +42,7 @@ export default function PerformaModel() {
   const topFeatures = useMemo(() => {
     if (!fi.data) return [];
     return [...fi.data]
-      .sort((a, b) => b.gain_importance - a.gain_importance)
+      .sort((a, b) => b.importance - a.importance)
       .slice(0, 12);
   }, [fi.data]);
 
@@ -133,22 +133,22 @@ export default function PerformaModel() {
       </div>
 
       <Card
-        title="Feature Importance"
-        subtitle="12 fitur paling berpengaruh (gain importance)"
+        title="Feature Importance (Permutation)"
+        subtitle="Rata-rata penurunan skor model saat nilai fitur diacak — 12 teratas"
         icon="trending-up"
       >
         <BarChart
           labels={topFeatures.map((f) => prettifyFeature(f.fitur))}
           datasets={[
             {
-              label: "Gain importance",
-              data: topFeatures.map((f) => f.gain_importance),
+              label: "Permutation importance",
+              data: topFeatures.map((f) => f.importance),
               color: colors.primary,
             },
           ]}
           horizontal
           height={Math.max(280, topFeatures.length * 34 + 40)}
-          valueFormatter={(v) => formatPercent(v)}
+          valueFormatter={(v) => v.toFixed(3)}
         />
       </Card>
 

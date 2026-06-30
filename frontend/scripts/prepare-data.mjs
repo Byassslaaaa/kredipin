@@ -169,8 +169,13 @@ function main() {
   });
 
   safe("feature_importance.json", () => {
-    const gain = readCsv(resolve(REPO, "krediPin/hasil_evaluasi/feature_importance_gain.csv"));
-    writeOut("feature_importance.json", gain);
+    // Permutation importance: teragregasi ke fitur asal & lebih robust untuk
+    // interpretabilitas (dibanding gain yang bias ke fitur kardinalitas tinggi).
+    const perm = readCsv(resolve(REPO, "krediPin/hasil_evaluasi/feature_importance_permutation.csv"))
+      .map((r) => ({ fitur: r.fitur, importance: r.perm_importance }))
+      .filter((r) => typeof r.importance === "number")
+      .sort((a, b) => b.importance - a.importance);
+    writeOut("feature_importance.json", perm);
   });
 
   safe("eksplorasi.json", () => {
