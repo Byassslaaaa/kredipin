@@ -1,10 +1,9 @@
 import { motion } from "framer-motion";
 import { Alert, Card, EmptyState, ProgressBar, Skeleton } from "@/components/ui";
 import Icon from "@/components/ui/Icon";
-import DecisionBadge from "@/components/common/DecisionBadge";
 import FaktorList from "@/components/common/FaktorList";
 import { formatDateTime, formatPercent } from "@/utils/format";
-import { NATIVE_THRESHOLD, nativeDecision } from "@/utils/prediction";
+import { isMurniXgboost } from "@/utils/prediction";
 import styles from "./HasilPrediksi.module.css";
 
 function EmptyPanel() {
@@ -64,15 +63,7 @@ export default function HasilPrediksi({ data, loading, error }) {
   const layak = data.keputusan === "Layak";
   const probPct = data.probabilitas_layak * 100;
   const thrPct = data.threshold * 100;
-
-  // Perbandingan: keputusan dengan ambang batas (yang dipilih analis) vs
-  // keputusan XGBoost tanpa ambang batas (native, patokan 50%).
-  const keputusanNative = nativeDecision(data.probabilitas_layak);
-  const nativePct = NATIVE_THRESHOLD * 100;
-  const sepakat = data.keputusan === keputusanNative;
-  const relasiAmbang = data.probabilitas_layak >= data.threshold ? "≥" : "<";
-  const relasiNative = data.probabilitas_layak >= NATIVE_THRESHOLD ? "≥" : "<";
-  const ambangLebihKetat = data.threshold > NATIVE_THRESHOLD;
+  const murni = isMurniXgboost(data.threshold);
 
   return (
     <motion.div
@@ -98,7 +89,7 @@ export default function HasilPrediksi({ data, loading, error }) {
             <Icon name={layak ? "check-circle" : "x-circle"} size={26} />
           </span>
           <div className={styles.verdictText}>
-            <span className={styles.verdictLabel}>Keputusan Sistem (Ambang {Math.round(thrPct)}%)</span>
+            <span className={styles.verdictLabel}>Keputusan Model</span>
             <span className={styles.verdictValue}>{data.keputusan}</span>
           </div>
           <div className={styles.verdictProb}>
@@ -131,60 +122,20 @@ export default function HasilPrediksi({ data, loading, error }) {
               <span className={`${styles.metricValue} num`}>{formatPercent(data.threshold)}</span>
             </div>
           </div>
-        </div>
 
-        {/* Perbandingan keputusan: ambang batas vs XGBoost native */}
-        <div className={styles.section}>
-          <div className={styles.sectionHead}>
-            <h4 className={styles.sectionTitle}>Perbandingan Keputusan</h4>
-            <span className={styles.sectionHint}>Ambang batas vs model XGBoost apa adanya</span>
-          </div>
-
-          <div className={styles.compareGrid}>
-            <div
-              className={`${styles.compareCard} ${
-                data.keputusan === "Layak" ? styles.compareLayak : styles.compareTolak
-              }`}
-            >
-              <div className={styles.compareTop}>
-                <span className={styles.compareLabel}>Dengan Ambang Batas</span>
-                <span className={styles.compareThr}>ambang {Math.round(thrPct)}%</span>
-              </div>
-              <DecisionBadge keputusan={data.keputusan} />
-              <span className={`${styles.compareRule} num`}>
-                {probPct.toFixed(1)}% {relasiAmbang} {Math.round(thrPct)}%
-              </span>
-            </div>
-
-            <div
-              className={`${styles.compareCard} ${
-                keputusanNative === "Layak" ? styles.compareLayak : styles.compareTolak
-              }`}
-            >
-              <div className={styles.compareTop}>
-                <span className={styles.compareLabel}>XGBoost Tanpa Ambang</span>
-                <span className={styles.compareThr}>native {nativePct}%</span>
-              </div>
-              <DecisionBadge keputusan={keputusanNative} />
-              <span className={`${styles.compareRule} num`}>
-                {probPct.toFixed(1)}% {relasiNative} {nativePct}%
-              </span>
-            </div>
-          </div>
-
-          <div className={`${styles.compareNote} ${sepakat ? styles.noteAgree : styles.noteDiffer}`}>
-            <Icon name={sepakat ? "check-circle" : "alert-triangle"} size={15} />
+          {/* Keterangan kemurnian model */}
+          <div className={`${styles.modelNote} ${murni ? styles.modelNoteMurni : styles.modelNoteAmbang}`}>
+            <Icon name={murni ? "check-circle" : "alert-triangle"} size={15} />
             <p>
-              {sepakat ? (
+              {murni ? (
                 <>
-                  Ambang batas {Math.round(thrPct)}% menghasilkan keputusan yang <strong>sama</strong>{" "}
-                  dengan model XGBoost tanpa ambang batas (patokan {nativePct}%).
+                  Keputusan <strong>murni XGBoost</strong> (patokan native 50%), tanpa ambang batas
+                  kustom.
                 </>
               ) : (
                 <>
-                  Keputusan <strong>berbeda</strong> karena ambang batas diatur {Math.round(thrPct)}%
-                  {ambangLebihKetat ? " (lebih ketat" : " (lebih longgar"} dari patokan native{" "}
-                  {nativePct}%). Probabilitas {probPct.toFixed(1)}% berada di antara kedua ambang.
+                  Keputusan ini <strong>tidak murni XGBoost</strong> — memakai ambang batas kustom{" "}
+                  {Math.round(thrPct)}% (bukan patokan native 50%).
                 </>
               )}
             </p>

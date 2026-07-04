@@ -1,15 +1,14 @@
 /**
- * Helper terkait keputusan prediksi.
+ * Helper terkait ambang keputusan / kemurnian model.
  *
- * Keputusan "native" XGBoost = keputusan model tanpa ambang batas kustom.
  * XGBClassifier.predict() memakai patokan 0.5 pada probabilitas kelas positif,
- * sehingga keputusan tanpa ambang batas setara dengan `probabilitas_layak >= 0.5`.
- * Nilai ini diturunkan sepenuhnya dari `probabilitas_layak` pada response API,
+ * sehingga keputusan "murni XGBoost" (tanpa ambang batas kustom) setara dengan
+ * `probabilitas_layak >= 0.5`. Nilai ambang ada di response API (`threshold`),
  * jadi tidak perlu perubahan backend/kontrak API.
  */
 export const NATIVE_THRESHOLD = 0.5;
 
-/** Keputusan XGBoost tanpa ambang batas kustom (patokan native 50%). */
-export function nativeDecision(probabilitasLayak) {
-  return Number(probabilitasLayak) >= NATIVE_THRESHOLD ? "Layak" : "Tidak Layak";
+/** True jika ambang = patokan native 50% → keputusan murni XGBoost. */
+export function isMurniXgboost(threshold) {
+  return Math.abs(Number(threshold) - NATIVE_THRESHOLD) < 1e-6;
 }

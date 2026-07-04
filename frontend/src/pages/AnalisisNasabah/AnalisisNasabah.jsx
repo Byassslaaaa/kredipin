@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useToast } from "@/components/ui";
 import usePredict from "@/hooks/usePredict";
+import { NATIVE_THRESHOLD } from "@/utils/prediction";
 import useNasabahForm from "@/features/analisis-nasabah/useNasabahForm";
 import NasabahForm from "@/features/analisis-nasabah/components/NasabahForm";
 import HasilPrediksi from "@/features/analisis-nasabah/components/HasilPrediksi";
@@ -11,6 +12,8 @@ export default function AnalisisNasabah() {
   const { data, loading, error, predict } = usePredict();
   const toast = useToast();
   const [threshold, setThreshold] = useState(0.5);
+  // Ambang mati = keputusan murni XGBoost (patokan native 50%).
+  const [ambangAktif, setAmbangAktif] = useState(false);
 
   const handleSubmit = async () => {
     if (!form.validate()) {
@@ -18,7 +21,8 @@ export default function AnalisisNasabah() {
       return;
     }
     try {
-      const payload = { ...form.getPayload(), threshold };
+      const effectiveThreshold = ambangAktif ? threshold : NATIVE_THRESHOLD;
+      const payload = { ...form.getPayload(), threshold: effectiveThreshold };
       const result = await predict(payload);
       if (result) {
         toast.success(
@@ -44,6 +48,8 @@ export default function AnalisisNasabah() {
           onReset={form.reset}
           threshold={threshold}
           onThresholdChange={setThreshold}
+          ambangAktif={ambangAktif}
+          onAmbangToggle={setAmbangAktif}
           loading={loading}
         />
       </div>

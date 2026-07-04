@@ -169,57 +169,8 @@
   color: var(--color-text);
 }
 
-/* ---------- Perbandingan keputusan ---------- */
-.compareGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
-}
-
-.compareCard {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  border-left-width: 3px;
-}
-
-.compareLayak {
-  border-left-color: var(--color-accent);
-}
-
-.compareTolak {
-  border-left-color: var(--color-danger);
-}
-
-.compareTop {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.compareLabel {
-  font-size: var(--text-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--color-text);
-}
-
-.compareThr {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-}
-
-.compareRule {
-  font-size: var(--text-xs);
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.compareNote {
+/* ---------- Keterangan kemurnian model ---------- */
+.modelNote {
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
@@ -227,37 +178,31 @@
   border-radius: var(--radius-md);
 }
 
-.compareNote p {
+.modelNote p {
   font-size: var(--text-xs);
   line-height: var(--leading-normal);
 }
 
-.noteAgree {
+.modelNoteMurni {
   background: var(--color-success-soft);
-  color: var(--color-accent-strong, var(--color-accent));
+  color: var(--color-text);
 }
 
-.noteAgree svg {
+.modelNoteMurni svg {
   color: var(--color-accent);
   flex-shrink: 0;
   margin-top: 1px;
 }
 
-.noteDiffer {
-  background: var(--color-warning-soft, var(--color-danger-soft));
+.modelNoteAmbang {
+  background: var(--color-warning-soft);
   color: var(--color-text);
 }
 
-.noteDiffer svg {
-  color: var(--color-warning, var(--color-danger));
+.modelNoteAmbang svg {
+  color: var(--color-warning);
   flex-shrink: 0;
   margin-top: 1px;
-}
-
-@media (max-width: 520px) {
-  .compareGrid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ---------- Disclaimer ---------- */

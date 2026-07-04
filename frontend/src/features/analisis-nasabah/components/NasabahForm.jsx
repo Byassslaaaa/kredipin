@@ -74,6 +74,8 @@ export default function NasabahForm({
   onReset,
   threshold,
   onThresholdChange,
+  ambangAktif,
+  onAmbangToggle,
   loading,
 }) {
   const fieldsByGroup = (groupId) =>
@@ -141,7 +143,12 @@ export default function NasabahForm({
               </span>
               <h4 className={styles.groupTitle}>Pengaturan Keputusan</h4>
             </div>
-            <ThresholdControl value={threshold} onChange={onThresholdChange} />
+            <ThresholdControl
+              value={threshold}
+              onChange={onThresholdChange}
+              enabled={ambangAktif}
+              onToggle={onAmbangToggle}
+            />
           </section>
         </div>
 
