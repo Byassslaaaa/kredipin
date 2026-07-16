@@ -64,22 +64,36 @@
   background: var(--color-surface-hover);
 }
 
+/* Tombol ikon berbaur dengan topbar: tanpa border & tanpa background diam.
+   Bentuknya baru muncul saat hover — kontrol sekunder tidak perlu menuntut
+   perhatian lewat kotak permanen. */
 .iconBtn {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  transition: background var(--duration-fast) var(--ease-in-out),
-    color var(--duration-fast) var(--ease-in-out);
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
 }
 
 .iconBtn:hover {
   background: var(--color-surface-hover);
   color: var(--color-text);
+}
+
+.iconBtn:active {
+  transform: scale(0.94);
+}
+
+.iconBtn:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
 }
 
 @media (max-width: 1024px) {
