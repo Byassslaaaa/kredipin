@@ -84,3 +84,38 @@
     margin: 0 var(--space-2);
   }
 }
+
+/* ---------- Trigger (marker + label) ----------
+   Dibungkus agar langkah yang sudah selesai bisa diklik untuk kembali,
+   tanpa mengubah tata letak garis penghubung. */
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.triggerAktif {
+  cursor: pointer;
+}
+
+.triggerAktif:hover .marker {
+  border-color: var(--color-accent);
+  transform: scale(1.06);
+}
+
+.triggerAktif:hover .label {
+  color: var(--color-text);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}

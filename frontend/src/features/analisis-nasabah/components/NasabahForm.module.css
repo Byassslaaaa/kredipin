@@ -110,3 +110,44 @@
     width: 100%;
   }
 }
+
+/* ---------- Wizard ---------- */
+.stepperWrap {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-surface-2);
+  overflow-x: auto;
+}
+
+.stepBody {
+  /* Tinggi minimum menahan lompatan layout saat berpindah langkah
+     (jumlah field tiap grup berbeda: 3 s.d. 6). */
+  min-height: 320px;
+  padding: var(--space-5);
+}
+
+.groupCount {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* Ikon "Hitung otomatis" tidak boleh terdorong oleh groupCount */
+.groupCount + .autoBtn {
+  margin-left: var(--space-2);
+}
+
+.ambang {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-divider);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Panah "Kembali" menghadap kiri */
+.backBtn svg {
+  transform: rotate(180deg);
+}

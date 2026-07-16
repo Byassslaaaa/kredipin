@@ -46,6 +46,8 @@ export default function AnalisisNasabah() {
           onFillExample={form.fillExample}
           onAutoRatios={form.autoCalcRatios}
           onReset={form.reset}
+          validateGroup={form.validateGroup}
+          groupFilled={form.groupFilled}
           threshold={threshold}
           onThresholdChange={setThreshold}
           ambangAktif={ambangAktif}
