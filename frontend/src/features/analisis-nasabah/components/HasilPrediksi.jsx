@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Alert, Card, EmptyState, ProgressBar, Skeleton } from "@/components/ui";
 import Icon from "@/components/ui/Icon";
 import FaktorList from "@/components/common/FaktorList";
@@ -55,7 +55,12 @@ function ErrorPanel({ error }) {
  * HasilPrediksi — laporan penilaian kelayakan kredit untuk satu nasabah,
  * disusun sebagai satu dokumen dengan hierarki visual yang jelas.
  */
+const EASE = [0.32, 0.72, 0, 1];
+
 export default function HasilPrediksi({ data, loading, error }) {
+  // Dipanggil sebelum early-return agar urutan hook tetap konsisten.
+  const kurangiGerak = useReducedMotion();
+
   if (loading) return <LoadingPanel />;
   if (error) return <ErrorPanel error={error} />;
   if (!data) return <EmptyPanel />;
@@ -65,11 +70,25 @@ export default function HasilPrediksi({ data, loading, error }) {
   const thrPct = data.threshold * 100;
   const murni = isMurniXgboost(data.threshold);
 
+  // Bagian laporan masuk bertahap: verdict lebih dulu, lalu angka, faktor,
+  // dan disclaimer — mengikuti urutan seorang analis membaca hasil.
+  const wadah = {
+    hidden: {},
+    show: { transition: { staggerChildren: kurangiGerak ? 0 : 0.09, delayChildren: 0.04 } },
+  };
+  const bagian = {
+    hidden: kurangiGerak ? { opacity: 1 } : { opacity: 0, y: 12 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE } },
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      variants={wadah}
+      initial="hidden"
+      animate="show"
+      // Kunci per-prediksi: animasi diputar ulang tiap hasil baru datang,
+      // memberi umpan balik bahwa panel benar-benar diperbarui.
+      key={data.id_riwayat ?? data.waktu}
     >
       <Card padding="none">
         {/* Header laporan */}
@@ -84,10 +103,20 @@ export default function HasilPrediksi({ data, loading, error }) {
         </div>
 
         {/* Verdict band */}
-        <div className={`${styles.verdict} ${layak ? styles.verdictLayak : styles.verdictTolak}`}>
-          <span className={styles.verdictIcon} aria-hidden="true">
+        <motion.div
+          variants={bagian}
+          className={`${styles.verdict} ${layak ? styles.verdictLayak : styles.verdictTolak}`}
+        >
+          <motion.span
+            className={styles.verdictIcon}
+            aria-hidden="true"
+            // Ikon keputusan "mendarat" dengan pegas — penanda hasil sudah final.
+            initial={kurangiGerak ? false : { scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.1 }}
+          >
             <Icon name={layak ? "check-circle" : "x-circle"} size={26} />
-          </span>
+          </motion.span>
           <div className={styles.verdictText}>
             <span className={styles.verdictLabel}>Keputusan Model</span>
             <span className={styles.verdictValue}>{data.keputusan}</span>
@@ -96,10 +125,10 @@ export default function HasilPrediksi({ data, loading, error }) {
             <span className={styles.verdictProbValue}>{formatPercent(data.probabilitas_layak)}</span>
             <span className={styles.verdictProbCaption}>probabilitas layak</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Probabilitas + ambang */}
-        <div className={styles.section}>
+        <motion.div variants={bagian} className={styles.section}>
           <ProgressBar
             value={probPct}
             tone={layak ? "success" : "danger"}
@@ -140,22 +169,22 @@ export default function HasilPrediksi({ data, loading, error }) {
               )}
             </p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Faktor */}
-        <div className={styles.section}>
+        <motion.div variants={bagian} className={styles.section}>
           <div className={styles.sectionHead}>
             <h4 className={styles.sectionTitle}>Faktor Penilaian Utama</h4>
             <span className={styles.sectionHint}>Kontribusi terbesar pada keputusan ini (SHAP)</span>
           </div>
           <FaktorList faktor={data.faktor} />
-        </div>
+        </motion.div>
 
         {/* Disclaimer */}
-        <div className={styles.disclaimer}>
+        <motion.div variants={bagian} className={styles.disclaimer}>
           <Icon name="info" size={15} className={styles.disclaimerIcon} />
           <p>{data.disclaimer}</p>
-        </div>
+        </motion.div>
       </Card>
     </motion.div>
   );
