@@ -73,22 +73,25 @@ jobs:
           port: ${{ secrets.VM_PORT }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
+          # Default action ini 10 menit. Build pertama (cold cache) mengunduh
+          # dependensi besar sehingga bisa melampauinya; beri margin longgar.
+          command_timeout: 30m
           script: |
             set -e
             cd ~/kredipin
             git pull --ff-only
 
-            # Disk VM sangat terbatas (~5.7 GB) sementara stack ML besar
-            # (scipy/numpy/sklearn/xgboost). Bersihkan image & build cache tak
-            # terpakai SEBELUM build agar tidak "no space left on device".
-            # CATATAN: tanpa --volumes, sehingga volume kredipin_db
-            # (riwayat prediksi) TIDAK ikut terhapus.
-            docker system prune -af
-            docker builder prune -af
-
+            # CATATAN: sengaja TIDAK memakai `docker system prune -af` /
+            # `builder prune` sebelum build. Storage VM sudah ditambah, sehingga
+            # layer cache Docker justru HARUS dipertahankan: selama
+            # requirements.txt & package-lock.json tidak berubah, layer
+            # `pip install` dan `npm ci` dipakai ulang dan build hanya butuh
+            # hitungan detik. Prune agresif memaksa unduh ulang ratusan MB tiap
+            # deploy dan menyebabkan job timeout.
             docker compose -f docker-compose.vm.yml up -d --build
 
-            # Sisakan disk lega untuk deploy berikutnya.
-            docker builder prune -af
+            # Bersihkan hanya image yatim (dangling) — cache build tetap utuh.
+            docker image prune -f
+
             docker compose -f docker-compose.vm.yml ps
             df -h /
