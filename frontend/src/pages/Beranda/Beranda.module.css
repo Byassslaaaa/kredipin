@@ -13,21 +13,66 @@
   margin-top: var(--space-1);
 }
 
-.kpiGrid {
+/* ============================================================
+   BENTO — kisi asimetris
+   ------------------------------------------------------------
+   Sengaja menghindari baris kartu seragam (pola generik). Donat
+   besar mengunci sisi kiri sebagai jangkar visual, empat KPI
+   menempati kisi 2x2 di kanan, lalu dua ubin lebar di bawah.
+   ============================================================ */
+.bento {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-4);
 }
 
-.twoCol {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: var(--space-4);
+/* Ubin besar: 2 kolom x 2 baris */
+.tileDonat {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 2;
 }
 
-@media (max-width: 900px) {
-  .twoCol {
+/* KPI mengalir mengisi 2 kolom sisa pada baris 1-2 */
+.tileKpi {
+  grid-column: span 1;
+}
+
+.tilePerforma {
+  grid-column: 1 / span 4;
+}
+
+.tileRisiko {
+  grid-column: 1 / span 4;
+}
+
+/* Kartu di dalam ubin harus setinggi ubinnya agar tepi sejajar. */
+.fill {
+  height: 100%;
+}
+
+@media (max-width: 1100px) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tileDonat {
+    grid-column: 1 / span 2;
+    grid-row: auto;
+  }
+  .tilePerforma,
+  .tileRisiko {
+    grid-column: 1 / span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .bento {
     grid-template-columns: 1fr;
+  }
+  .tileDonat,
+  .tileKpi,
+  .tilePerforma,
+  .tileRisiko {
+    grid-column: 1;
   }
 }
 
