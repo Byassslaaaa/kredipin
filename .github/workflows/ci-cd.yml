@@ -33,8 +33,12 @@ jobs:
           cache-dependency-path: KrediPin_backend/requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
+      # `python -m pytest` (bukan `pytest`) agar folder kerja KrediPin_backend
+      # masuk sys.path, sehingga `from app.main import app` dapat di-resolve.
+      # `tests/` tidak punya __init__.py, jadi pytest langsung hanya memasukkan
+      # folder tests/ ke sys.path dan `app` tidak ketemu.
       - name: Run tests
-        run: pytest -q
+        run: python -m pytest -q
 
   # ---------- CI: build frontend ----------
   frontend-build:
