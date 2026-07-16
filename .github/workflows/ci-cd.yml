@@ -77,5 +77,18 @@ jobs:
             set -e
             cd ~/kredipin
             git pull --ff-only
+
+            # Disk VM sangat terbatas (~5.7 GB) sementara stack ML besar
+            # (scipy/numpy/sklearn/xgboost). Bersihkan image & build cache tak
+            # terpakai SEBELUM build agar tidak "no space left on device".
+            # CATATAN: tanpa --volumes, sehingga volume kredipin_db
+            # (riwayat prediksi) TIDAK ikut terhapus.
+            docker system prune -af
+            docker builder prune -af
+
             docker compose -f docker-compose.vm.yml up -d --build
+
+            # Sisakan disk lega untuk deploy berikutnya.
+            docker builder prune -af
             docker compose -f docker-compose.vm.yml ps
+            df -h /
