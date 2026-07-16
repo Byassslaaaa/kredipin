@@ -14,7 +14,12 @@ SQLAlchemy==2.0.51
 # Inferensi model (HARUS cocok dengan versi saat training di Tahap 1)
 scikit-learn==1.8.0
 scipy==1.13.1
-xgboost==3.3.0
+# xgboost-cpu (BUKAN xgboost): modul Python-nya identik (`import xgboost`) dan
+# versinya sama persis dengan saat training, tetapi TANPA dependensi GPU.
+# Paket `xgboost` menarik nvidia-nccl-cu12 (~303 MB) — pustaka multi-GPU NVIDIA
+# yang tidak pernah dipakai karena inferensi KrediPin murni CPU dan VM tanpa GPU.
+# Dampak: unduhan ~402 MB -> ~5 MB, image jauh lebih ramping, build CI/CD cepat.
+xgboost-cpu==3.3.0
 joblib==1.5.3
 pandas==3.0.2
 # numpy 2.0.2 (bukan 2.4.x): wheel baseline SSE3 sehingga jalan di CPU lama/VPS
