@@ -26,9 +26,30 @@ venv/
 # ---- Arsip (tidak diikutkan ke repo) ----
 *.zip
 
+# ---- Deliverable tugas (dikumpulkan terpisah ke dosen, bukan source code) ----
+# Laporan, PPT, dokumentasi ber-screenshot, dan berkas rancangan tugas.
+# Repo ini sengaja berisi SOURCE CODE saja agar ramping & mudah di-review.
+# Catatan: README.md, CLAUDE.md, DEPLOYMENT.md, DEPLOY_VM.md, dan CICD.md TETAP
+# dilacak karena merupakan dokumentasi teknis repo (bagian dari deliverable
+# source code), bukan laporan tugas.
+*.docx
+*.pptx
+*.pdf
+DASD_SIAB_Laporan_*.md
+
 # ---- Logs ----
 *.log
 npm-debug.log*
+
+# ---- Berkas sementara Office (lock file saat dokumen dibuka) ----
+~$*
+*.tmp
+
+# ---- Tooling AI assistant (bukan kode proyek) ----
+# Skill pihak ketiga hasil `npx skills add ...` — dapat dipasang ulang kapan saja.
+.agents/
+.claude/
+skills-lock.json
 
 # ---- OS / Editor ----
 .DS_Store
