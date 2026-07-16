@@ -15,10 +15,14 @@ export default function AnalisisNasabah() {
   // Ambang mati = keputusan murni XGBoost (patokan native 50%).
   const [ambangAktif, setAmbangAktif] = useState(false);
 
+  /**
+   * @returns {boolean} true bila prediksi berhasil — dipakai wizard untuk
+   * memutuskan boleh/tidaknya maju ke langkah Hasil.
+   */
   const handleSubmit = async () => {
     if (!form.validate()) {
       toast.error("Data belum lengkap", "Periksa kembali field yang ditandai merah.");
-      return;
+      return false;
     }
     try {
       const effectiveThreshold = ambangAktif ? threshold : NATIVE_THRESHOLD;
@@ -29,35 +33,36 @@ export default function AnalisisNasabah() {
           `Keputusan: ${result.keputusan}`,
           `Probabilitas layak ${(result.probabilitas_layak * 100).toFixed(1)}%.`,
         );
+        return true;
       }
+      return false;
     } catch (err) {
       toast.error("Prediksi gagal", err?.message);
+      return false;
     }
   };
 
   return (
     <div className={styles.layout}>
-      <div className={styles.formCol}>
-        <NasabahForm
-          values={form.values}
-          errors={form.errors}
-          setField={form.setField}
-          onSubmit={handleSubmit}
-          onFillExample={form.fillExample}
-          onAutoRatios={form.autoCalcRatios}
-          onReset={form.reset}
-          validateGroup={form.validateGroup}
-          groupFilled={form.groupFilled}
-          threshold={threshold}
-          onThresholdChange={setThreshold}
-          ambangAktif={ambangAktif}
-          onAmbangToggle={setAmbangAktif}
-          loading={loading}
-        />
-      </div>
-      <aside className={styles.resultCol}>
-        <HasilPrediksi data={data} loading={loading} error={error} />
-      </aside>
+      <NasabahForm
+        values={form.values}
+        errors={form.errors}
+        setField={form.setField}
+        onSubmit={handleSubmit}
+        onFillExample={form.fillExample}
+        onAutoRatios={form.autoCalcRatios}
+        onReset={form.reset}
+        validateGroup={form.validateGroup}
+        groupFilled={form.groupFilled}
+        threshold={threshold}
+        onThresholdChange={setThreshold}
+        ambangAktif={ambangAktif}
+        onAmbangToggle={setAmbangAktif}
+        loading={loading}
+        // Hasil kelayakan disajikan sebagai LANGKAH TERAKHIR wizard, bukan
+        // panel terpisah — alurnya: isi data -> lihat keputusan.
+        hasilSlot={<HasilPrediksi data={data} loading={loading} error={error} />}
+      />
     </div>
   );
 }

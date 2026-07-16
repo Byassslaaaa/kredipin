@@ -95,27 +95,38 @@ export default function NasabahForm({
   ambangAktif,
   onAmbangToggle,
   loading,
+  hasilSlot,
 }) {
   const kurangiGerak = useReducedMotion();
   const [langkah, setLangkah] = useState(0);
   // Arah transisi: +1 maju, -1 mundur — agar slide-nya terasa logis.
   const [arah, setArah] = useState(1);
 
-  const grup = FEATURE_GROUPS[langkah];
-  const terakhir = langkah === FEATURE_GROUPS.length - 1;
-  const fields = FEATURE_FIELDS.filter((f) => f.group === grup.id);
-  const { terisi, total } = groupFilled(grup.id);
+  // Langkah 0..N-1 = grup fitur, langkah N = Hasil Kelayakan.
+  const IDX_HASIL = FEATURE_GROUPS.length;
+  const diHasil = langkah === IDX_HASIL;
+  const grup = diHasil ? null : FEATURE_GROUPS[langkah];
+  // Langkah input terakhir = tempat tombol "Prediksi Kelayakan".
+  const inputTerakhir = langkah === FEATURE_GROUPS.length - 1;
+  const fields = grup ? FEATURE_FIELDS.filter((f) => f.group === grup.id) : [];
+  const { terisi, total } = grup ? groupFilled(grup.id) : { terisi: 0, total: 0 };
 
   const keLangkah = (tujuan, arahBaru) => {
     setArah(arahBaru);
     setLangkah(tujuan);
   };
 
-  const maju = () => {
+  const maju = async () => {
     // Hanya boleh lanjut bila langkah ini sudah valid.
     if (!validateGroup(grup.id)) return;
-    if (terakhir) onSubmit();
-    else keLangkah(langkah + 1, 1);
+    if (inputTerakhir) {
+      // Baru pindah ke langkah Hasil bila prediksi benar-benar berhasil,
+      // agar pengguna tidak terdampar di langkah kosong saat API gagal.
+      const berhasil = await onSubmit();
+      if (berhasil) keLangkah(IDX_HASIL, 1);
+      return;
+    }
+    keLangkah(langkah + 1, 1);
   };
 
   const mundur = () => {
@@ -125,6 +136,12 @@ export default function NasabahForm({
   /** Lompat langsung lewat Stepper — hanya ke langkah yang sudah dilewati. */
   const lompat = (i) => {
     if (i < langkah) keLangkah(i, -1);
+  };
+
+  /** Selesai menilai satu nasabah -> bersihkan form dan mulai dari awal. */
+  const mulaiUlang = () => {
+    onReset();
+    keLangkah(0, -1);
   };
 
   const varian = {
@@ -140,7 +157,9 @@ export default function NasabahForm({
           <div className={styles.toolbarText}>
             <h3 className={styles.toolbarTitle}>Data Pengajuan Nasabah</h3>
             <p className={styles.toolbarSub}>
-              Langkah {langkah + 1} dari {FEATURE_GROUPS.length} · nilai uang dalam Rupiah
+              {diHasil
+                ? "Hasil penilaian kelayakan"
+                : `Langkah ${langkah + 1} dari ${FEATURE_GROUPS.length} · nilai uang dalam Rupiah`}
             </p>
           </div>
           <div className={styles.toolbarActions}>
@@ -156,7 +175,7 @@ export default function NasabahForm({
         {/* Indikator langkah — juga sebagai navigasi mundur */}
         <div className={styles.stepperWrap}>
           <Stepper
-            steps={FEATURE_GROUPS.map((g) => LABEL_LANGKAH[g.id] || g.label)}
+            steps={[...FEATURE_GROUPS.map((g) => LABEL_LANGKAH[g.id] || g.label), "Hasil"]}
             current={langkah}
             onStepClick={lompat}
           />
@@ -165,6 +184,18 @@ export default function NasabahForm({
         {/* Isi langkah aktif */}
         <div className={styles.stepBody}>
           <AnimatePresence mode="wait" custom={arah} initial={false}>
+            {diHasil ? (
+              <motion.section
+                key="hasil"
+                custom={arah}
+                variants={varian}
+                initial="masuk"
+                animate="tampil"
+                exit="keluar"
+              >
+                {hasilSlot}
+              </motion.section>
+            ) : (
             <motion.section
               key={grup.id}
               custom={arah}
@@ -209,7 +240,7 @@ export default function NasabahForm({
               </div>
 
               {/* Pengaturan ambang hanya di langkah terakhir, tepat sebelum submit */}
-              {terakhir && (
+              {inputTerakhir && (
                 <div className={styles.ambang}>
                   <div className={styles.groupHead}>
                     <span className={styles.groupIcon} aria-hidden="true">
@@ -226,6 +257,7 @@ export default function NasabahForm({
                 </div>
               )}
             </motion.section>
+            )}
           </AnimatePresence>
         </div>
 
@@ -239,20 +271,32 @@ export default function NasabahForm({
             disabled={langkah === 0}
             className={styles.backBtn}
           >
-            Kembali
+            {diHasil ? "Ubah Data" : "Kembali"}
           </Button>
 
-          <Button
-            size="lg"
-            iconRight={terakhir ? undefined : "chevron-right"}
-            iconLeft={terakhir ? "trending-up" : undefined}
-            onClick={maju}
-            loading={terakhir && loading}
-            type="button"
-            className={styles.submitBtn}
-          >
-            {terakhir ? "Prediksi Kelayakan" : "Lanjut"}
-          </Button>
+          {diHasil ? (
+            <Button
+              size="lg"
+              iconLeft="user-plus"
+              onClick={mulaiUlang}
+              type="button"
+              className={styles.submitBtn}
+            >
+              Analisis Nasabah Lain
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              iconRight={inputTerakhir ? undefined : "chevron-right"}
+              iconLeft={inputTerakhir ? "trending-up" : undefined}
+              onClick={maju}
+              loading={inputTerakhir && loading}
+              type="button"
+              className={styles.submitBtn}
+            >
+              {inputTerakhir ? "Prediksi Kelayakan" : "Lanjut"}
+            </Button>
+          )}
         </div>
       </Card>
     </div>
