@@ -8,6 +8,7 @@ export const ROUTES = {
   analisis: "/analisis-nasabah",
   importData: "/import-data",
   eksplorasi: "/eksplorasi-data",
+  proses: "/proses-colab",
   performa: "/performa-model",
   riwayat: "/riwayat",
   dokumentasi: "/dokumentasi",
@@ -44,6 +45,7 @@ export const NAV_GROUPS = [
     label: "Analitik",
     items: [
       { to: ROUTES.eksplorasi, label: "Eksplorasi Data", icon: "bar-chart" },
+      { to: ROUTES.proses, label: "Proses Data (Colab)", icon: "database" },
       { to: ROUTES.performa, label: "Performa Model", icon: "gauge" },
       { to: ROUTES.riwayat, label: "Riwayat Prediksi", icon: "history" },
     ],

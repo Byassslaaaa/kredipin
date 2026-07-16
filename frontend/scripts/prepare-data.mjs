@@ -11,6 +11,7 @@
  *   - krediPin/dashboard_data/analitik_bisnis.csv
  *   - krediPin/hasil_evaluasi/feature_importance_gain.csv
  *   - KrediPin_backend/model/selected_model_info.json
+ *   - SIAB_DASD.ipynb  (notebook Google Colab — tahap & output eksekusinya)
  *
  * Jalankan: npm run prepare-data
  */
@@ -144,6 +145,82 @@ function aggregateEksplorasi(rows) {
   };
 }
 
+/**
+ * Ekstrak tahapan pipeline + KODE dan OUTPUT EKSEKUSI ASLI dari notebook Colab.
+ *
+ * Tiap heading `## N. Judul` pada sel markdown menandai satu tahap. Sel kode
+ * setelahnya (hingga heading berikutnya) diambil sebagai pasangan kode+output
+ * apa adanya, sehingga halaman "Proses Colab" berfungsi sebagai DOKUMENTASI
+ * yang selalu SINKRON dengan notebook — bukan ditulis ulang manual.
+ */
+function extractPipeline(nbPath) {
+  const nb = JSON.parse(readFileSync(nbPath, "utf-8"));
+  const MAX_KODE = 6000; // kode = dokumentasi, jangan dipangkas agresif
+  const MAX_OUTPUT = 2200; // output panjang (tabel pandas) cukup diringkas
+
+  const potong = (teks, batas) => ({
+    teks: teks.slice(0, batas),
+    terpotong: teks.length > batas,
+  });
+
+  const teksOutput = (out) => {
+    if (out.output_type === "stream") return (out.text || []).join("");
+    if (out.data && out.data["text/plain"]) return out.data["text/plain"].join("");
+    return "";
+  };
+
+  const stages = [];
+  let current = null;
+
+  for (const cell of nb.cells) {
+    const source = (cell.source || []).join("");
+
+    if (cell.cell_type === "markdown") {
+      // Hanya heading level-2 (`## `) yang menandai tahap baru.
+      const m = source.match(/^##\s+(.+)$/m);
+      if (m) {
+        current = { judul: m[1].trim(), sel: [] };
+        stages.push(current);
+      }
+      continue;
+    }
+
+    if (cell.cell_type !== "code" || !current) continue;
+
+    const kode = source.trim();
+    if (!kode) continue;
+
+    let output = "";
+    let punyaGambar = false;
+    for (const out of cell.outputs || []) {
+      if (out.output_type === "error") continue;
+      if (out.data && out.data["image/png"]) punyaGambar = true;
+      output += teksOutput(out);
+    }
+    output = output.trim();
+
+    const k = potong(kode, MAX_KODE);
+    const o = potong(output, MAX_OUTPUT);
+
+    current.sel.push({
+      kode: k.teks,
+      kodeTerpotong: k.terpotong,
+      output: o.teks,
+      outputTerpotong: o.terpotong,
+      punyaGambar,
+    });
+  }
+
+  return stages
+    .map((s, i) => ({
+      no: i,
+      judul: s.judul,
+      punyaGambar: s.sel.some((c) => c.punyaGambar),
+      sel: s.sel,
+    }))
+    .filter((s) => s.sel.length > 0);
+}
+
 function main() {
   if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
   console.log("Menyiapkan data dashboard ke public/data/ ...");
@@ -192,6 +269,11 @@ function main() {
   safe("eksplorasi.json", () => {
     const rows = readCsv(resolve(REPO, "krediPin/dashboard_data/prediksi_lengkap.csv"));
     writeOut("eksplorasi.json", aggregateEksplorasi(rows));
+  });
+
+  safe("pipeline.json", () => {
+    const tahap = extractPipeline(resolve(REPO, "SIAB_DASD.ipynb"));
+    writeOut("pipeline.json", { sumber: "SIAB_DASD.ipynb", tahap });
   });
 
   console.log("Selesai.");

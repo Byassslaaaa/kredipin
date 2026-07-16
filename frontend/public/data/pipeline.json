@@ -1,0 +1,145 @@
+{
+  "sumber": "SIAB_DASD.ipynb",
+  "tahap": [
+    {
+      "no": 0,
+      "judul": "0. Setup — instalasi, impor, deteksi lingkungan",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "# Instal dependensi bila perlu (Colab biasanya sudah ada sebagian)\ntry:\n    import xgboost  # noqa\nexcept Exception:\n    !pip -q install xgboost scikit-learn pandas numpy joblib matplotlib\n\nimport os, json, warnings\nimport numpy as np\nimport pandas as pd\nimport joblib\nimport matplotlib\nimport matplotlib.pyplot as plt\n\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.preprocessing import OneHotEncoder\nfrom sklearn.inspection import permutation_importance\nfrom sklearn.metrics import (accuracy_score, precision_score, recall_score,\n                             f1_score, roc_auc_score, confusion_matrix,\n                             classification_report, ConfusionMatrixDisplay)\nfrom xgboost import XGBClassifier\n\nwarnings.filterwarnings(\"ignore\")\n\n# Deteksi Colab vs lokal\ntry:\n    import google.colab  # noqa\n    IN_COLAB = True\nexcept Exception:\n    IN_COLAB = False\nprint(\"Lingkungan:\", \"Google Colab\" if IN_COLAB else \"Lokal/Jupyter\")\n\n# Folder kerja & artefak\nBASE = \"/content/krediPin\" if IN_COLAB else os.path.join(os.getcwd(), \"krediPin\")\nDIR_DATASET = os.path.join(BASE, \"dataset\")\nDIR_MODEL   = os.path.join(BASE, \"model\")\nDIR_EVAL    = os.path.join(BASE, \"hasil_evaluasi\")\nDIR_DASH    = os.path.join(BASE, \"dashboard_data\")\nfor d in [DIR_DATASET, DIR_MODEL, DIR_EVAL, DIR_DASH]:\n    os.makedirs(d, exist_ok=True)\n\n# Cari data.csv di beberapa lokasi kandidat\ndef temukan_data():\n    kandidat = [\"data.csv\", os.path.join(DIR_DATASET, \"data.csv\"),\n                \"/content/data.csv\", os.path.join(os.getcwd(), \"data.csv\")]\n    for p in kandidat:\n        if os.path.exists(p):\n            return p\n    if IN_COLAB:\n        from google.colab import files\n        print(\"Unggah data.csv ...\")\n        up = files.upload()\n        return list(up.keys())[0]\n    raise FileNotFoundError(\"data.csv tidak ditemukan. Letakkan di folder notebook.\")\n\nDATA_PATH = temukan_data()\nprint(\"Dataset:\", DATA_PATH)",
+          "kodeTerpotong": false,
+          "output": "Lingkungan: Lokal/Jupyter\nDataset: data.csv",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 1,
+      "judul": "1. Memuat & memverifikasi data",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "df = pd.read_csv(DATA_PATH)\nprint(\"Shape:\", df.shape)\ndisplay(df.head())\n\nprint(\"\\nTipe data:\\n\", df.dtypes)\nprint(\"\\nDistribusi target (status_pinjaman):\")\nprint(df[\"status_pinjaman\"].value_counts())\nprint(df[\"status_pinjaman\"].value_counts(normalize=True).round(4))\n\nprint(\"\\nMissing value:\")\nmv = df.isna().sum(); print(mv[mv > 0] if mv.sum() else \"Tidak ada\")\nprint(\"\\nDuplikat baris:\", df.duplicated().sum(),\n      \"| Duplikat id_pelanggan:\", df[\"id_pelanggan\"].duplicated().sum())",
+          "kodeTerpotong": false,
+          "output": "Shape: (50000, 20)\n  id_pelanggan  usia status_pekerjaan  lama_bekerja_tahun  pendapatan_tahunan  \\\n0   CUST100000  40.0          Bekerja                17.2               25579   \n1   CUST100001  33.0          Bekerja                 7.3               43087   \n2   CUST100002  42.0        Mahasiswa                 1.1               20840   \n3   CUST100003  53.0        Mahasiswa                 0.5               29147   \n4   CUST100004  32.0          Bekerja                12.5               63657   \n\n   skor_kredit  lama_riwayat_kredit_tahun  aset_tabungan  hutang_saat_ini  \\\n0          692                        5.3            895            10820   \n1          627                        3.5            169            16550   \n2          689                        8.4             17             7852   \n3          692                        9.8           1480            11603   \n4          630                        7.2            209            12424   \n\n   gagal_bayar_tercatat  tunggakan_2thn_terakhir  catatan_negatif  \\\n0                     0                        0                0   \n1                     0                        1                0   \n2                     0                        0                0   \n3                     0                        1                0   \n4                     0                        0                0   \n\n        tipe_produk     tujuan_pinjaman  jumlah_pinjaman  suku_bunga  \\\n0      Kartu Kredit              Bisnis              600       17.02   \n1  Pinjaman Pribadi      Renovasi Rumah            53300       14.10   \n2      Kartu Kredit  Konsolidasi Hutang             2100       18.33   \n3      Kartu Kredit              Bisnis             2900       18.74   \n4  Pinjaman Pribadi          Pendidikan            99600       13.92   \n\n   rasio_hutang_terhadap_pendapatan  rasio_pinjaman_terhadap_pendapatan  \\\n0                             0.423                               0.023   \n1                             0.384                               1.237   \n2                             0.377                               0.101   \n3                             0.398                               0.099   \n4       ",
+          "outputTerpotong": true,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "judul": "2. Konversi mata uang USD → IDR",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "KURS_USD_IDR = 18000  # asumsi tetap sesuai ketentuan tugas (kurs nyata bisa berbeda)\nKOLOM_UANG = [\"pendapatan_tahunan\", \"aset_tabungan\", \"hutang_saat_ini\", \"jumlah_pinjaman\"]\nfor c in KOLOM_UANG:\n    df[c] = df[c] * KURS_USD_IDR\nprint(\"Konversi x{} diterapkan pada: {}\".format(KURS_USD_IDR, KOLOM_UANG))\ndf[KOLOM_UANG].describe().round(0)",
+          "kodeTerpotong": false,
+          "output": "Konversi x18000 diterapkan pada: ['pendapatan_tahunan', 'aset_tabungan', 'hutang_saat_ini', 'jumlah_pinjaman']\n       pendapatan_tahunan  aset_tabungan  hutang_saat_ini  jumlah_pinjaman\ncount        5.000000e+04   5.000000e+04     5.000000e+04     5.000000e+04\nmean         9.011321e+08   6.472115e+07     2.572280e+08     5.947537e+08\nstd          5.873490e+08   2.381832e+08     2.383876e+08     4.700913e+08\nmin          2.700000e+08   0.000000e+00     1.080000e+06     9.000000e+06\n25%          4.910490e+08   2.340000e+06     1.004580e+08     2.214000e+08\n50%          7.489350e+08   1.022400e+07     1.869300e+08     4.698000e+08\n75%          1.129018e+09   4.087800e+07     3.320865e+08     8.730000e+08\nmax          4.500000e+09   5.400000e+09     2.940192e+09     1.800000e+09",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "judul": "3. Augmentasi fitur sintetik terkalibrasi: `tenor_bulan` & `jaminan`",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "EFEK_LITERATUR = 0.35       # 0 = murni acak; ~0.3-0.4 = modifier sekunder yang wajar\nSEED_AUGMENTASI = 20250607  # SENGAJA bukan 42 -> noise independen dari proses pembuat-label\nrng_aug = np.random.default_rng(SEED_AUGMENTASI)\n\ndef zscore(s):\n    return (s - s.mean()) / s.std()\n\n# Indeks risiko laten (nilai tinggi = lebih berisiko)\nrisk_z = (\n    -zscore(df[\"skor_kredit\"])\n    + zscore(df[\"rasio_hutang_terhadap_pendapatan\"])\n    + zscore(df[\"suku_bunga\"])\n    + zscore(df[\"jumlah_pinjaman\"])\n) / 4.0\n\n# tenor_bulan: makin berisiko -> tenor makin panjang\nlaten_tenor = EFEK_LITERATUR * risk_z + rng_aug.standard_normal(len(df))\ntenor_pilihan = np.array([6, 12, 24, 36, 48, 60])\ndf[\"tenor_bulan\"] = tenor_pilihan[pd.qcut(laten_tenor, q=6, labels=False, duplicates=\"drop\")]\n\n# jaminan: makin berisiko -> makin kecil peluang \"Ada Jaminan\"\nlaten_jaminan = -EFEK_LITERATUR * risk_z + rng_aug.standard_normal(len(df))\ndf[\"jaminan\"] = np.where(laten_jaminan > np.median(laten_jaminan),\n                         \"Ada Jaminan\", \"Tanpa Jaminan\")\n\n# Verifikasi arah hubungan (harus sesuai literatur, dan lemah)\nprint(\"corr(tenor_bulan, Layak) = {:.3f}  (harus NEGATIF kecil)\".format(\n      df[\"tenor_bulan\"].corr(df[\"status_pinjaman\"])))\nprint(\"Rasio Layak per jaminan:\")\nprint(df.groupby(\"jaminan\")[\"status_pinjaman\"].mean().round(3))",
+          "kodeTerpotong": false,
+          "output": "corr(tenor_bulan, Layak) = -0.083  (harus NEGATIF kecil)\nRasio Layak per jaminan:\njaminan\nAda Jaminan      0.588\nTanpa Jaminan    0.513\nName: status_pinjaman, dtype: float64",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "judul": "4. Pra-pemrosesan & Pipeline",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "TARGET = \"status_pinjaman\"\nX = df.drop(columns=[TARGET, \"id_pelanggan\"])\ny = df[TARGET]\n\nfitur_kategorikal = [\"status_pekerjaan\", \"tipe_produk\", \"tujuan_pinjaman\", \"jaminan\"]\nfitur_numerik = [c for c in X.columns if c not in fitur_kategorikal]\n\npreprocessor = ColumnTransformer([\n    (\"num\", Pipeline([(\"imputer\", SimpleImputer(strategy=\"median\"))]), fitur_numerik),\n    (\"cat\", Pipeline([\n        (\"imputer\", SimpleImputer(strategy=\"most_frequent\")),\n        (\"onehot\", OneHotEncoder(handle_unknown=\"ignore\")),\n    ]), fitur_kategorikal),\n])\n\nRANDOM_STATE = 42\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.20, stratify=y, random_state=RANDOM_STATE)\nprint(\"Train:\", X_train.shape, \"| Test:\", X_test.shape)",
+          "kodeTerpotong": false,
+          "output": "Train: (40000, 20) | Test: (10000, 20)",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "judul": "5. Model — XGBoost",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "xgb = XGBClassifier(\n    n_estimators=400,\n    max_depth=5,\n    learning_rate=0.05,\n    subsample=0.9,\n    colsample_bytree=0.9,\n    min_child_weight=2,\n    gamma=0.0,\n    reg_lambda=1.0,\n    objective=\"binary:logistic\",\n    eval_metric=\"logloss\",\n    random_state=RANDOM_STATE,\n    n_jobs=-1,\n    tree_method=\"hist\",\n)\nmodel = Pipeline([(\"preprocessor\", preprocessor), (\"classifier\", xgb)])\nmodel.fit(X_train, y_train)\nprint(\"Model terlatih.\")",
+          "kodeTerpotong": false,
+          "output": "Model terlatih.",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "judul": "6. Evaluasi & interpretasi bisnis",
+      "punyaGambar": true,
+      "sel": [
+        {
+          "kode": "y_pred = model.predict(X_test)\ny_proba = model.predict_proba(X_test)[:, 1]\nmetrik = {\n    \"accuracy\": accuracy_score(y_test, y_pred),\n    \"precision\": precision_score(y_test, y_pred),\n    \"recall\": recall_score(y_test, y_pred),\n    \"f1\": f1_score(y_test, y_pred),\n    \"roc_auc\": roc_auc_score(y_test, y_proba),\n}\nfor k, v in metrik.items():\n    print(f\"{k:10s}: {v:.4f}\")\nprint(\"\\n\", classification_report(y_test, y_pred,\n      target_names=[\"Tidak Layak (0)\", \"Layak (1)\"]))\n\ncm = confusion_matrix(y_test, y_pred)\nfig, ax = plt.subplots(figsize=(5, 4))\nConfusionMatrixDisplay(cm, display_labels=[\"Tidak Layak\", \"Layak\"]).plot(\n    ax=ax, cmap=\"Greens\", colorbar=False)\nax.set_title(\"Confusion Matrix — KrediPin (XGBoost)\")\nplt.tight_layout()\nplt.savefig(os.path.join(DIR_EVAL, \"confusion_matrix.png\"), dpi=120)\nplt.show()",
+          "kodeTerpotong": false,
+          "output": "accuracy  : 0.9274\nprecision : 0.9253\nrecall    : 0.9444\nf1        : 0.9347\nroc_auc   : 0.9843\n\n                  precision    recall  f1-score   support\n\nTidak Layak (0)       0.93      0.91      0.92      4495\n      Layak (1)       0.93      0.94      0.93      5505\n\n       accuracy                           0.93     10000\n      macro avg       0.93      0.93      0.93     10000\n   weighted avg       0.93      0.93      0.93     10000\n\n<Figure size 500x400 with 1 Axes>",
+          "outputTerpotong": false,
+          "punyaGambar": true
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "judul": "7. Feature importance — interpretasi utama sistem",
+      "punyaGambar": true,
+      "sel": [
+        {
+          "kode": "feat_names = [n.split(\"__\", 1)[-1]\n              for n in model.named_steps[\"preprocessor\"].get_feature_names_out()]\ngain = model.named_steps[\"classifier\"].feature_importances_\nimp_gain = (pd.DataFrame({\"fitur\": feat_names, \"gain_importance\": gain})\n            .sort_values(\"gain_importance\", ascending=False).reset_index(drop=True))\n\nperm = permutation_importance(model, X_test, y_test, n_repeats=5,\n                              random_state=RANDOM_STATE, n_jobs=-1, scoring=\"roc_auc\")\nimp_perm = (pd.DataFrame({\"fitur\": X_test.columns, \"perm_importance\": perm.importances_mean})\n            .sort_values(\"perm_importance\", ascending=False).reset_index(drop=True))\n\nimp_gain.to_csv(os.path.join(DIR_EVAL, \"feature_importance_gain.csv\"), index=False)\nimp_perm.to_csv(os.path.join(DIR_EVAL, \"feature_importance_permutation.csv\"), index=False)\n\nprint(\"TOP-12 GAIN:\"); display(imp_gain.head(12))\nprint(\"PERMUTATION (semua fitur):\"); display(imp_perm)\n\nfor key in [\"tenor_bulan\", \"jaminan\"]:\n    pg = imp_gain.index[imp_gain[\"fitur\"].str.contains(key)].min() + 1\n    pp = imp_perm.index[imp_perm[\"fitur\"].str.contains(key)].min() + 1\n    print(f\"{key}: peringkat gain={pg}, permutation={pp}\")\n\ntop12 = imp_gain.head(12).iloc[::-1]\nwarna = [\"#f59e0b\" if (\"tenor_bulan\" in f or \"jaminan\" in f) else \"#16a34a\"\n         for f in top12[\"fitur\"]]\nfig, ax = plt.subplots(figsize=(8, 5))\nax.barh(top12[\"fitur\"], top12[\"gain_importance\"], color=warna)\nax.set_title(\"Top-12 Feature Importance (Gain) — sorotan: tenor & jaminan\")\nax.set_xlabel(\"Gain importance\"); plt.tight_layout()\nplt.savefig(os.path.join(DIR_EVAL, \"feature_importance_top12.png\"), dpi=120)\nplt.show()",
+          "kodeTerpotong": false,
+          "output": "TOP-12 GAIN:\n                                   fitur  gain_importance\n0                            skor_kredit         0.140859\n1                   gagal_bayar_tercatat         0.115128\n2       rasio_hutang_terhadap_pendapatan         0.093121\n3                tunggakan_2thn_terakhir         0.078916\n4     tujuan_pinjaman_Konsolidasi Hutang         0.058207\n5               tipe_produk_Kartu Kredit         0.057522\n6                tujuan_pinjaman_Pribadi         0.047532\n7             tujuan_pinjaman_Pendidikan         0.046748\n8                 tujuan_pinjaman_Bisnis         0.046049\n9   rasio_pembayaran_terhadap_pendapatan         0.044154\n10             lama_riwayat_kredit_tahun         0.040453\n11    rasio_pinjaman_terhadap_pendapatan         0.035745PERMUTATION (semua fitur):\n                                   fitur  perm_importance\n0       rasio_hutang_terhadap_pendapatan         0.126157\n1                            skor_kredit         0.119385\n2                        tujuan_pinjaman         0.037336\n3                   gagal_bayar_tercatat         0.034527\n4                tunggakan_2thn_terakhir         0.027027\n5              lama_riwayat_kredit_tahun         0.023903\n6     rasio_pinjaman_terhadap_pendapatan         0.012689\n7                     lama_bekerja_tahun         0.011625\n8                            tipe_produk         0.007534\n9                        jumlah_pinjaman         0.004818\n10  rasio_pembayaran_terhadap_pendapatan         0.004478\n11                       catatan_negatif         0.003406\n12                                  usia         0.000640\n13                         aset_tabungan         0.000551\n14                    pendapatan_tahunan         0.000364\n15                      status_pekerjaan         0.000221\n16                            suku_bunga         0.000106\n17                       hutang_saat_ini         0.000021\n18                           tenor_bulan         0.000007\n19                               jaminan        -0.000008tenor_bulan: peringkat gain=28, permutation=19\njaminan: peringkat gain=29, permutation=20\n<Figure size 800x500 with 1 Axes>",
+          "outputTerpotong": false,
+          "punyaGambar": true
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "judul": "8. Prediksi seluruh data → data untuk dashboard",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "proba_all = model.predict_proba(X)[:, 1]\nAMBANG = 0.5\ndf_out = df.copy()\ndf_out[\"probabilitas_layak\"] = proba_all.round(4)\ndf_out[\"keputusan\"] = np.where(proba_all >= AMBANG, \"Layak\", \"Tidak Layak\")\ndf_out.to_csv(os.path.join(DIR_DASH, \"prediksi_lengkap.csv\"), index=False)\n\n# =====================================================================================\n# CATATAN — Feature Importance vs Analitik Bisnis\n# - Feature Importance (Tahap 7) digunakan untuk MENGETAHUI VARIABEL yang paling\n#   MEMENGARUHI KEPUTUSAN MODEL XGBoost (skor kredit, gagal bayar, rasio hutang, tunggakan).\n# - Analitik bisnis di bawah digunakan untuk MERANGKUM KARAKTERISTIK HASIL PREDIKSI\n#   per keputusan (deskriptif), BUKAN melatih ulang model maupun mengubah prediksi.\n# - Pada proyek KrediPin, KPI dashboard SENGAJA dipilih agar SELARAS dengan Feature\n#   Importance, sehingga interpretasi model dan dashboard bisnis menjadi KONSISTEN.\n#   Metrik keuangan lain (pendapatan, jumlah pinjaman, suku bunga, aset tabungan) tetap\n#   disajikan sebagai INSIGHT PENDUKUNG, bukan KPI utama.\n# =====================================================================================\n\n# --- KPI UTAMA dashboard (selaras Feature Importance model) ---\n# Kolom: jumlah nasabah, rata skor kredit, % gagal bayar tercatat, rata rasio hutang,\n#        rata tunggakan 2thn, rata probabilitas kelayakan.\nanalitik_kpi = (df_out.groupby(\"keputusan\")\n    .agg(\n        jumlah_nasabah=(\"keputusan\", \"size\"),\n        rata_skor_kredit=(\"skor_kredit\", \"mean\"),\n        # persentase nasabah yang memiliki gagal bayar tercatat (>= 1 kejadian)\n        persen_gagal_bayar_tercatat=(\"gagal_bayar_tercatat\", lambda s: (s > 0).mean() * 100),\n        rata_rasio_hutang_terhadap_pendapatan=(\"rasio_hutang_terhadap_pendapatan\", \"mean\"),\n        rata_tunggakan_2thn_terakhir=(\"tunggakan_2thn_terakhir\", \"mean\"),\n        rata_probabilitas_layak=(\"probabilitas_layak\", \"mean\"),\n    ).round(2).reset_index())\nanalitik_kpi.to_csv(os.path.join(DIR_DASH, \"analitik_kpi.csv\"), index=False)\n\n# --- INSIGHT BISNIS TAMBAHAN (metrik keuangan pendukung, dalam IDR) ---\n# Tidak dihapus karena tetap berguna untuk analisis bisnis, namun bukan KPI utama.\nanalitik_bisnis = (df_out.groupby(\"keputusan\")\n    .agg(\n        jumlah_nasabah=(\"keputusan\", \"size\"),\n        rata_pendapatan_tahunan_idr=(\"pendapatan_tahunan\", \"mean\"),\n        rata_jumlah_pinjaman_idr=(\"jumlah_pinjaman\", \"mean\"),\n        rata_suku_bunga=(\"suku_bunga\", \"mean\"),\n        rata_aset_tabungan_idr=(\"aset_tabungan\", \"mean\"),\n    ).round(2).reset_index())\nanalitik_bisnis.to_csv(os.path.join(DIR_DASH, \"analitik_bisnis.csv\"), index=False)\n\nsummary = {\n    \"nama_sistem\": \"KrediPin - Sistem Pendukung Keputusan Kelayakan Pinjaman Digital\",\n    \"total_data\": int(len(df_out)),\n    \"kurs_usd_idr\": KURS_USD_IDR,\n    \"ambang_keputusan\": AMBANG,\n    \"distribusi_keputusan\": df_out[\"keputusan\"].value_counts().to_dict(),\n    \"persentase_layak\": round(float((df_out[\"keputusan\"] == \"Layak\").mean()) * 100, 2),\n    \"evaluasi_model\": {k: round(float(v), 4) for k, v in metrik.items()},\n    \"fitur_sintetik\": [\"tenor_bulan\", \"jaminan\"], \"efek_literatur\": EFEK_LITERATUR,\n}\nwith open(os.path.join(DIR_DASH, \"summary.json\"), \"w\") as f:\n    json.dump(summary, f, indent=2, ensure_ascii=False)\n\nprint(\"Distribusi keputusan:\", summary[\"distribusi_keputusan\"])\nprint(\"\\n=== KPI UTAMA (selaras Feature Importance) ===\")\nprint(analitik_kpi.to_string(index=False))\nprint(\"\\n=== INSIGHT BISNIS TAMBAHAN (metrik keuangan pendukung) ===\")\nprint(analitik_bisnis.to_string(index=False))",
+          "kodeTerpotong": false,
+          "output": "Distribusi keputusan: {'Layak': 27929, 'Tidak Layak': 22071}\n\n=== KPI UTAMA (selaras Feature Importance) ===\n  keputusan  jumlah_nasabah  rata_skor_kredit  persen_gagal_bayar_tercatat  rata_rasio_hutang_terhadap_pendapatan  rata_tunggakan_2thn_terakhir  rata_probabilitas_layak\n      Layak           27929            673.29                         0.00                                   0.24                          0.31                     0.93\nTidak Layak           22071            606.07                        12.12                                   0.34                          0.86                     0.08\n\n=== INSIGHT BISNIS TAMBAHAN (metrik keuangan pendukung) ===\n  keputusan  jumlah_nasabah  rata_pendapatan_tahunan_idr  rata_jumlah_pinjaman_idr  rata_suku_bunga  rata_aset_tabungan_idr\n      Layak           27929                 985737692.29              584231766.26            14.79             84526550.54\nTidak Layak           22071                 794070718.50              608068397.44            16.39             39659074.35",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "judul": "9. Simpan artefak (model-as-a-service)",
+      "punyaGambar": false,
+      "sel": [
+        {
+          "kode": "joblib.dump(model, os.path.join(DIR_MODEL, \"model_krediPin.pkl\"))\n\nfitur_model = {\n    \"fitur_numerik\": fitur_numerik,\n    \"fitur_kategorikal\": fitur_kategorikal,\n    \"kategori_valid\": {\n        \"status_pekerjaan\": sorted(df[\"status_pekerjaan\"].dropna().unique().tolist()),\n        \"tipe_produk\": sorted(df[\"tipe_produk\"].unique().tolist()),\n        \"tujuan_pinjaman\": sorted(df[\"tujuan_pinjaman\"].unique().tolist()),\n        \"jaminan\": [\"Ada Jaminan\", \"Tanpa Jaminan\"],\n        \"tenor_bulan\": [6, 12, 24, 36, 48, 60],\n    },\n    \"target\": TARGET, \"mapping_output\": {\"1\": \"Layak\", \"0\": \"Tidak Layak\"},\n    \"kurs_usd_idr\": KURS_USD_IDR, \"kolom_uang_idr\": KOLOM_UANG,\n}\nwith open(os.path.join(DIR_MODEL, \"fitur_model.json\"), \"w\") as f:\n    json.dump(fitur_model, f, indent=2, ensure_ascii=False)\n\nselected_info = {\n    \"model\": \"XGBClassifier\", \"library\": \"xgboost \" + xgboost.__version__,\n    \"hyperparameter\": {k: (v if isinstance(v, (int, float, str, bool, type(None))) else str(v))\n                       for k, v in xgb.get_params().items()},\n    \"split\": {\"test_size\": 0.2, \"stratify\": True, \"random_state\": RANDOM_STATE},\n    \"evaluasi\": {k: round(float(v), 4) for k, v in metrik.items()},\n    \"confusion_matrix\": cm.tolist(),\n}\nwith open(os.path.join(DIR_MODEL, \"selected_model_info.json\"), \"w\") as f:\n    json.dump(selected_info, f, indent=2, ensure_ascii=False)\n\ndf.to_csv(os.path.join(DIR_DATASET, \"data_augmented.csv\"), index=False)\nprint(\"Artefak tersimpan di:\", BASE)\nprint(sorted(os.listdir(DIR_MODEL)))",
+          "kodeTerpotong": false,
+          "output": "Artefak tersimpan di: /home/claude/krediPin/krediPin\n['fitur_model.json', 'model_krediPin.pkl', 'selected_model_info.json']",
+          "outputTerpotong": false,
+          "punyaGambar": false
+        }
+      ]
+    }
+  ]
+}

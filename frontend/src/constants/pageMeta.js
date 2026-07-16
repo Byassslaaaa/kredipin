@@ -20,6 +20,10 @@ export const PAGE_META = {
     title: "Eksplorasi Data",
     subtitle: "Telusuri distribusi & pola data pinjaman",
   },
+  [ROUTES.proses]: {
+    title: "Proses Data (Google Colab)",
+    subtitle: "Tahapan pemrosesan & output asli notebook SIAB_DASD.ipynb",
+  },
   [ROUTES.performa]: {
     title: "Performa Model",
     subtitle: "Metrik evaluasi & interpretabilitas model XGBoost",

@@ -1,0 +1,51 @@
+# KrediPin — deploy di VM kampus (IP saja, TANPA domain, TANPA HTTPS).
+#
+# Self-contained: container frontend (Nginx) menyajikan SPA sekaligus mem-proxy
+# /api/* ke container backend (same-origin). Tidak perlu reverse proxy eksternal.
+#
+# Jalankan di VM:
+#   docker compose -f docker-compose.vm.yml up -d --build
+#
+# Akses:
+#   http://<IP-VM>            (WEB_PORT default 80; ubah bila port lain di-forward)
+#   http://<IP-VM>/api/health (health check backend)
+#
+# Bila lab hanya mem-forward port tertentu (mis. 8080) ke VM, jalankan dengan:
+#   WEB_PORT=8080 docker compose -f docker-compose.vm.yml up -d --build
+#   lalu akses http://<IP-VM>:8080
+
+services:
+  backend:
+    build: ./KrediPin_backend
+    image: kredipin-backend
+    container_name: kredipin-backend
+    environment:
+      THRESHOLD: "0.5"
+      # Same-origin lewat Nginx, jadi CORS praktis tidak terpakai; diisi untuk eksplisit.
+      CORS_ORIGINS: "*"
+    volumes:
+      - kredipin_db:/app/database
+    restart: unless-stopped
+    # Hanya diekspos di jaringan internal Docker (tidak ke publik).
+    expose:
+      - "8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Relatif: browser memanggil /api/* yang di-proxy Nginx ke backend.
+        VITE_API_BASE_URL: "/api"
+    image: kredipin-frontend
+    container_name: kredipin-frontend
+    depends_on:
+      - backend
+    # Override nginx default dengan konfigurasi yang mem-proxy /api.
+    volumes:
+      - ./frontend/nginx.vm.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "${WEB_PORT:-80}:80"
+    restart: unless-stopped
+
+volumes:
+  kredipin_db:

@@ -21,3 +21,5 @@ export const getAnalitikBisnis = (opts) => getJson("analitik_bisnis.json", opts)
 export const getModelInfo = (opts) => getJson("model_info.json", opts);
 export const getFeatureImportance = (opts) => getJson("feature_importance.json", opts);
 export const getEksplorasi = (opts) => getJson("eksplorasi.json", opts);
+/** Tahapan + output eksekusi asli notebook Google Colab (SIAB_DASD.ipynb). */
+export const getPipeline = (opts) => getJson("pipeline.json", opts);

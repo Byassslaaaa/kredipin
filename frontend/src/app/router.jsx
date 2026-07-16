@@ -9,6 +9,7 @@ const Beranda = lazy(() => import("@/pages/Beranda"));
 const AnalisisNasabah = lazy(() => import("@/pages/AnalisisNasabah"));
 const ImportData = lazy(() => import("@/pages/ImportData"));
 const EksplorasiData = lazy(() => import("@/pages/EksplorasiData"));
+const ProsesColab = lazy(() => import("@/pages/ProsesColab"));
 const PerformaModel = lazy(() => import("@/pages/PerformaModel"));
 const Riwayat = lazy(() => import("@/pages/Riwayat"));
 const Dokumentasi = lazy(() => import("@/pages/Dokumentasi"));
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.analisis, element: <AnalisisNasabah /> },
       { path: ROUTES.importData, element: <ImportData /> },
       { path: ROUTES.eksplorasi, element: <EksplorasiData /> },
+      { path: ROUTES.proses, element: <ProsesColab /> },
       { path: ROUTES.performa, element: <PerformaModel /> },
       { path: ROUTES.riwayat, element: <Riwayat /> },
       { path: ROUTES.dokumentasi, element: <Dokumentasi /> },

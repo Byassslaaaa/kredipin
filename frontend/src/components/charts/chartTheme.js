@@ -1,6 +1,9 @@
 /**
  * chartTheme — jembatan antara design tokens (CSS variables) dan Chart.js (canvas).
  * Membaca nilai token saat runtime sehingga warna chart selaras tema aktif.
+ *
+ * Catatan: nilai fallback disamakan dengan tokens.css (palet Ink + semantik
+ * emerald/merah) agar konsisten bila CSS belum termuat.
  */
 
 function cssVar(name, fallback) {
@@ -13,21 +16,21 @@ function cssVar(name, fallback) {
 export function getChartColors() {
   return {
     series: [
-      cssVar("--chart-1", "#2563eb"),
-      cssVar("--chart-2", "#10b981"),
-      cssVar("--chart-3", "#f59e0b"),
-      cssVar("--chart-4", "#8b5cf6"),
-      cssVar("--chart-5", "#ef4444"),
-      cssVar("--chart-6", "#06b6d4"),
+      cssVar("--chart-1", "#059669"),
+      cssVar("--chart-2", "#dc2626"),
+      cssVar("--chart-3", "#d97706"),
+      cssVar("--chart-4", "#0e7490"),
+      cssVar("--chart-5", "#7c3aed"),
+      cssVar("--chart-6", "#71717a"),
     ],
-    primary: cssVar("--color-primary", "#2563eb"),
+    primary: cssVar("--color-primary", "#18181b"),
     success: cssVar("--color-accent", "#059669"),
     danger: cssVar("--color-danger", "#dc2626"),
-    grid: cssVar("--chart-grid", "#e2e8f0"),
-    axis: cssVar("--chart-axis", "#94a3b8"),
-    text: cssVar("--color-text-secondary", "#475569"),
+    grid: cssVar("--chart-grid", "#e4e4e7"),
+    axis: cssVar("--chart-axis", "#a1a1aa"),
+    text: cssVar("--color-text-secondary", "#52525b"),
     surface: cssVar("--color-surface", "#ffffff"),
-    border: cssVar("--color-border", "#e2e8f0"),
+    border: cssVar("--color-border", "#e4e4e7"),
   };
 }
 
@@ -35,18 +38,18 @@ export function getChartColors() {
 export function baseTooltip(colors) {
   return {
     backgroundColor: colors.surface,
-    titleColor: cssVar("--color-text", "#0f172a"),
+    titleColor: cssVar("--color-text", "#09090b"),
     bodyColor: colors.text,
     borderColor: colors.border,
     borderWidth: 1,
     padding: 12,
     cornerRadius: 8,
     boxPadding: 6,
-    titleFont: { family: "IBM Plex Sans", weight: "600", size: 13 },
-    bodyFont: { family: "IBM Plex Sans", size: 13 },
+    titleFont: { family: "Geist", weight: "600", size: 13 },
+    bodyFont: { family: "Geist", size: 13 },
     displayColors: true,
     usePointStyle: true,
   };
 }
 
-export const FONT_FAMILY = "IBM Plex Sans";
+export const FONT_FAMILY = "Geist";
