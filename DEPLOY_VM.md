@@ -42,6 +42,7 @@ langkah oleh siapa pun, dan dilampirkan sebagai dokumentasi deployment pada lapo
 
 | Item | Nilai |
 |------|-------|
+| **URL aplikasi (LIVE)** | **http://157.66.9.7:8008** |
 | Host IP | `157.66.9.7` |
 | Username | `root` |
 | Password | `dasd8` |
@@ -59,20 +60,27 @@ langkah oleh siapa pun, dan dilampirkan sebagai dokumentasi deployment pada lapo
 
 ## 3. Prasyarat & Pemeriksaan Awal (PENTING)
 
-Port SSH memakai **2208** (bukan 22). Ini indikasi kuat VM berada **di balik NAT**
-(banyak VM berbagi satu IP publik, tiap VM dipetakan ke port yang berbeda). Konsekuensinya
-**port 80 belum tentu terbuka dari internet**.
+VM berada **di balik NAT**: `157.66.9.7` adalah **gateway bersama**, sedangkan IP asli VM
+adalah **192.168.37.179** (lihat `hostname -I`). Karena itu tiap layanan perlu **di-forward**
+oleh admin lab, dan nomor port publiknya mengikuti **urutan VM** (VM ini bernomor **08**).
 
-**Sebelum mulai, tanyakan ke admin lab:** *"Port publik mana yang di-forward ke VM saya
-untuk layanan web (HTTP)?"*
+**Pemetaan port yang berlaku (sudah dikonfirmasi admin — request "Buka Port" selesai):**
 
-| Jawaban admin | Cara akses | Bagian yang diikuti |
-|---------------|-----------|---------------------|
-| Port **80** di-forward | `http://157.66.9.7` | §5 (WEB_PORT=80, default) |
-| Port lain, mis. **8080** | `http://157.66.9.7:8080` | §5 (set `WEB_PORT=8080`) |
-| Port **80 & 443** di-forward | `https://kredipin.my.id` | §8 Skenario A (pakai domain) |
+| Layanan | Port publik (gateway) | Diteruskan ke | Status |
+|---------|----------------------|---------------|--------|
+| SSH | `157.66.9.7:2208` | `192.168.37.179:22` | ✅ aktif |
+| **HTTP (web)** | **`157.66.9.7:8008`** | `192.168.37.179:80` | ✅ **aktif** |
 
-Proses deploy Docker-nya **sama saja**; hanya port publik (dan opsi domain) yang menyesuaikan.
+→ **Aplikasi diakses di http://157.66.9.7:8008**
+
+> **Penting:** container tetap listen di **port 80** di dalam VM (`WEB_PORT` default = 80).
+> Forwarding 8008 → 80 dilakukan di sisi gateway kampus, **bukan** di VM. Jadi tidak ada
+> konfigurasi yang perlu diubah. Frontend memanggil API secara relatif (`/api`), sehingga
+> browser otomatis memakai origin yang sama berikut portnya
+> (`http://157.66.9.7:8008/api/...`) — same-origin tetap terjaga, tanpa CORS.
+
+Jika suatu saat mendapat VM baru dengan nomor urut berbeda, tanyakan kembali ke admin lab:
+*"Port publik mana yang di-forward ke VM saya untuk layanan web (HTTP)?"*
 
 ---
 
@@ -166,8 +174,8 @@ curl -s http://127.0.0.1/api/health
 (Ganti ke `http://127.0.0.1:8080/api/health` bila memakai WEB_PORT lain.)
 
 **7.3. Akses dari browser:**
-- Aplikasi: `http://157.66.9.7` (atau `http://157.66.9.7:8080`)
-- Health API: `http://157.66.9.7/api/health`
+- Aplikasi: **http://157.66.9.7:8008**
+- Health API: **http://157.66.9.7:8008/api/health**
 
 Uji fitur inti: buka **Analisis Nasabah Baru**, isi form, klik prediksi — hasil
 (keputusan + probabilitas + 5 faktor) harus tampil. Ini juga membuktikan frontend
@@ -236,7 +244,8 @@ Data riwayat prediksi (SQLite) tersimpan di volume `kredipin_db` sehingga aman s
 
 | Gejala | Kemungkinan penyebab | Solusi |
 |--------|----------------------|--------|
-| Browser tak bisa membuka `http://157.66.9.7` | Port 80 tidak di-forward (NAT) atau firewall | Konfirmasi port ke admin lab; deploy dengan `WEB_PORT` yang benar; `ufw allow <port>` |
+| Browser tak bisa membuka `http://157.66.9.7:8008` | Container mati, atau forwarding gateway berubah | Cek `docker compose ... ps` & `curl http://127.0.0.1/api/health` dari dalam VM; bila lokal OK, konfirmasi forwarding ke admin lab |
+| Build gagal `no space left on device` | Disk VM hanya 5.8 GB, image ML besar | `docker compose ... down` → `docker system prune -af` → build ulang. Solusi permanen: ajukan **Tambah Storage** ke ~20 GB |
 | `curl 127.0.0.1/api/health` gagal | Backend belum siap / gagal | `docker compose -f docker-compose.vm.yml logs backend` |
 | Build backend gagal saat import numpy | CPU VM tanpa `x86-64-v2` | Sudah diatasi: `numpy==2.0.2` dipin di `requirements.txt` (tak perlu tindakan) |
 | Halaman tampil tapi prediksi error | Proxy `/api` tidak jalan | Pastikan pakai `docker-compose.vm.yml` (memuat `frontend/nginx.vm.conf`) |
@@ -270,5 +279,5 @@ curl -fsSL https://raw.githubusercontent.com/Byassslaaaa/kredipin/main/deploy/de
 
 # 3) Verifikasi
 curl -s http://127.0.0.1/api/health    # → {"status":"ok",...}
-# buka http://157.66.9.7 di browser
+# buka http://157.66.9.7:8008 di browser
 ```
