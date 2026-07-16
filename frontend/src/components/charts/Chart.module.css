@@ -3,6 +3,26 @@
   width: 100%;
 }
 
+/* ApexCharts menyisipkan tooltip/legend sebagai elemen sendiri — pastikan
+   tipografinya mewarisi token aplikasi, bukan default pustaka. */
+.wrap :global(.apexcharts-tooltip) {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-surface);
+}
+
+.wrap :global(.apexcharts-tooltip-title) {
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-divider);
+  font-weight: var(--fw-semibold);
+}
+
+.wrap :global(.apexcharts-legend-text) {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-sans) !important;
+}
+
 /* Label tengah untuk DoughnutChart */
 .center {
   position: absolute;
@@ -14,6 +34,11 @@
   align-items: center;
   pointer-events: none;
   text-align: center;
+}
+
+/* Legend di bawah membuat donat tergeser ke atas — ikuti agar tetap di lubangnya. */
+.centerWithLegend {
+  top: 42%;
 }
 
 /* Saat legend bottom aktif, geser sedikit ke atas agar pas di lubang donat */

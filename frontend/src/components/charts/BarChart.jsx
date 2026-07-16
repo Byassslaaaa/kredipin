@@ -1,22 +1,20 @@
 import { useMemo } from "react";
-import { Bar } from "react-chartjs-2";
-import { ensureChartsRegistered } from "./registerCharts";
-import { getChartColors, baseTooltip, FONT_FAMILY } from "./chartTheme";
+import ReactApexChart from "react-apexcharts";
+import { useChartTheme, baseApexOptions } from "./chartTheme";
 import styles from "./Chart.module.css";
-
-ensureChartsRegistered();
 
 /**
  * BarChart — chart batang reusable (vertikal/horizontal, satu atau banyak seri).
+ * Ditenagai ApexCharts.
  *
- * Props:
+ * Props (TIDAK berubah dari implementasi sebelumnya):
  * - labels: string[]
  * - datasets: Array<{ label, data: number[], color? }>
- * - horizontal?: boolean (indexAxis 'y')
+ * - horizontal?: boolean
  * - height?: number
  * - legend?: boolean
  * - stacked?: boolean
- * - valueFormatter?: (n) => string  (tooltip & sumbu)
+ * - valueFormatter?: (n) => string  (tooltip & sumbu nilai)
  */
 export default function BarChart({
   labels,
@@ -27,79 +25,86 @@ export default function BarChart({
   stacked = false,
   valueFormatter,
 }) {
-  const palette = getChartColors();
+  const { colors, dark } = useChartTheme();
 
-  const data = useMemo(
-    () => ({
-      labels,
-      datasets: datasets.map((ds, i) => ({
-        label: ds.label,
-        data: ds.data,
-        backgroundColor: ds.color || palette.series[i % palette.series.length],
-        borderRadius: 6,
-        borderSkipped: false,
-        maxBarThickness: 42,
-      })),
-    }),
-    [labels, datasets, palette.series],
+  const fmt = useMemo(
+    () => valueFormatter || ((n) => Number(n).toLocaleString("id-ID")),
+    [valueFormatter],
   );
 
-  const fmt = valueFormatter || ((n) => n.toLocaleString("id-ID"));
-
-  const options = useMemo(
-    () => ({
-      indexAxis: horizontal ? "y" : "x",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: legend,
-          position: "top",
-          align: "end",
-          labels: {
-            usePointStyle: true,
-            pointStyle: "circle",
-            color: palette.text,
-            font: { family: FONT_FAMILY, size: 13 },
-          },
-        },
-        tooltip: {
-          ...baseTooltip(palette),
-          callbacks: {
-            label: (ctx) => {
-              const v = horizontal ? ctx.parsed.x : ctx.parsed.y;
-              return ` ${ctx.dataset.label ? ctx.dataset.label + ": " : ""}${fmt(v)}`;
-            },
-          },
-        },
-      },
-      scales: {
-        x: {
-          stacked,
-          grid: { display: horizontal, color: palette.grid, drawBorder: false },
-          ticks: {
-            color: palette.axis,
-            font: { family: FONT_FAMILY, size: 12 },
-            callback: horizontal ? (v) => fmt(v) : undefined,
-          },
-        },
-        y: {
-          stacked,
-          grid: { display: !horizontal, color: palette.grid, drawBorder: false },
-          ticks: {
-            color: palette.axis,
-            font: { family: FONT_FAMILY, size: 12 },
-            callback: !horizontal ? (v) => fmt(v) : undefined,
-          },
-        },
-      },
-    }),
-    [horizontal, legend, stacked, palette, fmt],
+  const series = useMemo(
+    () => datasets.map((ds) => ({ name: ds.label || "", data: ds.data })),
+    [datasets],
   );
+
+  const seriesColors = useMemo(
+    () => datasets.map((ds, i) => ds.color || colors.series[i % colors.series.length]),
+    [datasets, colors.series],
+  );
+
+  const options = useMemo(() => {
+    const base = baseApexOptions(colors, dark);
+    return {
+      ...base,
+      chart: { ...base.chart, type: "bar", stacked },
+      colors: seriesColors,
+      plotOptions: {
+        bar: {
+          horizontal,
+          borderRadius: 6,
+          // Sudut membulat hanya di ujung batang agar tetap terbaca saat stacked.
+          borderRadiusApplication: "end",
+          columnWidth: horizontal ? "70%" : "58%",
+          barHeight: "72%",
+        },
+      },
+      xaxis: {
+        categories: labels,
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+        labels: {
+          style: { colors: colors.axis, fontSize: "12px" },
+          // Saat horizontal, sumbu-X adalah sumbu NILAI -> perlu diformat.
+          formatter: horizontal ? (v) => fmt(v) : undefined,
+          // Label kategori panjang (nama fitur) dipangkas agar tidak merusak layout.
+          trim: !horizontal,
+          hideOverlappingLabels: true,
+        },
+      },
+      yaxis: {
+        labels: {
+          style: { colors: colors.axis, fontSize: "12px" },
+          // Saat vertikal, sumbu-Y adalah sumbu NILAI -> perlu diformat.
+          formatter: horizontal ? undefined : (v) => fmt(v),
+          maxWidth: horizontal ? 220 : undefined,
+        },
+      },
+      grid: {
+        ...base.grid,
+        // Garis bantu hanya pada sumbu nilai agar tidak ramai.
+        xaxis: { lines: { show: horizontal } },
+        yaxis: { lines: { show: !horizontal } },
+      },
+      legend: { ...base.legend, show: legend, position: "top", horizontalAlign: "right" },
+      tooltip: {
+        ...base.tooltip,
+        shared: false,
+        intersect: true,
+        y: { formatter: (v) => fmt(v) },
+      },
+    };
+  }, [colors, dark, seriesColors, horizontal, stacked, labels, legend, fmt]);
 
   return (
-    <div className={styles.wrap} style={{ height }}>
-      <Bar data={data} options={options} />
+    <div className={styles.wrap}>
+      <ReactApexChart
+        // key memaksa remount saat tema berubah agar warna & grid ikut ter-refresh.
+        key={dark ? "dark" : "light"}
+        type="bar"
+        series={series}
+        options={options}
+        height={height}
+      />
     </div>
   );
 }

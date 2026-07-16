@@ -1,86 +1,82 @@
 import { useMemo } from "react";
-import { Doughnut } from "react-chartjs-2";
-import { ensureChartsRegistered } from "./registerCharts";
-import { getChartColors, baseTooltip, FONT_FAMILY } from "./chartTheme";
+import ReactApexChart from "react-apexcharts";
+import { useChartTheme, baseApexOptions } from "./chartTheme";
 import styles from "./Chart.module.css";
-
-ensureChartsRegistered();
 
 /**
  * DoughnutChart — chart donat reusable untuk distribusi/komposisi.
+ * Ditenagai ApexCharts.
  *
- * Props:
+ * Props (TIDAK berubah dari implementasi sebelumnya):
  * - labels: string[]
  * - values: number[]
  * - colors?: string[] (override warna seri)
- * - height?: number (px)
+ * - height?: number
  * - legend?: boolean (default true)
  * - centerLabel?: { value, caption } -> teks di tengah donat
  */
 export default function DoughnutChart({
   labels,
   values,
-  colors,
+  colors: colorsProp,
   height = 240,
   legend = true,
   centerLabel,
 }) {
-  const palette = getChartColors();
-  const seriesColors = colors || palette.series;
+  const { colors, dark } = useChartTheme();
+  const seriesColors = colorsProp || colors.series;
 
-  const data = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    const base = baseApexOptions(colors, dark);
+    const total = values.reduce((a, b) => a + Number(b || 0), 0);
+
+    return {
+      ...base,
+      chart: { ...base.chart, type: "donut" },
       labels,
-      datasets: [
-        {
-          data: values,
-          backgroundColor: seriesColors,
-          borderColor: palette.surface,
-          borderWidth: 2,
-          hoverOffset: 6,
-        },
-      ],
-    }),
-    [labels, values, seriesColors, palette.surface],
-  );
-
-  const options = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: "68%",
-      plugins: {
-        legend: {
-          display: legend,
-          position: "bottom",
-          labels: {
-            usePointStyle: true,
-            pointStyle: "circle",
-            padding: 16,
-            color: palette.text,
-            font: { family: FONT_FAMILY, size: 13 },
-          },
-        },
-        tooltip: {
-          ...baseTooltip(palette),
-          callbacks: {
-            label: (ctx) => {
-              const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-              const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
-              return ` ${ctx.label}: ${ctx.parsed.toLocaleString("id-ID")} (${pct}%)`;
-            },
+      colors: seriesColors,
+      stroke: { width: 2, colors: [colors.surface] },
+      plotOptions: {
+        pie: {
+          expandOnClick: false,
+          donut: {
+            size: "68%",
+            // Label bawaan dimatikan; angka tengah dirender sebagai overlay HTML
+            // (centerLabel) agar mewarisi tipografi & token warna aplikasi.
+            labels: { show: false },
           },
         },
       },
-    }),
-    [legend, palette],
-  );
+      legend: { ...base.legend, show: legend, position: "bottom" },
+      tooltip: {
+        ...base.tooltip,
+        y: {
+          formatter: (v) => {
+            const pct = total ? ((v / total) * 100).toFixed(1) : "0.0";
+            return `${Number(v).toLocaleString("id-ID")} (${pct}%)`;
+          },
+        },
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: { legend: { position: "bottom" } },
+        },
+      ],
+    };
+  }, [colors, dark, labels, seriesColors, legend, values]);
 
   return (
-    <div className={styles.wrap} style={{ height }}>
-      <Doughnut data={data} options={options} />
+    <div className={styles.wrap}>
+      <ReactApexChart
+        key={dark ? "dark" : "light"}
+        type="donut"
+        series={values}
+        options={options}
+        height={height}
+      />
       {centerLabel && (
-        <div className={styles.center}>
+        <div className={`${styles.center} ${legend ? styles.centerWithLegend : ""}`}>
           <span className={styles.centerValue}>{centerLabel.value}</span>
           {centerLabel.caption && (
             <span className={styles.centerCaption}>{centerLabel.caption}</span>
