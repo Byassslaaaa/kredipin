@@ -9,6 +9,7 @@
  * baru; service lain (predict/history/health) dibangun di atas instance ini.
  */
 import axios from "axios";
+import { ambilToken, hapusSesi } from "./tokenStore";
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL?.trim() || "http://localhost:8000";
@@ -23,7 +24,15 @@ const apiClient = axios.create({
  * Bentuk error yang seragam untuk seluruh aplikasi.
  */
 export class ApiError extends Error {
-  constructor({ message, status, detail, isNetwork = false, isValidation = false, isTimeout = false }) {
+  constructor({
+    message,
+    status,
+    detail,
+    isNetwork = false,
+    isValidation = false,
+    isTimeout = false,
+    isAuth = false,
+  }) {
     super(message);
     this.name = "ApiError";
     this.status = status ?? 0;
@@ -31,6 +40,7 @@ export class ApiError extends Error {
     this.isNetwork = isNetwork;
     this.isValidation = isValidation;
     this.isTimeout = isTimeout;
+    this.isAuth = isAuth;
   }
 }
 
@@ -63,6 +73,9 @@ function normalizeError(error) {
   const detail = data?.detail ?? null;
 
   const messages = {
+    401: "Sesi berakhir atau kredensial tidak valid. Silakan masuk kembali.",
+    403: "Anda tidak memiliki hak akses untuk tindakan ini.",
+    429: "Terlalu banyak permintaan. Mohon tunggu sebentar lalu coba lagi.",
     422: "Data yang dikirim tidak valid. Periksa kembali isian Anda.",
     404: "Sumber daya tidak ditemukan.",
     500: "Terjadi kesalahan di server saat memproses permintaan.",
@@ -74,12 +87,31 @@ function normalizeError(error) {
     status,
     detail,
     isValidation: status === 422,
+    isAuth: status === 401,
   });
 }
 
+// Sisipkan token pada setiap permintaan. Dibaca ULANG tiap kali (bukan sekali
+// saat modul dimuat) agar login/logout langsung berlaku tanpa reload halaman.
+apiClient.interceptors.request.use((config) => {
+  const token = ambilToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(normalizeError(error)),
+  (error) => {
+    const apiError = normalizeError(error);
+
+    // Token kedaluwarsa/dicabut -> bersihkan sesi basi supaya UI tidak terjebak
+    // menampilkan "sudah login" padahal server menolak. Endpoint login sendiri
+    // dikecualikan: 401 di sana berarti "password salah", bukan sesi berakhir.
+    const dariLogin = error.config?.url?.includes("/auth/login");
+    if (apiError.isAuth && !dariLogin) hapusSesi();
+
+    return Promise.reject(apiError);
+  },
 );
 
 export default apiClient;

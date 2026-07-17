@@ -1,4 +1,5 @@
 import Icon from "@/components/ui/Icon";
+import { useAuth } from "@/features/auth/AuthContext";
 import HealthIndicator from "./HealthIndicator";
 import styles from "./Topbar.module.css";
 
@@ -8,6 +9,16 @@ import styles from "./Topbar.module.css";
  * (indikator status backend & toggle tema disiapkan untuk milestone berikutnya).
  */
 export default function Topbar({ title, subtitle, onToggleSidebar, theme, onToggleTheme }) {
+  const { user, logout } = useAuth();
+
+  // Inisial dari nama untuk avatar — hindari memuat gambar demi dua huruf.
+  const inisial = (user?.nama || user?.username || "?")
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
   return (
     <header className={styles.topbar}>
       <div className={styles.left}>
@@ -27,6 +38,17 @@ export default function Topbar({ title, subtitle, onToggleSidebar, theme, onTogg
 
       <div className={styles.right}>
         <HealthIndicator />
+
+        {user && (
+          <div className={styles.pengguna}>
+            <span className={styles.avatar} aria-hidden="true">{inisial}</span>
+            <span className={styles.penggunaTeks}>
+              <span className={styles.penggunaNama}>{user.nama}</span>
+              <span className={styles.penggunaPeran}>{user.peran}</span>
+            </span>
+          </div>
+        )}
+
         <button
           type="button"
           className={styles.iconBtn}
@@ -36,6 +58,18 @@ export default function Topbar({ title, subtitle, onToggleSidebar, theme, onTogg
         >
           <Icon name={theme === "dark" ? "sun" : "moon"} size={19} />
         </button>
+
+        {user && (
+          <button
+            type="button"
+            className={styles.iconBtn}
+            onClick={logout}
+            aria-label="Keluar dari sesi"
+            title="Keluar"
+          >
+            <Icon name="x" size={19} />
+          </button>
+        )}
       </div>
     </header>
   );
