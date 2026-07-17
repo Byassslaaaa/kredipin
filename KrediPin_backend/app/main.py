@@ -21,7 +21,7 @@ from app.core.rate_limit import RateLimitMiddleware
 from app.api.routes import router
 from app.config import settings
 from app.core.exceptions import register_exception_handlers
-from app.db.database import get_session_langsung, init_db
+from app.db.database import get_session_langsung, init_db, migrasi_ringan
 from app.ml.model_loader import artifacts
 
 logging.basicConfig(
@@ -36,6 +36,8 @@ async def lifespan(app: FastAPI):
     """Startup: muat model sekali + siapkan database. Shutdown: bersih-bersih."""
     logger.info("Memulai %s v%s ...", settings.APP_NAME, settings.APP_VERSION)
     init_db()
+    # Selaraskan skema database lama dengan model terkini (lihat migrasi_ringan).
+    migrasi_ringan()
 
     # Seed pengguna awal — tanpa ini sistem terkunci total setelah autentikasi
     # diaktifkan (tidak ada yang bisa login untuk membuat user pertama).
