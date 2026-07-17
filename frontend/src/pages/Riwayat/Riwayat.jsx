@@ -81,7 +81,17 @@ export default function Riwayat() {
             emptyTitle="Belum ada riwayat"
             emptyDescription="Lakukan prediksi di Analisis Nasabah Baru atau Import Data Nasabah."
             columns={[
-              { key: "id", header: "ID", mono: true, align: "right", width: "70px" },
+              // ID nyata (bukan nomor urut) dipertahankan: inilah rujukan audit —
+              // dipakai endpoint keputusan analis (/history/{id}/keputusan) & audit log.
+              // Diberi awalan "#" agar terbaca sebagai referensi, bukan hitungan baris.
+              {
+                key: "id",
+                header: "ID",
+                mono: true,
+                align: "right",
+                width: "72px",
+                render: (r) => `#${r.id}`,
+              },
               { key: "waktu", header: "Waktu", render: (r) => formatDateTime(r.waktu) },
               ...(admin
                 ? [{
