@@ -41,3 +41,7 @@ export const updateUser = (id, data) => apiClient.patch(`/users/${id}`, data).th
 /** Jejak audit tindakan istimewa — khusus admin, hanya baca. */
 export const getAudit = (limit = 50) =>
   apiClient.get(`/audit?limit=${limit}`).then((r) => r.data);
+
+/** Ringkasan pemantauan + sinyal drift (tingkat penyimpangan) — khusus admin. */
+export const getMonitoring = (hari = 30) =>
+  apiClient.get(`/monitoring?hari=${hari}`).then((r) => r.data);

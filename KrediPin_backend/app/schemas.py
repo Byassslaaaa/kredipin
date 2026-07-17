@@ -338,3 +338,17 @@ class KeputusanAnalisResponse(BaseModel):
     menyimpang: bool
     alasan: Optional[str] = None
     diputus_pada: datetime
+
+
+class MonitoringResponse(BaseModel):
+    """Ringkasan pemantauan + tren harian."""
+
+    periode_hari: int
+    total_penilaian: int
+    layak: int
+    tidak_layak: int
+    rata_probabilitas: Optional[float] = None
+    sudah_diputus: int
+    menyimpang: int
+    tingkat_penyimpangan: Optional[float] = None
+    tren: list[dict]

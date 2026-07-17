@@ -36,6 +36,10 @@ export const PAGE_META = {
     title: "Kelola Pengguna",
     subtitle: "Buat & atur akun analis dan admin",
   },
+  [ROUTES.monitoring]: {
+    title: "Monitoring",
+    subtitle: "Pemantauan operasional & sinyal drift model",
+  },
   [ROUTES.audit]: {
     title: "Jejak Audit",
     subtitle: "Catatan tindakan istimewa — hanya-tambah",

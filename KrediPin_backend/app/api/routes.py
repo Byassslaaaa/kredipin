@@ -16,6 +16,7 @@ from app import __version__
 from app.config import settings
 from app.db.database import check_db, get_session
 from app.db import audit as audit_repo
+from app.db import monitoring as monitoring_repo
 from app.db import kebijakan as kebijakan_repo
 from app.db.models import PredictionHistory
 from app.db.repository import get_recent, save_prediction
@@ -25,7 +26,7 @@ from app.auth.deps import get_current_user, require_admin
 from app.auth.security import buat_token, hash_password, verify_password
 from app.db.models import User
 from app.schemas import (
-    AuditItem, HealthResponse, KeputusanAnalisRequest, KeputusanAnalisResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
+    AuditItem, HealthResponse, MonitoringResponse, KeputusanAnalisRequest, KeputusanAnalisResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
     PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserBuatRequest,
     UserInfo, UserItem, UserUbahRequest,
 )
@@ -90,6 +91,25 @@ async def login(payload: LoginRequest, db: Session = Depends(get_session)) -> Lo
 async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
     """Identitas pemilik token — dipakai frontend memulihkan sesi saat refresh."""
     return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
+
+
+@router.get("/monitoring", response_model=MonitoringResponse, tags=["monitoring"])
+async def monitoring(
+    hari: int = 30,
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> MonitoringResponse:
+    """
+    Pemantauan operasional & sinyal drift — khusus admin.
+
+    Sinyal utama: tingkat penyimpangan analis dari model. Bila naik, model mulai
+    tidak sesuai kenyataan lapangan — peringatan paling dini bahwa model perlu
+    ditinjau, jauh sebelum metrik formal tersedia.
+    """
+    hari = max(1, min(hari, 365))
+    ringkas = monitoring_repo.ringkasan(db, hari=hari)
+    tren = monitoring_repo.tren_harian(db, hari=min(hari, 30))
+    return MonitoringResponse(**ringkas, tren=tren)
 
 
 @router.get("/audit", response_model=list[AuditItem], tags=["audit"])

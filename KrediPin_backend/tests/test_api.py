@@ -576,3 +576,31 @@ def test_putuskan_riwayat_tak_ada(client, auth):
         "/history/999999/keputusan", json={"keputusan_analis": "Layak"}, headers=auth
     )
     assert r.status_code == 404
+
+
+# ==================== Monitoring (saran #6) ====================
+
+def test_analis_tak_boleh_monitoring(client, auth):
+    assert client.get("/monitoring", headers=auth).status_code == 403
+
+
+def test_monitoring_menghitung_penyimpangan(client, auth, auth_admin):
+    """
+    Tingkat penyimpangan = sinyal drift paling dini. Harus dihitung dari
+    penilaian yang SUDAH diputus, bukan dari seluruh prediksi.
+    """
+    d = client.post("/predict", json=INPUT_VALID, headers=auth).json()
+    rid, model = d["id_riwayat"], d["keputusan"]
+    lawan = "Tidak Layak" if model == "Layak" else "Layak"
+    client.post(
+        f"/history/{rid}/keputusan",
+        json={"keputusan_analis": lawan, "alasan": "Uji regresi penyimpangan monitoring."},
+        headers=auth,
+    )
+
+    m = client.get("/monitoring?hari=30", headers=auth_admin).json()
+    assert m["total_penilaian"] >= 1
+    assert m["sudah_diputus"] >= 1
+    assert m["menyimpang"] >= 1
+    assert 0.0 <= m["tingkat_penyimpangan"] <= 1.0
+    assert isinstance(m["tren"], list)
