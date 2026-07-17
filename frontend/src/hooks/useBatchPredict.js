@@ -12,7 +12,7 @@ const INITIAL_PROGRESS = { done: 0, total: 0, ok: 0, failed: 0 };
  * dan kemampuan membatalkan.
  *
  * API:
- *   run(payloads, { threshold, concurrency = 4 })  -> Promise (selesai/cancel)
+ *   run(payloads, { concurrency = 4 })  -> Promise (selesai/cancel)
  *   cancel()
  *   reset()
  *
@@ -74,7 +74,7 @@ export default function useBatchPredict() {
   }, []);
 
   const run = useCallback(
-    async (payloads, { threshold, concurrency = 4 } = {}) => {
+    async (payloads, { concurrency = 4 } = {}) => {
       const total = payloads.length;
       const controller = new AbortController();
       controllerRef.current = controller;
@@ -105,7 +105,9 @@ export default function useBatchPredict() {
           if (index >= total) return;
 
           const body =
-            threshold != null ? { ...payloads[index], threshold } : payloads[index];
+            // Ambang tidak lagi dititipkan per-baris: server memakai kebijakan
+            // yang berlaku, sehingga batch dan penilaian satuan konsisten.
+            payloads[index];
 
           try {
             const result = await postPredict(body, { signal: controller.signal });

@@ -57,3 +57,22 @@ class User(Base):
     peran: Mapped[str] = mapped_column(String(16), default="analis", nullable=False)
     aktif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now, nullable=False)
+
+
+class Kebijakan(Base):
+    """
+    Kebijakan risiko yang berlaku sistem-wide. Selalu satu baris (id=1).
+
+    KENAPA TERSIMPAN, BUKAN PARAMETER REQUEST: ambang adalah selera risiko
+    PERUSAHAAN. Saat dikirim per-request, ia menjadi preferensi individu —
+    dua nasabah berprofil identik bisa mendapat keputusan berbeda tergantung
+    siapa yang menangani. Disimpan di sini, ambang berlaku seragam untuk semua
+    analis dan perubahannya meninggalkan jejak (diubah_oleh/diubah_pada).
+    """
+
+    __tablename__ = "kebijakan"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    ambang: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
+    diubah_oleh: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    diubah_pada: Mapped[datetime] = mapped_column(DateTime, default=_now, nullable=False)

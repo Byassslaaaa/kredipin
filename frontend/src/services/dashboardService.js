@@ -5,6 +5,8 @@
  * TIDAK menyajikannya. Diakses lewat fetch sebagai aset statis Vite.
  */
 
+import apiClient from "./apiClient";
+
 const BASE = `${import.meta.env.BASE_URL}data/`;
 
 async function getJson(file, { signal } = {}) {
@@ -23,3 +25,10 @@ export const getFeatureImportance = (opts) => getJson("feature_importance.json",
 export const getEksplorasi = (opts) => getJson("eksplorasi.json", opts);
 /** Tahapan + output eksekusi asli notebook Google Colab (SIAB_DASD.ipynb). */
 export const getPipeline = (opts) => getJson("pipeline.json", opts);
+
+/** Kebijakan ambang yang berlaku (semua peran boleh membaca). */
+export const getKebijakanAmbang = () => apiClient.get("/kebijakan/ambang").then((r) => r.data);
+
+/** Ubah ambang kebijakan — khusus admin (backend menolak 403 selain admin). */
+export const putKebijakanAmbang = (ambang) =>
+  apiClient.put("/kebijakan/ambang", { ambang }).then((r) => r.data);

@@ -14,15 +14,16 @@ from sqlalchemy.orm import Session
 from app import __version__
 from app.config import settings
 from app.db.database import check_db, get_session
+from app.db import kebijakan as kebijakan_repo
 from app.db.repository import get_recent, save_prediction
 from app.ml.model_loader import ModelArtifacts, get_artifacts
 from app.ml.predictor import predict
-from app.auth.deps import get_current_user
+from app.auth.deps import get_current_user, require_admin
 from app.auth.security import buat_token, verify_password
 from app.db.models import User
 from app.schemas import (
-    HealthResponse, HistoryItem, LoginRequest, LoginResponse, PredictRequest,
-    PredictResponse, RootResponse, UserInfo,
+    HealthResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
+    PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserInfo,
 )
 from sqlalchemy import select
 
@@ -87,6 +88,39 @@ async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
     return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
 
 
+@router.get("/kebijakan/ambang", response_model=KebijakanResponse, tags=["kebijakan"])
+async def baca_ambang(
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> KebijakanResponse:
+    """Ambang kebijakan yang berlaku. Semua peran boleh MEMBACA (transparansi)."""
+    row = kebijakan_repo.ambil(db)
+    return KebijakanResponse(
+        ambang=row.ambang, diubah_oleh=row.diubah_oleh, diubah_pada=row.diubah_pada
+    )
+
+
+@router.put("/kebijakan/ambang", response_model=KebijakanResponse, tags=["kebijakan"])
+async def ubah_ambang(
+    payload: UbahAmbangRequest,
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> KebijakanResponse:
+    """
+    Ubah ambang kebijakan — khusus admin (mewakili komite risiko).
+
+    Perubahan dicatat beserta pelakunya: auditor harus dapat menjawab "siapa
+    yang melonggarkan ambang, dan kapan?".
+    """
+    row = kebijakan_repo.ubah_ambang(db, payload.ambang, admin.username)
+    logger.warning(
+        "Kebijakan ambang diubah menjadi %.2f oleh %s", row.ambang, admin.username
+    )
+    return KebijakanResponse(
+        ambang=row.ambang, diubah_oleh=row.diubah_oleh, diubah_pada=row.diubah_pada
+    )
+
+
 @router.post(
     "/predict",
     response_model=PredictResponse,
@@ -119,23 +153,15 @@ async def predict_endpoint(
             ),
         )
 
-    # Ambang keputusan = KEBIJAKAN RISIKO perusahaan, bukan preferensi individu.
+    # Ambang SELALU diambil dari kebijakan tersimpan, tidak pernah dari request.
     #
-    # Bila tiap analis bebas menggeser ambang, dua nasabah dengan profil identik
-    # bisa mendapat keputusan berbeda hanya karena ditangani orang berbeda —
-    # yaitu ketidakkonsistenan yang justru menjadi alasan sistem ini dibangun.
-    # Karena itu override hanya diizinkan bagi admin (mewakili komite risiko);
-    # analis memakai ambang kebijakan yang berlaku.
-    if payload.threshold is not None and user.peran != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail=(
-                "Ambang keputusan adalah kebijakan risiko dan hanya dapat diubah "
-                "admin. Penilaian Anda memakai ambang kebijakan yang berlaku."
-            ),
-        )
-
-    hasil = predict(payload.features(), art, threshold=payload.threshold)
+    # Sebelumnya ambang dikirim per-prediksi, sehingga ia menjadi preferensi
+    # individu: dua nasabah berprofil identik bisa mendapat keputusan berbeda
+    # tergantung siapa yang menangani — ketidakkonsistenan yang justru menjadi
+    # alasan sistem ini dibangun. Kini ambang berlaku seragam bagi semua analis
+    # dan hanya dapat diubah admin lewat PUT /kebijakan/ambang (teraudit).
+    ambang = kebijakan_repo.ambil(db).ambang
+    hasil = predict(payload.features(), art, threshold=ambang)
 
     record = save_prediction(
         db,

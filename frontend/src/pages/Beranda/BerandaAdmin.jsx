@@ -6,6 +6,7 @@ import useDashboardData from "@/hooks/useDashboardData";
 import useHealth from "@/hooks/useHealth";
 import { ROUTES } from "@/constants/navigation";
 import { formatNumber, formatPercent } from "@/utils/format";
+import KebijakanAmbang from "@/components/common/KebijakanAmbang";
 import HeroBanner from "./components/HeroBanner";
 import RiskProfileComparison from "./components/RiskProfileComparison";
 import styles from "./Beranda.module.css";
@@ -162,6 +163,15 @@ export default function BerandaAdmin() {
         ) : (
           <RiskProfileComparison kpi={kpi} bisnis={bisnis} />
         )}
+      </Card>
+
+      {/* Kebijakan risiko — wewenang admin */}
+      <Card
+        title="Kebijakan Ambang Keputusan"
+        subtitle="Berlaku untuk seluruh penilaian oleh semua analis"
+        icon="shield-check"
+      >
+        <KebijakanAmbang dapatDiubah />
       </Card>
 
       {/* Status sistem */}

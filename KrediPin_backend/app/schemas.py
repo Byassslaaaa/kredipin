@@ -50,7 +50,6 @@ class PredictRequest(BaseModel):
                 "rasio_pembayaran_terhadap_pendapatan": 0.27,
                 "tenor_bulan": 36,
                 "jaminan": "Tanpa Jaminan",
-                "threshold": 0.5,
             }
         },
     )
@@ -98,18 +97,15 @@ class PredictRequest(BaseModel):
     tenor_bulan: TenorBulan
     jaminan: Jaminan
 
-    # --- Override ambang keputusan (opsional) ---
+    # --- Ambang: DIABAIKAN bila dikirim ---
     #
-    # Rentang SENGAJA dibatasi 0.2-0.9, bukan 0.0-1.0. Ambang 0.0 membuat SEMUA
-    # pengajuan dinyatakan Layak (probabilitas >= 0 selalu benar) sehingga model
-    # ter-bypass total; 1.0 menolak semuanya. Keduanya tidak punya makna bisnis
-    # dan merupakan celah pemaksaan keputusan dari sisi klien.
+    # Ambang kini KEBIJAKAN TERSIMPAN, bukan parameter per-request. Lihat
+    # PUT /kebijakan/ambang (khusus admin). Field ini dipertahankan sebagai
+    # opsional-diabaikan demi kompatibilitas klien lama; nilainya tidak pernah
+    # dipakai. Akan dihapus pada versi berikutnya.
     threshold: Optional[float] = Field(
-        default=None, ge=0.2, le=0.9,
-        description=(
-            "Override ambang keputusan (0.2-0.9). Kosong = pakai default config (0.5). "
-            "Nilai ekstrem ditolak agar model tidak dapat di-bypass."
-        ),
+        default=None, deprecated=True,
+        description="Diabaikan — ambang diambil dari kebijakan (PUT /kebijakan/ambang).",
     )
 
     def features(self) -> dict:
@@ -238,3 +234,23 @@ class LoginResponse(BaseModel):
     token_type: str = "bearer"
     expires_in_minutes: int
     user: UserInfo
+
+
+# ============================ Kebijakan Risiko ============================
+
+class KebijakanResponse(BaseModel):
+    """Kebijakan ambang yang berlaku + jejak perubahan terakhir."""
+
+    ambang: float = Field(..., ge=0.2, le=0.9)
+    diubah_oleh: Optional[str] = None
+    diubah_pada: datetime
+
+
+class UbahAmbangRequest(BaseModel):
+    """Permintaan mengubah ambang kebijakan (khusus admin)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # Rentang sama dengan sebelumnya: 0 meloloskan semua, 1 menolak semua —
+    # keduanya meniadakan model dan tidak punya makna bisnis.
+    ambang: float = Field(..., ge=0.2, le=0.9)

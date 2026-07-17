@@ -1,5 +1,5 @@
 import { Alert, Badge, Button, Card, Table } from "@/components/ui";
-import ThresholdControl from "@/components/common/ThresholdControl";
+import KebijakanAmbang from "@/components/common/KebijakanAmbang";
 import styles from "./ValidationSummary.module.css";
 
 /**
@@ -99,7 +99,8 @@ export default function ValidationSummary({
 
       {validRows.length > 0 ? (
         <div className={styles.runBlock}>
-          <ThresholdControl value={threshold} onChange={onThresholdChange} />
+          {/* Batch memakai ambang kebijakan yang sama dengan penilaian satuan. */}
+          <KebijakanAmbang />
           <div className={styles.actions}>
             <Button variant="ghost" iconLeft="refresh" onClick={onReset}>
               Ganti file

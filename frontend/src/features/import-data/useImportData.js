@@ -14,7 +14,6 @@ export default function useImportData() {
   const [stage, setStage] = useState("idle"); // idle | parsing | validated | error
   const [parseError, setParseError] = useState(null);
   const [validation, setValidation] = useState(null);
-  const [threshold, setThreshold] = useState(0.5);
 
   const handleFile = useCallback(
     async (file) => {
@@ -41,9 +40,9 @@ export default function useImportData() {
     (concurrency = 5) => {
       if (!validation?.validRows?.length) return;
       const payloads = validation.validRows.map((r) => r.payload);
-      batch.run(payloads, { threshold, concurrency });
+      batch.run(payloads, { concurrency });
     },
-    [validation, threshold, batch],
+    [validation, batch],
   );
 
   const reset = useCallback(() => {
@@ -59,8 +58,6 @@ export default function useImportData() {
     stage,
     parseError,
     validation,
-    threshold,
-    setThreshold,
     handleFile,
     start,
     reset,

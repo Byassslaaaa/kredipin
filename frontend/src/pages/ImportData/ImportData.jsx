@@ -66,8 +66,6 @@ export default function ImportData() {
       {showValidation && (
         <ValidationSummary
           validation={imp.validation}
-          threshold={imp.threshold}
-          onThresholdChange={imp.setThreshold}
           onStart={handleStart}
           onReset={imp.reset}
           canStart={!running}

@@ -4,7 +4,7 @@ import { Button, Card, Icon, Stepper } from "@/components/ui";
 import { RadioGroup, Select, TextField } from "@/components/ui/form";
 import { FEATURE_FIELDS, FEATURE_GROUPS } from "@/constants/featureSchema";
 import { formatIDR } from "@/utils/format";
-import ThresholdControl from "@/components/common/ThresholdControl";
+import KebijakanAmbang from "@/components/common/KebijakanAmbang";
 import styles from "./NasabahForm.module.css";
 
 /** Label ringkas untuk indikator langkah (label penuh terlalu panjang). */
@@ -90,13 +90,8 @@ export default function NasabahForm({
   onReset,
   validateGroup,
   groupFilled,
-  threshold,
-  onThresholdChange,
-  ambangAktif,
-  onAmbangToggle,
   loading,
   hasilSlot,
-  bolehAturAmbang = false,
 }) {
   const kurangiGerak = useReducedMotion();
   const [langkah, setLangkah] = useState(0);
@@ -249,26 +244,7 @@ export default function NasabahForm({
                     </span>
                     <h4 className={styles.groupTitle}>Pengaturan Keputusan</h4>
                   </div>
-                  {bolehAturAmbang ? (
-                    <ThresholdControl
-                      value={threshold}
-                      onChange={onThresholdChange}
-                      enabled={ambangAktif}
-                      onToggle={onAmbangToggle}
-                    />
-                  ) : (
-                    // Analis melihat kebijakan, bukan kontrol. Menyembunyikan
-                    // slider (bukan sekadar men-disable) agar tidak terkesan
-                    // "boleh diubah tapi sedang rusak".
-                    <p className={styles.ambangInfo}>
-                      <Icon name="shield-check" size={15} />
-                      <span>
-                        Penilaian memakai <strong>ambang kebijakan</strong> yang ditetapkan
-                        komite risiko. Ambang hanya dapat diubah admin agar keputusan tetap
-                        konsisten antar analis.
-                      </span>
-                    </p>
-                  )}
+                  <KebijakanAmbang />
                 </div>
               )}
             </motion.section>

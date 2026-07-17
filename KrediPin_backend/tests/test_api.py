@@ -97,16 +97,31 @@ def test_admin_tak_boleh_menilai_kredit(client, auth_admin):
 
 
 @pytest.mark.parametrize("nilai", [0.0, 0.1, 0.95, 1.0])
-def test_predict_threshold_ekstrem_ditolak(client, auth, nilai):
+def test_kebijakan_ambang_ekstrem_ditolak(client, auth_admin, nilai):
     """
-    Ambang ekstrem harus ditolak.
+    Ambang ekstrem harus ditolak di titik penetapan kebijakan.
 
-    Regresi untuk celah keamanan: `threshold=0.0` membuat SEMUA pengajuan
-    dinyatakan Layak (probabilitas >= 0 selalu benar), sehingga model
-    ter-bypass total dan nasabah berisiko tinggi pun lolos.
+    Regresi celah keamanan: ambang 0.0 membuat SEMUA pengajuan dinyatakan Layak
+    (probabilitas >= 0 selalu benar) sehingga model ter-bypass total; 1.0
+    menolak semuanya. Keduanya meniadakan model.
     """
-    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai), headers=auth)
+    r = client.put("/kebijakan/ambang", json={"ambang": nilai}, headers=auth_admin)
     assert r.status_code == 422
+
+
+def test_threshold_kiriman_klien_diabaikan(client, auth):
+    """
+    Regresi: ambang tidak lagi boleh dititipkan di request prediksi.
+
+    Sebelumnya threshold dikirim per-prediksi sehingga menjadi preferensi
+    individu. Kini nilai kiriman diabaikan total; server memakai kebijakan.
+    """
+    polos = client.post("/predict", json=INPUT_VALID, headers=auth).json()
+    dititipi = client.post(
+        "/predict", json=dict(INPUT_VALID, threshold=0.9), headers=auth
+    ).json()
+    assert dititipi["threshold"] == polos["threshold"]
+    assert dititipi["keputusan"] == polos["keputusan"]
 
 
 def test_rasio_kiriman_klien_diabaikan(client, auth):
@@ -286,7 +301,7 @@ def auth_admin(client):
     return {"Authorization": f"Bearer {r.json()['access_token']}"}
 
 
-def test_analis_tak_boleh_menggeser_ambang(client, auth):
+def test_analis_tak_boleh_ubah_kebijakan(client, auth):
     """
     Ambang = kebijakan risiko perusahaan, bukan preferensi analis.
 
@@ -294,8 +309,26 @@ def test_analis_tak_boleh_menggeser_ambang(client, auth):
     keputusan berbeda tergantung siapa yang menangani — ketidakkonsistenan yang
     justru jadi alasan sistem ini dibangun.
     """
-    r = client.post("/predict", json=dict(INPUT_VALID, threshold=0.8), headers=auth)
-    assert r.status_code == 403
+    assert client.put("/kebijakan/ambang", json={"ambang": 0.8}, headers=auth).status_code == 403
+
+
+def test_admin_ubah_kebijakan_tercatat_pelakunya(client, auth_admin):
+    """Auditor harus dapat menjawab: siapa yang melonggarkan ambang, dan kapan?"""
+    r = client.put("/kebijakan/ambang", json={"ambang": 0.7}, headers=auth_admin)
+    assert r.status_code == 200
+    body = r.json()
+    assert body["ambang"] == 0.7
+    assert body["diubah_oleh"] == settings.SEED_ADMIN_USER
+
+    # Kembalikan agar tidak mengganggu test lain (urutan eksekusi bisa berubah).
+    client.put("/kebijakan/ambang", json={"ambang": 0.5}, headers=auth_admin)
+
+
+def test_semua_peran_boleh_membaca_kebijakan(client, auth):
+    """Transparansi: analis berhak tahu ambang yang dipakai menilai kerjanya."""
+    r = client.get("/kebijakan/ambang", headers=auth)
+    assert r.status_code == 200
+    assert 0.2 <= r.json()["ambang"] <= 0.9
 
 
 def test_analis_tetap_bisa_menilai_tanpa_ambang(client, auth):
@@ -305,10 +338,9 @@ def test_analis_tetap_bisa_menilai_tanpa_ambang(client, auth):
     assert r.json()["threshold"] == 0.5  # ambang kebijakan yang berlaku
 
 
-def test_admin_ditolak_walau_kirim_ambang(client, auth_admin):
-    """Admin tetap ditolak menilai, sekalipun ambangnya sah."""
-    r = client.post("/predict", json=dict(INPUT_VALID, threshold=0.8), headers=auth_admin)
-    assert r.status_code == 403
+def test_admin_tetap_ditolak_menilai(client, auth_admin):
+    """Pemisahan tugas berlaku tanpa syarat."""
+    assert client.post("/predict", json=INPUT_VALID, headers=auth_admin).status_code == 403
 
 
 def test_analis_hanya_melihat_riwayatnya_sendiri(client, auth, auth_admin):
