@@ -16,37 +16,38 @@ const EMPTY_VALUES = FEATURE_KEYS.reduce((acc, key) => {
 /**
  * useNasabahForm — kelola state form "Analisis Nasabah Baru".
  *
- * Menyediakan nilai, error, dan aksi (set, isi contoh, auto-hitung rasio,
+ * Menyediakan nilai, error, dan aksi (set, isi contoh,
  * validasi, reset, bangun payload). Validasi berdasarkan featureSchema (SSOT).
  */
 export default function useNasabahForm() {
   const [values, setValues] = useState(EMPTY_VALUES);
   const [errors, setErrors] = useState({});
 
+  // Field dasar yang menentukan ketiga rasio turunan.
   const setField = useCallback((name, value) => {
-    setValues((prev) => ({ ...prev, [name]: value }));
+    setValues((prev) => {
+      const next = { ...prev, [name]: value };
+      // Rasio adalah TURUNAN: hitung ulang otomatis begitu field dasarnya
+      // berubah, tanpa efek terpisah (menghindari render-loop). Analis tidak
+      // mengetik rasio sendiri, sehingga yang tampil selalu = yang dipakai model.
+      if (name === "pendapatan_tahunan" || name === "hutang_saat_ini" || name === "jumlah_pinjaman") {
+        Object.assign(next, computeRatios(next));
+      }
+      return next;
+    });
     setErrors((prev) => {
       if (!prev[name]) return prev;
-      const next = { ...prev };
-      delete next[name];
-      return next;
+      const nx = { ...prev };
+      delete nx[name];
+      return nx;
     });
   }, []);
 
   const fillExample = useCallback(() => {
-    setValues({ ...EXAMPLE_VALUES });
+    const isi = { ...EXAMPLE_VALUES };
+    Object.assign(isi, computeRatios(isi));
+    setValues(isi);
     setErrors({});
-  }, []);
-
-  const autoCalcRatios = useCallback(() => {
-    setValues((prev) => ({ ...prev, ...computeRatios(prev) }));
-    setErrors((prev) => {
-      const next = { ...prev };
-      delete next.rasio_hutang_terhadap_pendapatan;
-      delete next.rasio_pinjaman_terhadap_pendapatan;
-      delete next.rasio_pembayaran_terhadap_pendapatan;
-      return next;
-    });
   }, []);
 
   const reset = useCallback(() => {
@@ -57,9 +58,10 @@ export default function useNasabahForm() {
   /** Validasi semua field. @returns {boolean} valid */
   const validate = useCallback(() => {
     const nextErrors = {};
-    for (const key of FEATURE_KEYS) {
-      const msg = validateField(key, values[key]);
-      if (msg) nextErrors[key] = msg;
+    for (const f of FEATURE_FIELDS) {
+      if (f.derived) continue; // rasio: turunan, tidak divalidasi manual
+      const msg = validateField(f.name, values[f.name]);
+      if (msg) nextErrors[f.name] = msg;
     }
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -72,7 +74,9 @@ export default function useNasabahForm() {
    */
   const validateGroup = useCallback(
     (groupId) => {
-      const keys = FEATURE_FIELDS.filter((f) => f.group === groupId).map((f) => f.name);
+      const keys = FEATURE_FIELDS
+        .filter((f) => f.group === groupId && !f.derived)
+        .map((f) => f.name);
       const pesan = {};
       for (const key of keys) {
         const msg = validateField(key, values[key]);
@@ -115,7 +119,6 @@ export default function useNasabahForm() {
     errors,
     setField,
     fillExample,
-    autoCalcRatios,
     reset,
     validate,
     validateGroup,

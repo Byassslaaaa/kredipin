@@ -227,6 +227,7 @@ export const FEATURE_FIELDS = [
   // --- Rasio keuangan (tak bersatuan) ---
   {
     name: "rasio_hutang_terhadap_pendapatan",
+    derived: true,
     label: "Rasio Hutang / Pendapatan",
     group: "rasio",
     type: "float",
@@ -238,6 +239,7 @@ export const FEATURE_FIELDS = [
   },
   {
     name: "rasio_pinjaman_terhadap_pendapatan",
+    derived: true,
     label: "Rasio Pinjaman / Pendapatan",
     group: "rasio",
     type: "float",
@@ -248,6 +250,7 @@ export const FEATURE_FIELDS = [
   },
   {
     name: "rasio_pembayaran_terhadap_pendapatan",
+    derived: true,
     label: "Rasio Pembayaran / Pendapatan",
     group: "rasio",
     type: "float",
@@ -312,8 +315,13 @@ export function coerceValue(name, rawValue) {
 /** Bangun payload bertipe benar dari objek nilai mentah (semua 20 fitur). */
 export function buildPayload(values) {
   const payload = {};
-  for (const key of FEATURE_KEYS) {
-    payload[key] = coerceValue(key, values[key]);
+  for (const f of FEATURE_FIELDS) {
+    // Field turunan (rasio) TIDAK dikirim: server menghitungnya sendiri dari
+    // field dasar dan mengabaikan nilai kiriman. Mengirimnya hanya berisiko
+    // (mis. blank -> 422) tanpa manfaat. Ini juga menyelaraskan payload penilaian
+    // satuan maupun batch CSV dengan sumber kebenaran di server.
+    if (f.derived) continue;
+    payload[f.name] = coerceValue(f.name, values[f.name]);
   }
   return payload;
 }

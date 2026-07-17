@@ -65,9 +65,6 @@
   color: var(--color-text-secondary);
 }
 
-.autoBtn {
-  margin-left: auto;
-}
 
 /* Dua kolom tetap (bukan auto-fit): di kontainer 920px, auto-fit menghasilkan
    3-4 kolom sempit sehingga label terpotong dan baris terasa berdesakan.
@@ -152,11 +149,6 @@
   color: var(--color-text-muted);
 }
 
-/* Ikon "Hitung otomatis" tidak boleh terdorong oleh groupCount */
-.groupCount + .autoBtn {
-  margin-left: var(--space-2);
-}
-
 .ambang {
   margin-top: var(--space-6);
   padding-top: var(--space-5);
@@ -189,3 +181,17 @@
   margin-top: 1px;
   color: var(--color-accent);
 }
+
+.rasioNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+.rasioNote svg { flex-shrink: 0; margin-top: 1px; color: var(--color-accent); }

@@ -47,7 +47,6 @@ export default function AnalisisNasabah() {
         setField={form.setField}
         onSubmit={handleSubmit}
         onFillExample={form.fillExample}
-        onAutoRatios={form.autoCalcRatios}
         onReset={form.reset}
         validateGroup={form.validateGroup}
         groupFilled={form.groupFilled}

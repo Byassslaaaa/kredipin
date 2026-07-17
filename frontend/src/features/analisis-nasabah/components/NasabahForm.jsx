@@ -52,6 +52,23 @@ function FieldControl({ field, value, error, onChange }) {
 
   const moneyPreview = field.money && value !== "" && value != null ? formatIDR(value) : null;
 
+  // Field turunan (rasio): dihitung otomatis dari field dasar, tidak diketik
+  // manual. Dibuat read-only agar yang dilihat analis = yang dipakai model
+  // (server memang mengabaikan rasio kiriman & menghitung ulang sendiri).
+  if (field.derived) {
+    return (
+      <TextField
+        type="number"
+        label={field.label}
+        value={value}
+        placeholder="otomatis"
+        disabled
+        hint={field.help || "Dihitung otomatis dari data keuangan — tidak dapat diubah."}
+        onChange={() => {}}
+      />
+    );
+  }
+
   return (
     <TextField
       type="number"
@@ -86,7 +103,6 @@ export default function NasabahForm({
   setField,
   onSubmit,
   onFillExample,
-  onAutoRatios,
   onReset,
   validateGroup,
   groupFilled,
@@ -206,22 +222,23 @@ export default function NasabahForm({
                   <Icon name={grup.icon} size={16} />
                 </span>
                 <h4 className={styles.groupTitle}>{grup.label}</h4>
-                <span className={styles.groupCount}>
-                  {terisi}/{total} terisi
-                </span>
-                {grup.id === "rasio" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    iconLeft="gauge"
-                    onClick={onAutoRatios}
-                    type="button"
-                    className={styles.autoBtn}
-                  >
-                    Hitung otomatis
-                  </Button>
+                {/* Rasio dihitung otomatis -> tidak ada hitungan "terisi". */}
+                {grup.id !== "rasio" && (
+                  <span className={styles.groupCount}>
+                    {terisi}/{total} terisi
+                  </span>
                 )}
               </div>
+
+              {grup.id === "rasio" && (
+                <p className={styles.rasioNote}>
+                  <Icon name="info" size={14} />
+                  <span>
+                    Rasio dihitung otomatis dari hutang, pinjaman, dan pendapatan yang Anda isi.
+                    Nilai ini turunan — tidak dapat diubah manual.
+                  </span>
+                </p>
+              )}
 
               <div className={styles.grid}>
                 {fields.map((field) => (

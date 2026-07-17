@@ -38,7 +38,12 @@ export function parseCsvFile(file) {
  */
 export function validateParsed(parseResult) {
   const fields = parseResult.meta?.fields?.map((f) => f.trim()) || [];
-  const missingHeaders = FEATURE_KEYS.filter((k) => !fields.includes(k));
+
+  // Field turunan (rasio) TIDAK wajib ada di CSV dan tidak divalidasi: server
+  // menghitungnya sendiri dari field dasar. Kolom rasio yang tetap disertakan
+  // (mis. dari template lama) diterima, hanya diabaikan.
+  const requiredKeys = FEATURE_FIELDS.filter((f) => !f.derived).map((f) => f.name);
+  const missingHeaders = requiredKeys.filter((k) => !fields.includes(k));
   const extraHeaders = fields.filter((f) => !FEATURE_KEYS.includes(f));
 
   const validRows = [];
@@ -48,7 +53,7 @@ export function validateParsed(parseResult) {
     parseResult.data.forEach((raw, i) => {
       const rowNumber = i + 2; // +1 header, +1 indeks-1
       const errors = {};
-      for (const key of FEATURE_KEYS) {
+      for (const key of requiredKeys) {
         const msg = validateField(key, raw[key]);
         if (msg) errors[key] = msg;
       }
@@ -69,13 +74,16 @@ export function validateParsed(parseResult) {
   };
 }
 
-/** CSV template: header fitur + satu baris contoh. */
+/** Kolom input yang benar-benar dikirim (tanpa rasio turunan). */
+const INPUT_KEYS = FEATURE_FIELDS.filter((f) => !f.derived).map((f) => f.name);
+
+/** CSV template: header fitur + satu baris contoh (tanpa rasio — dihitung server). */
 export function buildTemplateCsv() {
-  const exampleRow = FEATURE_FIELDS.reduce((acc, f) => {
+  const exampleRow = FEATURE_FIELDS.filter((f) => !f.derived).reduce((acc, f) => {
     acc[f.name] = f.example;
     return acc;
   }, {});
-  return Papa.unparse({ fields: FEATURE_KEYS, data: [exampleRow] });
+  return Papa.unparse({ fields: INPUT_KEYS, data: [exampleRow] });
 }
 
 /**
@@ -83,12 +91,12 @@ export function buildTemplateCsv() {
  * @param results hasil dari useBatchPredict (Array<{ input, ok, result, error }>)
  */
 export function buildResultsCsv(results) {
-  const fields = [...FEATURE_KEYS, "keputusan", "probabilitas_layak", "confidence", "status"];
+  const fields = [...INPUT_KEYS, "keputusan", "probabilitas_layak", "confidence", "status"];
   const data = results
     .filter(Boolean)
     .map((r) => {
       const base = {};
-      for (const key of FEATURE_KEYS) base[key] = r.input?.[key];
+      for (const key of INPUT_KEYS) base[key] = r.input?.[key];
       if (r.ok) {
         base.keputusan = r.result.keputusan;
         base.probabilitas_layak = r.result.probabilitas_layak;

@@ -1,4 +1,5 @@
 import { Alert, Badge, Card, Icon, Table } from "@/components/ui";
+import { useAuth } from "@/features/auth/AuthContext";
 import { FEATURE_FIELDS } from "@/constants/featureSchema";
 import { APP } from "@/constants/app";
 import styles from "./Dokumentasi.module.css";
@@ -6,7 +7,7 @@ import styles from "./Dokumentasi.module.css";
 const STEPS_ANALISIS = [
   "Buka menu Analisis Nasabah Baru.",
   "Lengkapi 20 field data pengajuan (nilai uang dalam Rupiah). Gunakan “Isi Contoh” untuk demo.",
-  "Opsional: sesuaikan Ambang Keputusan, atau klik “Hitung otomatis” untuk mengisi rasio.",
+  "Rasio keuangan dihitung otomatis dari data yang Anda isi (tidak perlu diketik).",
   "Klik “Prediksi Kelayakan”. Panel hasil menampilkan keputusan, probabilitas, 5 faktor, dan disclaimer.",
 ];
 
@@ -31,6 +32,11 @@ function aturanText(f) {
 }
 
 export default function Dokumentasi() {
+  const { user } = useAuth();
+  // Detail teknis model (metodologi, kontrak API, catatan teknis) adalah ranah
+  // admin/tim risiko — selaras dengan Eksplorasi/Performa yang juga admin-only.
+  // Analis tetap melihat cara pakai + referensi field yang ia isi.
+  const admin = user?.peran === "admin";
   return (
     <div className={styles.page}>
       <Card icon="info" title={`Tentang ${APP.name}`} subtitle={APP.tagline}>
@@ -66,6 +72,7 @@ export default function Dokumentasi() {
         </Card>
       </div>
 
+      {admin && (
       <Card icon="gauge" title="Metodologi Model" subtitle="Ringkasan pendekatan machine learning">
         <ul className={styles.bullets}>
           <li><strong>Dataset:</strong> 50.000 baris data pinjaman (sektor pembiayaan), nilai uang dikonversi ke IDR (kurs 18.000).</li>
@@ -79,6 +86,7 @@ export default function Dokumentasi() {
           metrik tampak sangat tinggi. Pada data nyata, hubungan biasanya tidak sebersih ini.
         </Alert>
       </Card>
+      )}
 
       <Card icon="file-text" title="Referensi Fitur Model" subtitle="20 fitur input (sesuai kontrak API)" padding="none">
         <div className={styles.tableScroll}>
@@ -96,6 +104,8 @@ export default function Dokumentasi() {
         </div>
       </Card>
 
+      {admin && (
+      <>
       <Card icon="database" title="Kontrak API" subtitle="Endpoint backend FastAPI" padding="none">
         <Table
           data={ENDPOINTS}
@@ -123,6 +133,8 @@ export default function Dokumentasi() {
           <li>Setiap prediksi tersimpan ke riwayat (SQLite) dan dapat ditinjau di menu Riwayat.</li>
         </ul>
       </Card>
+      </>
+      )}
 
       <Alert variant="info" icon="info" title="Disclaimer">
         Hasil prediksi merupakan alat bantu pengambilan keputusan berbasis model statistik, BUKAN
