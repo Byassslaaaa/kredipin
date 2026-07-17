@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import RequireAuth from "@/features/auth/RequireAuth";
+import RequireRole from "@/features/auth/RequireRole";
 import { ROUTES } from "@/constants/navigation";
 
 // Code-splitting: tiap halaman dimuat sebagai chunk terpisah (lazy) agar bundle
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
         path: ROUTES.beranda,
         element: <DashboardLayout />,
         children: [
+          {
+            // Lapisan kedua: tolak rute yang bukan hak peran ini (URL langsung).
+            element: <RequireRole />,
+            children: [
           { index: true, element: <Beranda /> },
           { path: ROUTES.analisis, element: <AnalisisNasabah /> },
           { path: ROUTES.importData, element: <ImportData /> },
@@ -43,7 +48,9 @@ export const router = createBrowserRouter([
           { path: ROUTES.dokumentasi, element: <Dokumentasi /> },
           { path: "dev/ui", element: <UIShowcase /> },
           { path: "dev/api", element: <ApiDemo /> },
-          { path: "*", element: <NotFound /> },
+              { path: "*", element: <NotFound /> },
+            ],
+          },
         ],
       },
     ],

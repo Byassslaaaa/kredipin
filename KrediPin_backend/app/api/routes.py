@@ -104,6 +104,21 @@ async def predict_endpoint(
 
     Alur: validasi (Pydantic) -> inferensi model -> simpan riwayat -> kembalikan hasil.
     """
+    # Segregation of duties: penilaian kredit adalah wewenang ANALIS.
+    #
+    # Admin memegang kendali sistem (ambang, pengguna, pemantauan). Bila ia juga
+    # dapat menilai, satu orang bisa menyetel ambang lalu meloloskan pengajuan
+    # dengan ambang yang ia buat sendiri — kendali internal jadi tak berarti.
+    # Inilah alasan bank memisahkan "yang mengatur aturan" dari "yang memutus".
+    if user.peran == "admin":
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Penilaian kredit adalah wewenang analis. Admin mengelola sistem dan "
+                "kebijakan, tidak memutus pengajuan (pemisahan tugas)."
+            ),
+        )
+
     # Ambang keputusan = KEBIJAKAN RISIKO perusahaan, bukan preferensi individu.
     #
     # Bila tiap analis bebas menggeser ambang, dua nasabah dengan profil identik

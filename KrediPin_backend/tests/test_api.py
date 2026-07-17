@@ -85,13 +85,15 @@ def test_predict_valid(client, auth):
     assert body["id_riwayat"] is not None
 
 
-def test_predict_threshold_override(client, auth_admin):
-    # 0.8 dalam rentang kebijakan (0.2-0.9). Memakai admin: sejak pemisahan
-    # peran, hanya admin yang boleh menggeser ambang.
-    payload = dict(INPUT_VALID, threshold=0.8)
-    r = client.post("/predict", json=payload, headers=auth_admin)
-    assert r.status_code == 200
-    assert r.json()["threshold"] == 0.8
+def test_admin_tak_boleh_menilai_kredit(client, auth_admin):
+    """
+    Segregation of duties: admin mengatur sistem, analis memutus kredit.
+
+    Bila admin bisa menyetel ambang SEKALIGUS meloloskan pengajuan, kendali
+    internal jadi tak berarti — satu orang mengendalikan aturan dan hasilnya.
+    """
+    r = client.post("/predict", json=INPUT_VALID, headers=auth_admin)
+    assert r.status_code == 403
 
 
 @pytest.mark.parametrize("nilai", [0.0, 0.1, 0.95, 1.0])
@@ -135,14 +137,16 @@ def test_rasio_kiriman_klien_diabaikan(client, auth):
     assert ngawur["probabilitas_layak"] == jujur["probabilitas_layak"]
 
 
-def test_confidence_mengikuti_keputusan(client, auth_admin):
+def test_confidence_mengikuti_keputusan(client, auth):
     """
     confidence harus menyatakan keyakinan pada KEPUTUSAN YANG DIAMBIL.
 
     Regresi: rumus lama max(p, 1-p) mengukur keyakinan pada argmax (0.5),
     sehingga salah arti begitu ambang digeser.
     """
-    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9), headers=auth_admin).json()
+    # Ambang tidak dikirim: analis memakai ambang kebijakan. Rumus confidence
+    # tetap harus konsisten dengan keputusan yang diambil.
+    body = client.post("/predict", json=INPUT_VALID, headers=auth).json()
     p = body["probabilitas_layak"]
     harapan = p if body["keputusan"] == "Layak" else 1.0 - p
     assert abs(body["confidence"] - harapan) < 1e-4
@@ -301,10 +305,10 @@ def test_analis_tetap_bisa_menilai_tanpa_ambang(client, auth):
     assert r.json()["threshold"] == 0.5  # ambang kebijakan yang berlaku
 
 
-def test_admin_boleh_menggeser_ambang(client, auth_admin):
+def test_admin_ditolak_walau_kirim_ambang(client, auth_admin):
+    """Admin tetap ditolak menilai, sekalipun ambangnya sah."""
     r = client.post("/predict", json=dict(INPUT_VALID, threshold=0.8), headers=auth_admin)
-    assert r.status_code == 200
-    assert r.json()["threshold"] == 0.8
+    assert r.status_code == 403
 
 
 def test_analis_hanya_melihat_riwayatnya_sendiri(client, auth, auth_admin):
@@ -312,7 +316,6 @@ def test_analis_hanya_melihat_riwayatnya_sendiri(client, auth, auth_admin):
     Need-to-know: analis tidak boleh melihat keputusan kredit analis lain.
     Filter diterapkan dari identitas token, bukan parameter dari klien.
     """
-    client.post("/predict", json=INPUT_VALID, headers=auth_admin)
     client.post("/predict", json=INPUT_VALID, headers=auth)
 
     r = client.get("/history?limit=100", headers=auth)

@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import Icon from "@/components/ui/Icon";
-import { NAV_GROUPS } from "@/constants/navigation";
+import { navUntukPeran } from "@/constants/navigation";
+import { useAuth } from "@/features/auth/AuthContext";
 import { APP } from "@/constants/app";
 import styles from "./Sidebar.module.css";
 
@@ -10,6 +11,7 @@ import styles from "./Sidebar.module.css";
  * - Mobile: tampil sebagai drawer (dikontrol prop `open`), ditutup saat item diklik.
  */
 export default function Sidebar({ open, onNavigate }) {
+  const { user } = useAuth();
   return (
     <aside
       className={`${styles.sidebar} ${open ? styles.open : ""}`}
@@ -26,7 +28,7 @@ export default function Sidebar({ open, onNavigate }) {
       </div>
 
       <nav className={styles.nav}>
-        {NAV_GROUPS.map((group) => (
+        {navUntukPeran(user?.peran).map((group) => (
           <div key={group.label} className={styles.group}>
             <p className={styles.groupLabel}>{group.label}</p>
             <ul>
