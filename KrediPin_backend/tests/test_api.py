@@ -249,6 +249,17 @@ def test_login_salah_password(client):
     assert r.status_code == 401
 
 
+@pytest.mark.parametrize("pw", ["x", "pendek", "salahlagi", "sangatpanjangsekaliiii"])
+def test_login_semua_salah_seragam_401(client, pw):
+    """
+    Regresi: kredensial salah harus SELALU 401, apa pun panjang passwordnya.
+    Sebelumnya password <6 char kena min_length -> 422, membocorkan kebijakan
+    panjang dan membuat respons tidak seragam.
+    """
+    r = client.post("/auth/login", json={"username": settings.SEED_ANALIS_USER, "password": pw})
+    assert r.status_code == 401
+
+
 def test_login_username_tidak_ada_pesannya_sama(client):
     """
     Pesan galat harus IDENTIK dengan kasus password salah — membedakannya akan

@@ -220,8 +220,14 @@ class LoginRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    username: str = Field(..., min_length=3, max_length=64)
-    password: str = Field(..., min_length=6, max_length=128)
+    # Login SENGAJA tidak memvalidasi format password (hanya batas atas untuk
+    # cegah payload raksasa). Memvalidasi panjang minimum di sini akan:
+    #   (a) membocorkan kebijakan panjang password (422 utk pendek, 401 utk salah),
+    #   (b) tidak konsisten dengan aturan pembuatan user (min 8),
+    #   (c) tak berguna — password tetap diperiksa terhadap hash.
+    # Semua kredensial salah kini seragam mengembalikan 401.
+    username: str = Field(..., min_length=1, max_length=64)
+    password: str = Field(..., min_length=1, max_length=256)
 
 
 class UserInfo(BaseModel):
