@@ -65,7 +65,7 @@ export default function Login() {
           transition={{ duration: 0.5, ease: EASE }}
         >
           <div className={styles.merek}>
-            <img src="/favicon-32x32.png" alt="" className={styles.logo} width={32} height={32} />
+            <img src="/brand/logo-white.png" alt="" className={styles.logo} width={34} height={34} />
             <span className={styles.merekNama}>{APP.name}</span>
           </div>
 

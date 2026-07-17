@@ -32,6 +32,14 @@
   flex-shrink: 0;
 }
 
+/* Logo KrediPin (mark putih) di dalam chip primary — kontras di light & dark. */
+.logoImg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
 .brandText {
   display: flex;
   flex-direction: column;

@@ -19,7 +19,7 @@ export default function Sidebar({ open, onNavigate }) {
     >
       <div className={styles.brand}>
         <span className={styles.logo} aria-hidden="true">
-          <Icon name="shield-check" size={22} />
+          <img src="/brand/logo-white.png" alt="" className={styles.logoImg} width={22} height={22} />
         </span>
         <span className={styles.brandText}>
           <span className={styles.brandName}>{APP.name}</span>

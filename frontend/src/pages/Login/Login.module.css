@@ -49,10 +49,10 @@
   gap: var(--space-3);
 }
 
-/* Logo berlatar putih -> beri sudut membulat agar menyatu, bukan tampak
-   sebagai kotak tempelan di atas bidang gelap. */
+/* Logo KrediPin (mark putih) langsung di atas panel gelap (--zinc-950). */
 .logo {
-  border-radius: var(--radius-sm);
+  display: block;
+  object-fit: contain;
 }
 
 .merekNama {
