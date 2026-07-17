@@ -68,10 +68,64 @@ def test_predict_valid(client):
 
 
 def test_predict_threshold_override(client):
-    payload = dict(INPUT_VALID, threshold=0.99)
+    # 0.8 masih dalam rentang kebijakan yang diizinkan (0.2-0.9).
+    payload = dict(INPUT_VALID, threshold=0.8)
     r = client.post("/predict", json=payload)
     assert r.status_code == 200
-    assert r.json()["threshold"] == 0.99
+    assert r.json()["threshold"] == 0.8
+
+
+@pytest.mark.parametrize("nilai", [0.0, 0.1, 0.95, 1.0])
+def test_predict_threshold_ekstrem_ditolak(client, nilai):
+    """
+    Ambang ekstrem harus ditolak.
+
+    Regresi untuk celah keamanan: `threshold=0.0` membuat SEMUA pengajuan
+    dinyatakan Layak (probabilitas >= 0 selalu benar), sehingga model
+    ter-bypass total dan nasabah berisiko tinggi pun lolos.
+    """
+    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai))
+    assert r.status_code == 422
+
+
+def test_rasio_kiriman_klien_diabaikan(client):
+    """
+    Regresi untuk celah keamanan: rasio adalah nilai TURUNAN, sehingga nilai
+    kiriman klien harus diabaikan dan dihitung ulang di server.
+
+    Sebelum diperbaiki, mengirim rasio_hutang yang mengada-ada membalik
+    keputusan dari Layak (100%) menjadi Tidak Layak (0.3%) pada nasabah yang
+    datanya sama persis.
+    """
+    jujur = client.post("/predict", json=INPUT_VALID).json()
+
+    # Kirim rasio yang bertentangan total dengan field dasarnya.
+    ngawur = client.post(
+        "/predict",
+        json=dict(
+            INPUT_VALID,
+            rasio_hutang_terhadap_pendapatan=9.9,
+            rasio_pinjaman_terhadap_pendapatan=49.0,
+            rasio_pembayaran_terhadap_pendapatan=9.9,
+        ),
+    ).json()
+
+    # Hasil harus IDENTIK: rasio kiriman tidak berpengaruh sama sekali.
+    assert ngawur["keputusan"] == jujur["keputusan"]
+    assert ngawur["probabilitas_layak"] == jujur["probabilitas_layak"]
+
+
+def test_confidence_mengikuti_keputusan(client):
+    """
+    confidence harus menyatakan keyakinan pada KEPUTUSAN YANG DIAMBIL.
+
+    Regresi: rumus lama max(p, 1-p) mengukur keyakinan pada argmax (0.5),
+    sehingga salah arti begitu ambang digeser.
+    """
+    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9)).json()
+    p = body["probabilitas_layak"]
+    harapan = p if body["keputusan"] == "Layak" else 1.0 - p
+    assert abs(body["confidence"] - harapan) < 1e-4
 
 
 def test_predict_invalid_enum(client):

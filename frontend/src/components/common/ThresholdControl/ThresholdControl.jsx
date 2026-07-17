@@ -21,6 +21,9 @@ export default function ThresholdControl({
   const active = !hasToggle || enabled; // slider aktif?
   const sliderDisabled = disabled || !active;
   const pct = Math.round(value * 100);
+  // Posisi isian slider relatif terhadap rentang efektif (0.2-0.9), bukan 0-1,
+  // agar warna terisi sejajar dengan posisi thumb.
+  const isian = Math.round(((value - 0.2) / (0.9 - 0.2)) * 100);
 
   return (
     <div className={styles.wrap}>
@@ -55,14 +58,16 @@ export default function ThresholdControl({
           )}
           <input
             type="range"
-            min={0}
-            max={1}
+            // Rentang mengikuti kebijakan backend (0.2-0.9): di luar itu ditolak
+            // 422 karena ambang 0 meloloskan semua & 1 menolak semua (bypass model).
+            min={0.2}
+            max={0.9}
             step={0.01}
             value={value}
             disabled={sliderDisabled}
             onChange={(e) => onChange(Number(e.target.value))}
             className={styles.slider}
-            style={{ "--pct": `${pct}%` }}
+            style={{ "--pct": `${isian}%` }}
             aria-label="Ambang keputusan"
             aria-valuetext={formatPercent(value)}
           />

@@ -78,24 +78,88 @@ class PredictRequest(BaseModel):
     jumlah_pinjaman: float = Field(..., ge=0, le=10_000_000_000, description="IDR")
     suku_bunga: float = Field(..., ge=0, le=100, description="Persen per tahun")
 
-    # --- Rasio (tak bersatuan) ---
-    rasio_hutang_terhadap_pendapatan: float = Field(..., ge=0, le=10)
-    rasio_pinjaman_terhadap_pendapatan: float = Field(..., ge=0, le=50)
-    rasio_pembayaran_terhadap_pendapatan: float = Field(..., ge=0, le=10)
+    # --- Rasio: DIABAIKAN bila dikirim (dihitung server) ---
+    #
+    # Dipertahankan sebagai field opsional demi kompatibilitas: klien lama dan
+    # berkas CSV yang masih memuat kolom rasio tetap diterima (tidak 422).
+    # Nilainya SELALU ditimpa oleh hitung_rasio() di features(), sehingga tidak
+    # dapat dipakai memanipulasi keputusan. Akan dihapus pada versi berikutnya.
+    rasio_hutang_terhadap_pendapatan: Optional[float] = Field(
+        default=None, deprecated=True, description="Diabaikan — dihitung server."
+    )
+    rasio_pinjaman_terhadap_pendapatan: Optional[float] = Field(
+        default=None, deprecated=True, description="Diabaikan — dihitung server."
+    )
+    rasio_pembayaran_terhadap_pendapatan: Optional[float] = Field(
+        default=None, deprecated=True, description="Diabaikan — dihitung server."
+    )
 
     # --- Fitur sintetik (Tahap 1) ---
     tenor_bulan: TenorBulan
     jaminan: Jaminan
 
     # --- Override ambang keputusan (opsional) ---
+    #
+    # Rentang SENGAJA dibatasi 0.2-0.9, bukan 0.0-1.0. Ambang 0.0 membuat SEMUA
+    # pengajuan dinyatakan Layak (probabilitas >= 0 selalu benar) sehingga model
+    # ter-bypass total; 1.0 menolak semuanya. Keduanya tidak punya makna bisnis
+    # dan merupakan celah pemaksaan keputusan dari sisi klien.
     threshold: Optional[float] = Field(
-        default=None, ge=0.0, le=1.0,
-        description="Override ambang keputusan; bila kosong pakai default config (0.5).",
+        default=None, ge=0.2, le=0.9,
+        description=(
+            "Override ambang keputusan (0.2-0.9). Kosong = pakai default config (0.5). "
+            "Nilai ekstrem ditolak agar model tidak dapat di-bypass."
+        ),
     )
 
     def features(self) -> dict:
-        """Ambil hanya field fitur model (tanpa threshold) untuk inferensi."""
-        return self.model_dump(exclude={"threshold"})
+        """
+        Fitur untuk inferensi: field yang dikirim klien + rasio yang DIHITUNG
+        server. Rasio sengaja tidak diterima sebagai input (lihat _rasio).
+        """
+        data = self.model_dump(exclude={"threshold"})
+        data.update(hitung_rasio(data))
+        return data
+
+
+def hitung_rasio(f: dict) -> dict:
+    """
+    Turunkan ketiga rasio dari field dasar.
+
+    Formula diverifikasi terhadap 5.000 baris `data.csv` (cocok 5.000/5.000),
+    sehingga nilainya identik dengan yang dilihat model saat pelatihan:
+      - rasio_hutang    = hutang_saat_ini / pendapatan_tahunan
+      - rasio_pinjaman  = jumlah_pinjaman / pendapatan_tahunan
+      - rasio_pembayaran= (jumlah_pinjaman / 3) / pendapatan_tahunan
+        (dataset mengasumsikan pelunasan 3 tahun tetap, tanpa komponen bunga)
+
+    KENAPA dihitung di server, bukan diterima dari klien: ketiganya adalah nilai
+    TURUNAN. Saat diterima sebagai input bebas, klien dapat mengirim rasio yang
+    bertentangan dengan field dasarnya dan membalik keputusan — padahal
+    rasio_hutang adalah fitur terpenting ke-3 pada model.
+    """
+    pendapatan = float(f.get("pendapatan_tahunan") or 0)
+    hutang = float(f.get("hutang_saat_ini") or 0)
+    pinjaman = float(f.get("jumlah_pinjaman") or 0)
+
+    if pendapatan <= 0:
+        # Pendapatan 0 -> rasio tak terdefinisi. Pakai batas atas rentang agar
+        # tetap terbaca sebagai kondisi berisiko tinggi, bukan 0 (yang justru
+        # akan tampak sangat sehat bagi model).
+        return {
+            "rasio_hutang_terhadap_pendapatan": 10.0 if hutang > 0 else 0.0,
+            "rasio_pinjaman_terhadap_pendapatan": 50.0 if pinjaman > 0 else 0.0,
+            "rasio_pembayaran_terhadap_pendapatan": 10.0 if pinjaman > 0 else 0.0,
+        }
+
+    def batas(nilai: float, maks: float) -> float:
+        return round(min(max(nilai, 0.0), maks), 4)
+
+    return {
+        "rasio_hutang_terhadap_pendapatan": batas(hutang / pendapatan, 10),
+        "rasio_pinjaman_terhadap_pendapatan": batas(pinjaman / pendapatan, 50),
+        "rasio_pembayaran_terhadap_pendapatan": batas((pinjaman / 3) / pendapatan, 10),
+    }
 
 
 class Faktor(BaseModel):

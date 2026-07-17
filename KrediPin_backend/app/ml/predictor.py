@@ -88,8 +88,18 @@ def predict(features: dict, art: ModelArtifacts, threshold: float | None = None)
 
         # 1) Probabilitas kelas "Layak" (1)
         proba_layak = float(art.pipeline.predict_proba(X)[:, 1][0])
-        keputusan = "Layak" if proba_layak >= thr else "Tidak Layak"
-        confidence = round(max(proba_layak, 1.0 - proba_layak), 4)
+        layak = proba_layak >= thr
+        keputusan = "Layak" if layak else "Tidak Layak"
+
+        # Confidence = keyakinan pada KEPUTUSAN YANG DIAMBIL.
+        #
+        # Sebelumnya memakai max(p, 1-p), yang sebenarnya mengukur keyakinan pada
+        # keputusan argmax (ambang 0.5) — bukan pada keputusan hasil ambang.
+        # Akibatnya, begitu ambang digeser dari 0.5, angkanya salah arti: pada
+        # ambang 0.2 dengan p=0.03 keputusannya "Tidak Layak" namun confidence
+        # terbaca 97% seolah yakin "Layak".
+        # Pada ambang 0.5 hasilnya identik dengan rumus lama (kompatibel).
+        confidence = round(proba_layak if layak else 1.0 - proba_layak, 4)
 
         # 2) Faktor pendukung via SHAP (pred_contribs)
         faktor = _hitung_faktor(X, features, art)
