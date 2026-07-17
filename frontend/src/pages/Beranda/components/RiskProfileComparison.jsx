@@ -2,7 +2,7 @@ import { formatIDR, formatNumber, formatPercent } from "@/utils/format";
 import styles from "./RiskProfileComparison.module.css";
 
 /**
- * RiskProfileComparison — tabel perbandingan profil rata-rata antara nasabah
+ * RiskProfileComparison - tabel perbandingan profil rata-rata antara nasabah
  * "Layak" dan "Tidak Layak", menggabungkan KPI risiko & insight bisnis.
  */
 export default function RiskProfileComparison({ kpi, bisnis }) {

@@ -1,8 +1,8 @@
 /**
- * tokenStore — satu-satunya tempat token sesi disimpan & dibaca.
+ * tokenStore - satu-satunya tempat token sesi disimpan & dibaca.
  *
  * Dipisah dari authService agar apiClient dapat menyisipkan token TANPA
- * mengimpor authService — authService sendiri memakai apiClient, sehingga
+ * mengimpor authService - authService sendiri memakai apiClient, sehingga
  * saling-impor akan menciptakan circular dependency.
  *
  * Catatan keamanan: token disimpan di localStorage agar sesi bertahan saat

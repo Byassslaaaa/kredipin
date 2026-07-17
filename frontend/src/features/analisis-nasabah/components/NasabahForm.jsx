@@ -63,7 +63,7 @@ function FieldControl({ field, value, error, onChange }) {
         value={value}
         placeholder="otomatis"
         disabled
-        hint={field.help || "Dihitung otomatis dari data keuangan — tidak dapat diubah."}
+        hint={field.help || "Dihitung otomatis dari data keuangan - tidak dapat diubah."}
         onChange={() => {}}
       />
     );
@@ -89,7 +89,7 @@ function FieldControl({ field, value, error, onChange }) {
 }
 
 /**
- * NasabahForm — wizard bertahap pengisian 20 fitur model.
+ * NasabahForm - wizard bertahap pengisian 20 fitur model.
  *
  * Alur dipecah mengikuti pengelompokan fitur (5 langkah) agar tidak menyodorkan
  * 20 field sekaligus. Validasi dijalankan PER LANGKAH sehingga pengguna hanya
@@ -111,7 +111,7 @@ export default function NasabahForm({
 }) {
   const kurangiGerak = useReducedMotion();
   const [langkah, setLangkah] = useState(0);
-  // Arah transisi: +1 maju, -1 mundur — agar slide-nya terasa logis.
+  // Arah transisi: +1 maju, -1 mundur - agar slide-nya terasa logis.
   const [arah, setArah] = useState(1);
 
   // Langkah 0..N-1 = grup fitur, langkah N = Hasil Kelayakan.
@@ -145,7 +145,7 @@ export default function NasabahForm({
     if (langkah > 0) keLangkah(langkah - 1, -1);
   };
 
-  /** Lompat langsung lewat Stepper — hanya ke langkah yang sudah dilewati. */
+  /** Lompat langsung lewat Stepper - hanya ke langkah yang sudah dilewati. */
   const lompat = (i) => {
     if (i < langkah) keLangkah(i, -1);
   };
@@ -184,7 +184,7 @@ export default function NasabahForm({
           </div>
         </div>
 
-        {/* Indikator langkah — juga sebagai navigasi mundur */}
+        {/* Indikator langkah - juga sebagai navigasi mundur */}
         <div className={styles.stepperWrap}>
           <Stepper
             steps={[...FEATURE_GROUPS.map((g) => LABEL_LANGKAH[g.id] || g.label), "Hasil"]}
@@ -235,7 +235,7 @@ export default function NasabahForm({
                   <Icon name="info" size={14} />
                   <span>
                     Rasio dihitung otomatis dari hutang, pinjaman, dan pendapatan yang Anda isi.
-                    Nilai ini turunan — tidak dapat diubah manual.
+                    Nilai ini turunan - tidak dapat diubah manual.
                   </span>
                 </p>
               )}

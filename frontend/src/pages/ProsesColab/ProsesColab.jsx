@@ -6,7 +6,7 @@ import { getPipeline } from "@/services/dashboardService";
 import styles from "./ProsesColab.module.css";
 
 /**
- * Penjelasan singkat tiap tahap notebook — melengkapi kode & output dengan
+ * Penjelasan singkat tiap tahap notebook - melengkapi kode & output dengan
  * konteks "mengapa", tanpa mengubah satu angka pun dari Colab.
  * Kunci = nomor tahap pada notebook.
  */
@@ -18,12 +18,12 @@ const KETERANGAN = {
   4: "Membangun Pipeline scikit-learn (impute, one-hot) dan memisahkan data latih/uji secara stratified.",
   5: "Melatih XGBClassifier pada data latih.",
   6: "Mengukur performa pada data uji yang tidak pernah dilihat model saat pelatihan.",
-  7: "Mengukur fitur paling berpengaruh — dasar interpretasi sistem.",
+  7: "Mengukur fitur paling berpengaruh - dasar interpretasi sistem.",
   8: "Menjalankan model pada seluruh data untuk menghasilkan berkas analitik dashboard.",
   9: "Menyimpan artefak model agar dapat dilayani API tanpa melatih ulang.",
 };
 
-/** Tombol salin kode — memberi umpan balik singkat setelah disalin. */
+/** Tombol salin kode - memberi umpan balik singkat setelah disalin. */
 function TombolSalin({ teks }) {
   const [tersalin, setTersalin] = useState(false);
 
@@ -33,7 +33,7 @@ function TombolSalin({ teks }) {
       setTersalin(true);
       setTimeout(() => setTersalin(false), 1600);
     } catch {
-      // Clipboard diblokir (mis. konteks non-HTTPS) — abaikan diam-diam.
+      // Clipboard diblokir (mis. konteks non-HTTPS) - abaikan diam-diam.
     }
   };
 
@@ -50,7 +50,7 @@ function BlokKode({ kode, terpotong }) {
   return (
     <div className={styles.blok}>
       <div className={styles.blokHead}>
-        <span className={styles.blokLabel}>Kode — Python</span>
+        <span className={styles.blokLabel}>Kode - Python</span>
         <TombolSalin teks={kode} />
       </div>
       <pre className={styles.kode}>
@@ -76,7 +76,7 @@ function BlokOutput({ output, terpotong, punyaGambar }) {
       <pre className={styles.output}>{output}</pre>
       {terpotong && (
         <p className={styles.catatan}>
-          Output dipotong agar ringkas — lihat notebook untuk keluaran penuh.
+          Output dipotong agar ringkas - lihat notebook untuk keluaran penuh.
         </p>
       )}
     </div>
@@ -133,12 +133,12 @@ function LoadingView() {
 }
 
 /**
- * ProsesColab — dokumentasi tahapan pemrosesan data pada notebook Google Colab,
+ * ProsesColab - dokumentasi tahapan pemrosesan data pada notebook Google Colab,
  * lengkap dengan KODE dan OUTPUT EKSEKUSI ASLINYA.
  *
  * Data dibaca dari public/data/pipeline.json yang diekstrak langsung dari
  * SIAB_DASD.ipynb saat build (`npm run prepare-data`), sehingga halaman ini
- * selalu sinkron dengan notebook — tidak ada kode/angka yang disalin manual.
+ * selalu sinkron dengan notebook - tidak ada kode/angka yang disalin manual.
  */
 export default function ProsesColab() {
   const fetcher = useCallback((opts) => getPipeline(opts), []);
@@ -163,7 +163,7 @@ export default function ProsesColab() {
     <div className={styles.page}>
       <Alert variant="info" icon="info">
         Kode dan output di bawah diekstrak langsung dari notebook{" "}
-        <strong>{data.sumber}</strong>. Keduanya ditampilkan apa adanya sebagai dokumentasi —
+        <strong>{data.sumber}</strong>. Keduanya ditampilkan apa adanya sebagai dokumentasi -
         bukan ditulis ulang, sehingga selalu sinkron dengan Google Colab.
       </Alert>
 

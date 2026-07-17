@@ -3,7 +3,7 @@ import { BarChart } from "@/components/charts";
 import { getChartColors } from "@/components/charts/chartTheme";
 
 /**
- * CategoryDistribution — kartu distribusi sebuah fitur kategorikal,
+ * CategoryDistribution - kartu distribusi sebuah fitur kategorikal,
  * dipisah menurut keputusan (Layak vs Tidak Layak) sebagai bar bertumpuk horizontal.
  *
  * Props:

@@ -3,7 +3,7 @@ import PageLoader from "@/components/common/PageLoader";
 import { useAuth } from "./AuthContext";
 
 /**
- * RequireAuth — gerbang rute terproteksi.
+ * RequireAuth - gerbang rute terproteksi.
  *
  * Menahan render sampai pemulihan sesi selesai. Tanpa penahanan ini, pengguna
  * yang sudah login akan terlempar sesaat ke /login saat refresh, karena

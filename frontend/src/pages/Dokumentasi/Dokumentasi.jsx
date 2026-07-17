@@ -34,7 +34,7 @@ function aturanText(f) {
 export default function Dokumentasi() {
   const { user } = useAuth();
   // Detail teknis model (metodologi, kontrak API, catatan teknis) adalah ranah
-  // admin/tim risiko — selaras dengan Eksplorasi/Performa yang juga admin-only.
+  // admin/tim risiko - selaras dengan Eksplorasi/Performa yang juga admin-only.
   // Analis tetap melihat cara pakai + referensi field yang ia isi.
   const admin = user?.peran === "admin";
   return (
@@ -44,12 +44,12 @@ export default function Dokumentasi() {
           {APP.name} adalah sistem pendukung keputusan yang memprediksi kelayakan pengajuan pinjaman
           (<strong>Layak / Tidak Layak</strong>) beserta probabilitas dan faktor pendukungnya. Tujuannya
           mempercepat dan menstandarkan penilaian kredit agar konsisten, objektif, dan transparan.
-          Output bersifat <strong>alat bantu</strong> bagi analis/komite kredit — bukan keputusan akhir.
+          Output bersifat <strong>alat bantu</strong> bagi analis/komite kredit - bukan keputusan akhir.
         </p>
       </Card>
 
       <div className={styles.twoCol}>
-        <Card icon="user-plus" title="Cara Pakai — Analisis Nasabah Baru" subtitle="Prediksi satu nasabah">
+        <Card icon="user-plus" title="Cara Pakai - Analisis Nasabah Baru" subtitle="Prediksi satu nasabah">
           <ol className={styles.steps}>
             {STEPS_ANALISIS.map((s, i) => (
               <li key={i}>
@@ -60,7 +60,7 @@ export default function Dokumentasi() {
           </ol>
         </Card>
 
-        <Card icon="upload" title="Cara Pakai — Import Data Nasabah" subtitle="Prediksi banyak nasabah (CSV)">
+        <Card icon="upload" title="Cara Pakai - Import Data Nasabah" subtitle="Prediksi banyak nasabah (CSV)">
           <ol className={styles.steps}>
             {STEPS_IMPORT.map((s, i) => (
               <li key={i}>
@@ -129,7 +129,7 @@ export default function Dokumentasi() {
         <ul className={styles.bullets}>
           <li>Seluruh nilai uang dalam <strong>Rupiah (IDR)</strong>; tidak ada konversi ganda di sisi klien.</li>
           <li><strong>Ambang keputusan</strong> default 0,5 dan dapat di-override per prediksi (probabilitas ≥ ambang → Layak).</li>
-          <li>Prediksi batch (Import) menjalankan endpoint <code>POST /predict</code> berulang dari sisi klien — bukan endpoint terpisah.</li>
+          <li>Prediksi batch (Import) menjalankan endpoint <code>POST /predict</code> berulang dari sisi klien - bukan endpoint terpisah.</li>
           <li>Setiap prediksi tersimpan ke riwayat (SQLite) dan dapat ditinjau di menu Riwayat.</li>
         </ul>
       </Card>

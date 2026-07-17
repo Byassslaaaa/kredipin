@@ -11,7 +11,7 @@ import styles from "./Topbar.module.css";
 export default function Topbar({ title, subtitle, onToggleSidebar, theme, onToggleTheme }) {
   const { user, logout } = useAuth();
 
-  // Inisial dari nama untuk avatar — hindari memuat gambar demi dua huruf.
+  // Inisial dari nama untuk avatar - hindari memuat gambar demi dua huruf.
   const inisial = (user?.nama || user?.username || "?")
     .split(" ")
     .slice(0, 2)

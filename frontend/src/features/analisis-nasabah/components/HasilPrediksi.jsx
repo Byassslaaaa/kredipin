@@ -53,7 +53,7 @@ function ErrorPanel({ error }) {
 }
 
 /**
- * HasilPrediksi — laporan penilaian kelayakan kredit untuk satu nasabah,
+ * HasilPrediksi - laporan penilaian kelayakan kredit untuk satu nasabah,
  * disusun sebagai satu dokumen dengan hierarki visual yang jelas.
  */
 const EASE = [0.32, 0.72, 0, 1];
@@ -72,7 +72,7 @@ export default function HasilPrediksi({ data, loading, error }) {
   const murni = isMurniXgboost(data.threshold);
 
   // Bagian laporan masuk bertahap: verdict lebih dulu, lalu angka, faktor,
-  // dan disclaimer — mengikuti urutan seorang analis membaca hasil.
+  // dan disclaimer - mengikuti urutan seorang analis membaca hasil.
   const wadah = {
     hidden: {},
     show: { transition: { staggerChildren: kurangiGerak ? 0 : 0.09, delayChildren: 0.04 } },
@@ -111,7 +111,7 @@ export default function HasilPrediksi({ data, loading, error }) {
           <motion.span
             className={styles.verdictIcon}
             aria-hidden="true"
-            // Ikon keputusan "mendarat" dengan pegas — penanda hasil sudah final.
+            // Ikon keputusan "mendarat" dengan pegas - penanda hasil sudah final.
             initial={kurangiGerak ? false : { scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.1 }}
@@ -164,7 +164,7 @@ export default function HasilPrediksi({ data, loading, error }) {
                 </>
               ) : (
                 <>
-                  Keputusan ini <strong>tidak murni XGBoost</strong> — memakai ambang batas kustom{" "}
+                  Keputusan ini <strong>tidak murni XGBoost</strong> - memakai ambang batas kustom{" "}
                   {Math.round(thrPct)}% (bukan patokan native 50%).
                 </>
               )}
@@ -181,7 +181,7 @@ export default function HasilPrediksi({ data, loading, error }) {
           <FaktorList faktor={data.faktor} />
         </motion.div>
 
-        {/* Keputusan akhir analis — model merekomendasikan, manusia memutuskan. */}
+        {/* Keputusan akhir analis - model merekomendasikan, manusia memutuskan. */}
         {data.id_riwayat != null && (
           <motion.div variants={bagian}>
             <KeputusanAnalis riwayatId={data.id_riwayat} keputusanModel={data.keputusan} />

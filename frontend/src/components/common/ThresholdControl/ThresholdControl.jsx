@@ -2,7 +2,7 @@ import { formatPercent } from "@/utils/format";
 import styles from "./ThresholdControl.module.css";
 
 /**
- * ThresholdControl — atur ambang keputusan (0..1) yang dikirim per-request.
+ * ThresholdControl - atur ambang keputusan (0..1) yang dikirim per-request.
  * probabilitas_layak >= ambang -> "Layak". Default 0.5.
  *
  * Opsional: bila `onToggle` diberikan, tampil sakelar untuk menyalakan/mematikan
@@ -78,7 +78,7 @@ export default function ThresholdControl({
         </>
       ) : (
         <p className={styles.hint}>
-          Ambang batas <strong>nonaktif</strong> — keputusan memakai model{" "}
+          Ambang batas <strong>nonaktif</strong> - keputusan memakai model{" "}
           <strong>murni XGBoost</strong> (patokan native: probabilitas ≥ 50% dinilai Layak),
           tanpa ambang batas kustom.
         </p>

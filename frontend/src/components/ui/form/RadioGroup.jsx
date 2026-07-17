@@ -3,7 +3,7 @@ import FieldWrapper from "./FieldWrapper";
 import styles from "./form.module.css";
 
 /**
- * RadioGroup — kumpulan pilihan radio yang distyle sebagai kartu.
+ * RadioGroup - kumpulan pilihan radio yang distyle sebagai kartu.
  *
  * Props:
  * - options: Array<{ value, label }> atau Array<string>

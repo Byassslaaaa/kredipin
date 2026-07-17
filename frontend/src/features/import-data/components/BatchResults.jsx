@@ -125,7 +125,7 @@ function DoneView({ batch, onDownload, onReset }) {
                 header: "Probabilitas",
                 align: "right",
                 mono: true,
-                render: (r) => (r.prob != null ? formatPercent(r.prob) : "—"),
+                render: (r) => (r.prob != null ? formatPercent(r.prob) : "-"),
               },
             ]}
             data={preview}
@@ -147,7 +147,7 @@ function DoneView({ batch, onDownload, onReset }) {
 }
 
 /**
- * BatchResults — menampilkan progres saat berjalan, lalu ringkasan & hasil akhir.
+ * BatchResults - menampilkan progres saat berjalan, lalu ringkasan & hasil akhir.
  */
 export default function BatchResults({ batch, onCancel, onDownload, onReset }) {
   if (batch.status === "running") {

@@ -1,7 +1,7 @@
 import styles from "./Spinner.module.css";
 
 /**
- * Spinner — indikator loading lingkaran. Memakai currentColor sehingga
+ * Spinner - indikator loading lingkaran. Memakai currentColor sehingga
  * mengikuti warna konteksnya (mis. di dalam Button primary -> putih).
  */
 export default function Spinner({ size = 20, label, className = "" }) {

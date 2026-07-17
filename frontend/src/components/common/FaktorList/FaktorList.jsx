@@ -3,12 +3,12 @@ import Icon from "@/components/ui/Icon";
 import styles from "./FaktorList.module.css";
 
 /**
- * FaktorList — menampilkan faktor pendukung keputusan (kontribusi SHAP).
+ * FaktorList - menampilkan faktor pendukung keputusan (kontribusi SHAP).
  * Hijau = mendukung LAYAK, merah = mendukung TIDAK LAYAK. Panjang bar
  * proporsional terhadap |kontribusi| relatif faktor terbesar.
  *
  * Faktor masuk bertahap (stagger) dan bar tumbuh dari nol, sehingga urutan
- * pengaruh terbaca — bukan sekadar muncul serempak.
+ * pengaruh terbaca - bukan sekadar muncul serempak.
  *
  * Props: faktor = Array<{ fitur, nilai_input, kontribusi, arah }>
  */

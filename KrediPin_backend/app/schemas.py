@@ -84,13 +84,13 @@ class PredictRequest(BaseModel):
     # Nilainya SELALU ditimpa oleh hitung_rasio() di features(), sehingga tidak
     # dapat dipakai memanipulasi keputusan. Akan dihapus pada versi berikutnya.
     rasio_hutang_terhadap_pendapatan: Optional[float] = Field(
-        default=None, deprecated=True, description="Diabaikan — dihitung server."
+        default=None, deprecated=True, description="Diabaikan - dihitung server."
     )
     rasio_pinjaman_terhadap_pendapatan: Optional[float] = Field(
-        default=None, deprecated=True, description="Diabaikan — dihitung server."
+        default=None, deprecated=True, description="Diabaikan - dihitung server."
     )
     rasio_pembayaran_terhadap_pendapatan: Optional[float] = Field(
-        default=None, deprecated=True, description="Diabaikan — dihitung server."
+        default=None, deprecated=True, description="Diabaikan - dihitung server."
     )
 
     # --- Fitur sintetik (Tahap 1) ---
@@ -105,7 +105,7 @@ class PredictRequest(BaseModel):
     # dipakai. Akan dihapus pada versi berikutnya.
     threshold: Optional[float] = Field(
         default=None, deprecated=True,
-        description="Diabaikan — ambang diambil dari kebijakan (PUT /kebijakan/ambang).",
+        description="Diabaikan - ambang diambil dari kebijakan (PUT /kebijakan/ambang).",
     )
 
     def features(self) -> dict:
@@ -131,7 +131,7 @@ def hitung_rasio(f: dict) -> dict:
 
     KENAPA dihitung di server, bukan diterima dari klien: ketiganya adalah nilai
     TURUNAN. Saat diterima sebagai input bebas, klien dapat mengirim rasio yang
-    bertentangan dengan field dasarnya dan membalik keputusan — padahal
+    bertentangan dengan field dasarnya dan membalik keputusan - padahal
     rasio_hutang adalah fitur terpenting ke-3 pada model.
     """
     pendapatan = float(f.get("pendapatan_tahunan") or 0)
@@ -224,14 +224,14 @@ class LoginRequest(BaseModel):
     # cegah payload raksasa). Memvalidasi panjang minimum di sini akan:
     #   (a) membocorkan kebijakan panjang password (422 utk pendek, 401 utk salah),
     #   (b) tidak konsisten dengan aturan pembuatan user (min 8),
-    #   (c) tak berguna — password tetap diperiksa terhadap hash.
+    #   (c) tak berguna - password tetap diperiksa terhadap hash.
     # Semua kredensial salah kini seragam mengembalikan 401.
     username: str = Field(..., min_length=1, max_length=64)
     password: str = Field(..., min_length=1, max_length=256)
 
 
 class UserInfo(BaseModel):
-    """Identitas pengguna — TANPA password/hash."""
+    """Identitas pengguna - TANPA password/hash."""
 
     username: str
     nama: str
@@ -262,7 +262,7 @@ class UbahAmbangRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    # Rentang sama dengan sebelumnya: 0 meloloskan semua, 1 menolak semua —
+    # Rentang sama dengan sebelumnya: 0 meloloskan semua, 1 menolak semua -
     # keduanya meniadakan model dan tidak punya makna bisnis.
     ambang: float = Field(..., ge=0.2, le=0.9)
 
@@ -273,7 +273,7 @@ Peran = Literal["analis", "admin"]
 
 
 class UserItem(BaseModel):
-    """Baris pengguna untuk daftar admin — TANPA password/hash."""
+    """Baris pengguna untuk daftar admin - TANPA password/hash."""
 
     id: int
     username: str
@@ -296,7 +296,7 @@ class UserBuatRequest(BaseModel):
 
 class UserUbahRequest(BaseModel):
     """
-    Ubah pengguna. Semua opsional — hanya yang dikirim yang berubah.
+    Ubah pengguna. Semua opsional - hanya yang dikirim yang berubah.
 
     Tidak ada endpoint HAPUS: pengguna dinonaktifkan, bukan dihapus. Menghapus
     baris user akan memutus jejak audit (`dibuat_oleh` pada riwayat prediksi
@@ -329,7 +329,7 @@ class KeputusanAnalisRequest(BaseModel):
     """
     Keputusan akhir analis atas satu penilaian.
 
-    `alasan` WAJIB bila keputusan berbeda dari rekomendasi model — divalidasi di
+    `alasan` WAJIB bila keputusan berbeda dari rekomendasi model - divalidasi di
     endpoint karena aturannya bergantung pada data prediksi (tidak diketahui
     skema). Menyimpang dari model itu SAH, tetapi harus dapat
     dipertanggungjawabkan: inilah yang membuat sistem tetap "alat bantu", bukan

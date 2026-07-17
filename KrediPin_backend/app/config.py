@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "KrediPin API"
     APP_DESCRIPTION: str = (
         "REST API Sistem Pendukung Keputusan Kelayakan Pinjaman Digital (XGBoost). "
-        "Alat bantu keputusan kredit — bukan keputusan akhir."
+        "Alat bantu keputusan kredit - bukan keputusan akhir."
     )
     APP_VERSION: str = "1.0.0"
 

@@ -5,14 +5,14 @@ import { putuskan } from "@/services/predictService";
 import styles from "./KeputusanAnalis.module.css";
 
 /**
- * KeputusanAnalis — mencatat keputusan AKHIR analis atas satu penilaian.
+ * KeputusanAnalis - mencatat keputusan AKHIR analis atas satu penilaian.
  *
  * Model hanya MEREKOMENDASIKAN; yang memutuskan tetap manusia. Panel ini membuat
  * pemisahan itu terlihat: analis harus menyatakan keputusannya secara sadar,
  * bukan menerima keluaran model begitu saja.
  *
- * Bila keputusannya BERBEDA dari model, alasan wajib diisi. Menyimpang itu sah —
- * analis melihat hal yang tak terlihat model (mis. dokumen tak terverifikasi) —
+ * Bila keputusannya BERBEDA dari model, alasan wajib diisi. Menyimpang itu sah -
+ * analis melihat hal yang tak terlihat model (mis. dokumen tak terverifikasi) -
  * tetapi harus dapat dipertanggungjawabkan saat audit.
  */
 export default function KeputusanAnalis({ riwayatId, keputusanModel }) {
@@ -110,7 +110,7 @@ export default function KeputusanAnalis({ riwayatId, keputusanModel }) {
           />
           <p className={styles.bantuan}>
             Minimal 10 karakter. Alasan ini tercatat pada jejak audit dan menjadi bahan evaluasi
-            model — bila model sering dilawan, itu sinyal model perlu ditinjau.
+            model - bila model sering dilawan, itu sinyal model perlu ditinjau.
           </p>
         </motion.div>
       )}

@@ -2,7 +2,7 @@
 Regresi migrasi skema.
 
 KENAPA FILE TERPISAH: test_api.py memakai database yang dibuat create_all()
-sehingga skemanya selalu terkini — kondisi itu TIDAK pernah mewakili produksi,
+sehingga skemanya selalu terkini - kondisi itu TIDAK pernah mewakili produksi,
 di mana database sudah berisi data dengan skema lama. Celah inilah yang membuat
 CI hijau sementara aplikasi live mengembalikan 500 pada /predict dan /history.
 
@@ -74,7 +74,7 @@ def test_migrasi_tidak_merusak_data_lama(db_lama, monkeypatch):
 
 
 def test_migrasi_idempoten(db_lama, monkeypatch):
-    """Dijalankan berulang tidak boleh gagal — lifespan memanggilnya tiap startup."""
+    """Dijalankan berulang tidak boleh gagal - lifespan memanggilnya tiap startup."""
     from app.db import database
 
     monkeypatch.setattr(database, "engine", db_lama)

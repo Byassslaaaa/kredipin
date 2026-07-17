@@ -9,10 +9,10 @@ import styles from "./KelolaPengguna.module.css";
 const KOSONG = { username: "", nama: "", password: "", peran: "analis" };
 
 /**
- * KelolaPengguna — halaman admin untuk membuat & mengatur akun.
+ * KelolaPengguna - halaman admin untuk membuat & mengatur akun.
  *
  * TIDAK ADA tombol hapus, dan itu disengaja: menghapus baris user akan memutus
- * jejak audit — kolom `dibuat_oleh` pada riwayat prediksi menjadi menggantung,
+ * jejak audit - kolom `dibuat_oleh` pada riwayat prediksi menjadi menggantung,
  * padahal justru itu yang dibutuhkan auditor untuk menjawab "siapa yang
  * memutuskan ini?". Akun dinonaktifkan, bukan dihapus.
  */
@@ -103,8 +103,8 @@ export default function KelolaPengguna() {
             label="Peran"
             value={form.peran}
             options={[
-              { value: "analis", label: "Analis — menilai pengajuan kredit" },
-              { value: "admin", label: "Admin — kelola sistem & pengawasan" },
+              { value: "analis", label: "Analis - menilai pengajuan kredit" },
+              { value: "admin", label: "Admin - kelola sistem & pengawasan" },
             ]}
             onChange={(e) => set("peran", e.target.value)}
             required
@@ -163,7 +163,7 @@ export default function KelolaPengguna() {
               render: (r) => (
                 <div className={styles.aksiSel}>
                   {r.username === saya?.username ? (
-                    // Backend juga menolaknya (400) — ini sekadar agar tombolnya
+                    // Backend juga menolaknya (400) - ini sekadar agar tombolnya
                     // tidak menggoda untuk diklik.
                     <span className={styles.diri}>akun Anda</span>
                   ) : (

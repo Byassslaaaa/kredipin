@@ -81,7 +81,7 @@ export default function Riwayat() {
             emptyTitle="Belum ada riwayat"
             emptyDescription="Lakukan prediksi di Analisis Nasabah Baru atau Import Data Nasabah."
             columns={[
-              // ID nyata (bukan nomor urut) dipertahankan: inilah rujukan audit —
+              // ID nyata (bukan nomor urut) dipertahankan: inilah rujukan audit -
               // dipakai endpoint keputusan analis (/history/{id}/keputusan) & audit log.
               // Diberi awalan "#" agar terbaca sebagai referensi, bukan hitungan baris.
               {
@@ -97,7 +97,7 @@ export default function Riwayat() {
                 ? [{
                     key: "dibuat_oleh",
                     header: "Analis",
-                    render: (r) => r.dibuat_oleh || "—",
+                    render: (r) => r.dibuat_oleh || "-",
                   }]
                 : []),
               {

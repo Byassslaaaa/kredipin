@@ -3,7 +3,7 @@ import { formatNumber, formatPercent } from "@/utils/format";
 import styles from "./ConfusionMatrix.module.css";
 
 /**
- * ConfusionMatrix — matriks kebingungan 2x2 bergaya heatmap.
+ * ConfusionMatrix - matriks kebingungan 2x2 bergaya heatmap.
  *
  * Konvensi (sesuai sklearn): baris = aktual, kolom = prediksi,
  * indeks 0 = "Tidak Layak", indeks 1 = "Layak".
@@ -12,7 +12,7 @@ import styles from "./ConfusionMatrix.module.css";
  *
  * Catatan desain: sengaja dirender sebagai grid HTML semantik, BUKAN heatmap
  * ApexCharts. Ukurannya hanya 2x2 namun tiap sel perlu memuat label (TN/FP/FN/TP),
- * nilai, dua jenis persentase, dan makna bisnisnya — hal yang tidak muat pada sel
+ * nilai, dua jenis persentase, dan makna bisnisnya - hal yang tidak muat pada sel
  * heatmap kanvas, sekaligus lebih mudah diakses pembaca layar.
  */
 
@@ -20,25 +20,25 @@ const SEL = {
   tn: {
     kode: "TN",
     nama: "Benar Negatif",
-    arti: "Diprediksi Tidak Layak dan memang Tidak Layak — penolakan yang tepat.",
+    arti: "Diprediksi Tidak Layak dan memang Tidak Layak - penolakan yang tepat.",
     benar: true,
   },
   fp: {
     kode: "FP",
     nama: "Salah Positif",
-    arti: "Diprediksi Layak padahal Tidak Layak — pinjaman diloloskan ke nasabah berisiko. Kesalahan PALING MAHAL karena berpotensi gagal bayar.",
+    arti: "Diprediksi Layak padahal Tidak Layak - pinjaman diloloskan ke nasabah berisiko. Kesalahan PALING MAHAL karena berpotensi gagal bayar.",
     benar: false,
   },
   fn: {
     kode: "FN",
     nama: "Salah Negatif",
-    arti: "Diprediksi Tidak Layak padahal Layak — nasabah baik ditolak, sehingga kehilangan peluang pendapatan.",
+    arti: "Diprediksi Tidak Layak padahal Layak - nasabah baik ditolak, sehingga kehilangan peluang pendapatan.",
     benar: false,
   },
   tp: {
     kode: "TP",
     nama: "Benar Positif",
-    arti: "Diprediksi Layak dan memang Layak — persetujuan yang tepat.",
+    arti: "Diprediksi Layak dan memang Layak - persetujuan yang tepat.",
     benar: true,
   },
 };
@@ -121,12 +121,12 @@ export default function ConfusionMatrix({ matrix }) {
         </div>
       </div>
 
-      {/* Panel makna — berubah mengikuti sel yang disorot. */}
+      {/* Panel makna - berubah mengikuti sel yang disorot. */}
       <div className={`${styles.panel} ${aktif ? styles.panelAktif : ""}`}>
         {aktif ? (
           <>
             <span className={styles.panelJudul}>
-              {SEL[aktif].nama} ({SEL[aktif].kode}) — {formatNumber(data[aktif].nilai)} data
+              {SEL[aktif].nama} ({SEL[aktif].kode}) - {formatNumber(data[aktif].nilai)} data
             </span>
             <span className={styles.panelArti}>{SEL[aktif].arti}</span>
           </>

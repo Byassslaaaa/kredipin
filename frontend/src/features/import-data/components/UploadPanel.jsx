@@ -3,7 +3,7 @@ import { Button, Card, Icon } from "@/components/ui";
 import styles from "./UploadPanel.module.css";
 
 /**
- * UploadPanel — area unggah CSV (drag & drop atau pilih file) + unduh template.
+ * UploadPanel - area unggah CSV (drag & drop atau pilih file) + unduh template.
  */
 export default function UploadPanel({ onFile, fileName, onDownloadTemplate, disabled }) {
   const inputRef = useRef(null);
@@ -50,7 +50,7 @@ export default function UploadPanel({ onFile, fileName, onDownloadTemplate, disa
         <p className={styles.title}>
           {fileName ? (
             <>
-              <strong>{fileName}</strong> — klik untuk ganti file
+              <strong>{fileName}</strong> - klik untuk ganti file
             </>
           ) : (
             <>

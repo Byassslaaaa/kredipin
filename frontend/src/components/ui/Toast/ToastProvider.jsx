@@ -12,7 +12,7 @@ const ICONS = {
 };
 
 /**
- * ToastProvider — menyediakan notifikasi global (pojok kanan atas).
+ * ToastProvider - menyediakan notifikasi global (pojok kanan atas).
  *
  * API (lewat useToast):
  *   toast.show({ variant, title, message, duration })

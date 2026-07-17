@@ -73,7 +73,7 @@ async def login(payload: LoginRequest, db: Session = Depends(get_session)) -> Lo
     """
     Tukar username+password dengan token sesi.
 
-    Pesan galat sengaja SAMA untuk username tidak ada maupun password salah —
+    Pesan galat sengaja SAMA untuk username tidak ada maupun password salah -
     membedakannya akan membocorkan username mana yang terdaftar (user enumeration).
     """
     user = db.execute(select(User).where(User.username == payload.username)).scalar_one_or_none()
@@ -89,7 +89,7 @@ async def login(payload: LoginRequest, db: Session = Depends(get_session)) -> Lo
 
 @router.get("/auth/me", response_model=UserInfo, tags=["auth"])
 async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
-    """Identitas pemilik token — dipakai frontend memulihkan sesi saat refresh."""
+    """Identitas pemilik token - dipakai frontend memulihkan sesi saat refresh."""
     return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
 
 
@@ -100,10 +100,10 @@ async def monitoring(
     admin: User = Depends(require_admin),
 ) -> MonitoringResponse:
     """
-    Pemantauan operasional & sinyal drift — khusus admin.
+    Pemantauan operasional & sinyal drift - khusus admin.
 
     Sinyal utama: tingkat penyimpangan analis dari model. Bila naik, model mulai
-    tidak sesuai kenyataan lapangan — peringatan paling dini bahwa model perlu
+    tidak sesuai kenyataan lapangan - peringatan paling dini bahwa model perlu
     ditinjau, jauh sebelum metrik formal tersedia.
     """
     hari = max(1, min(hari, 365))
@@ -119,7 +119,7 @@ async def jejak_audit(
     admin: User = Depends(require_admin),
 ) -> list[AuditItem]:
     """
-    Jejak audit tindakan istimewa — khusus admin, HANYA BACA.
+    Jejak audit tindakan istimewa - khusus admin, HANYA BACA.
 
     Tidak ada endpoint ubah/hapus: log yang dapat disunting tidak bernilai
     sebagai bukti.
@@ -136,7 +136,7 @@ async def daftar_pengguna(
     db: Session = Depends(get_session),
     admin: User = Depends(require_admin),
 ) -> list[UserItem]:
-    """Daftar seluruh pengguna — khusus admin."""
+    """Daftar seluruh pengguna - khusus admin."""
     rows = db.execute(select(User).order_by(User.id)).scalars().all()
     return [UserItem.model_validate(r, from_attributes=True) for r in rows]
 
@@ -147,7 +147,7 @@ async def buat_pengguna(
     db: Session = Depends(get_session),
     admin: User = Depends(require_admin),
 ) -> UserItem:
-    """Buat pengguna baru — khusus admin."""
+    """Buat pengguna baru - khusus admin."""
     ada = db.execute(select(User).where(User.username == payload.username)).scalar_one_or_none()
     if ada:
         raise HTTPException(status_code=409, detail="Username sudah dipakai.")
@@ -176,7 +176,7 @@ async def ubah_pengguna(
     admin: User = Depends(require_admin),
 ) -> UserItem:
     """
-    Ubah pengguna — khusus admin.
+    Ubah pengguna - khusus admin.
 
     Dua penjagaan terhadap penguncian diri (lockout): admin tidak boleh
     menonaktifkan maupun menurunkan perannya sendiri. Tanpa ini, satu klik keliru
@@ -242,7 +242,7 @@ async def ubah_ambang(
     admin: User = Depends(require_admin),
 ) -> KebijakanResponse:
     """
-    Ubah ambang kebijakan — khusus admin (mewakili komite risiko).
+    Ubah ambang kebijakan - khusus admin (mewakili komite risiko).
 
     Perubahan dicatat beserta pelakunya: auditor harus dapat menjawab "siapa
     yang melonggarkan ambang, dan kapan?".
@@ -286,7 +286,7 @@ async def predict_endpoint(
     #
     # Admin memegang kendali sistem (ambang, pengguna, pemantauan). Bila ia juga
     # dapat menilai, satu orang bisa menyetel ambang lalu meloloskan pengajuan
-    # dengan ambang yang ia buat sendiri — kendali internal jadi tak berarti.
+    # dengan ambang yang ia buat sendiri - kendali internal jadi tak berarti.
     # Inilah alasan bank memisahkan "yang mengatur aturan" dari "yang memutus".
     if user.peran == "admin":
         raise HTTPException(
@@ -301,7 +301,7 @@ async def predict_endpoint(
     #
     # Sebelumnya ambang dikirim per-prediksi, sehingga ia menjadi preferensi
     # individu: dua nasabah berprofil identik bisa mendapat keputusan berbeda
-    # tergantung siapa yang menangani — ketidakkonsistenan yang justru menjadi
+    # tergantung siapa yang menangani - ketidakkonsistenan yang justru menjadi
     # alasan sistem ini dibangun. Kini ambang berlaku seragam bagi semua analis
     # dan hanya dapat diubah admin lewat PUT /kebijakan/ambang (teraudit).
     ambang = kebijakan_repo.ambil(db).ambang
@@ -349,7 +349,7 @@ async def putuskan(
     bantu, bukan penentu.
 
     Aturan: bila keputusan analis BERBEDA dari rekomendasi model, `alasan` wajib
-    diisi. Menyimpang itu sah — analis melihat hal yang tak terlihat model —
+    diisi. Menyimpang itu sah - analis melihat hal yang tak terlihat model -
     tetapi harus dapat dipertanggungjawabkan. Sekaligus memberi bahan evaluasi:
     bila model sering dilawan, itu sinyal model perlu ditinjau.
     """
@@ -357,7 +357,7 @@ async def putuskan(
     if row is None:
         raise HTTPException(status_code=404, detail="Riwayat penilaian tidak ditemukan.")
 
-    # Need-to-know: hanya pemiliknya yang boleh memutuskan. Admin pun tidak —
+    # Need-to-know: hanya pemiliknya yang boleh memutuskan. Admin pun tidak -
     # ia tidak menilai kredit (pemisahan tugas).
     if row.dibuat_oleh != user.username:
         raise HTTPException(
@@ -384,7 +384,7 @@ async def putuskan(
     db.commit()
     db.refresh(row)
 
-    # Penyimpangan adalah tindakan yang perlu terlihat pengawas — dicatat.
+    # Penyimpangan adalah tindakan yang perlu terlihat pengawas - dicatat.
     if menyimpang:
         audit_repo.catat(
             db,
@@ -420,7 +420,7 @@ async def history(
 
     # Need-to-know: analis hanya melihat penilaian yang ia buat sendiri; admin
     # (peran pengawas) melihat seluruhnya. Filter diterapkan di SERVER dari
-    # identitas token — bukan dari parameter yang bisa dikirim klien.
+    # identitas token - bukan dari parameter yang bisa dikirim klien.
     pemilik = None if user.peran == "admin" else user.username
     rows = get_recent(db, limit=limit, dibuat_oleh=pemilik)
     return [

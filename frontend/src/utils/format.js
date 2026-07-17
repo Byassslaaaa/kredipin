@@ -7,13 +7,13 @@ const idID = "id-ID";
 
 /** Format angka biasa dengan pemisah ribuan. */
 export function formatNumber(value, opts = {}) {
-  if (value == null || Number.isNaN(Number(value))) return "—";
+  if (value == null || Number.isNaN(Number(value))) return "-";
   return new Intl.NumberFormat(idID, opts).format(Number(value));
 }
 
 /** Format nominal Rupiah. Mode "compact" untuk angka besar (mis. Rp1,2 M). */
 export function formatIDR(value, { compact = false } = {}) {
-  if (value == null || Number.isNaN(Number(value))) return "—";
+  if (value == null || Number.isNaN(Number(value))) return "-";
   const num = Number(value);
   if (compact) {
     return new Intl.NumberFormat(idID, {
@@ -36,7 +36,7 @@ export function formatIDR(value, { compact = false } = {}) {
  * - value 0..100 -> set fromFraction=false.
  */
 export function formatPercent(value, { decimals = 1, fromFraction = true } = {}) {
-  if (value == null || Number.isNaN(Number(value))) return "—";
+  if (value == null || Number.isNaN(Number(value))) return "-";
   const pct = fromFraction ? Number(value) * 100 : Number(value);
   return `${pct.toLocaleString(idID, {
     minimumFractionDigits: decimals,
@@ -53,9 +53,9 @@ export function round(value, decimals = 2) {
 
 /** Format tanggal-waktu ISO menjadi teks lokal yang ramah. */
 export function formatDateTime(iso) {
-  if (!iso) return "—";
+  if (!iso) return "-";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleString(idID, {
     day: "2-digit",
     month: "short",

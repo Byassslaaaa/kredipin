@@ -19,7 +19,7 @@ const ACTIONS = [
 ];
 
 /**
- * Quick actions — titik masuk dua alur kerja utama analis kredit.
+ * Quick actions - titik masuk dua alur kerja utama analis kredit.
  * Tampilan tenang (border-first, tanpa gradient), bukan banner marketing.
  */
 export default function HeroBanner() {

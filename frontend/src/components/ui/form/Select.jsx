@@ -4,7 +4,7 @@ import FieldWrapper from "./FieldWrapper";
 import styles from "./form.module.css";
 
 /**
- * Select — dropdown native yang distyle.
+ * Select - dropdown native yang distyle.
  *
  * Props:
  * - options: Array<{ value, label }> atau Array<string|number>

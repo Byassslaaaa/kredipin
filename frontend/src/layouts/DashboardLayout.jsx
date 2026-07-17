@@ -8,7 +8,7 @@ import { getPageMeta } from "@/constants/pageMeta";
 import styles from "./DashboardLayout.module.css";
 
 /**
- * DashboardLayout — kerangka utama aplikasi (gaya dashboard SaaS).
+ * DashboardLayout - kerangka utama aplikasi (gaya dashboard SaaS).
  *
  * Komposisi: Sidebar (kiri) + Topbar (atas) + area konten (<Outlet />).
  * Mengelola state drawer sidebar untuk mobile dan tema light/dark.

@@ -9,7 +9,7 @@ deployment sudah terbukti rapuh terhadap dependensi native (kasus numpy vs CPU
 tanpa x86-64-v2). PBKDF2 tersedia di stdlib, tanpa kompilasi, dan merupakan
 algoritma yang direkomendasikan NIST bila iterasinya memadai.
 
-Token memakai JWT (PyJWT) — pustaka murni Python, ringan, tanpa ekstensi native.
+Token memakai JWT (PyJWT) - pustaka murni Python, ringan, tanpa ekstensi native.
 """
 import hashlib
 import hmac

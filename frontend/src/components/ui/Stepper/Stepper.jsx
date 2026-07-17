@@ -2,12 +2,12 @@ import Icon from "@/components/ui/Icon";
 import styles from "./Stepper.module.css";
 
 /**
- * Stepper — indikator langkah horizontal untuk alur kerja bertahap.
+ * Stepper - indikator langkah horizontal untuk alur kerja bertahap.
  *
  * Props:
  * - steps: string[] (label tiap langkah)
  * - current: number (indeks langkah aktif, 0-based; langkah sebelumnya = selesai)
- * - onStepClick?: (index) => void — bila diberikan, langkah yang SUDAH selesai
+ * - onStepClick?: (index) => void - bila diberikan, langkah yang SUDAH selesai
  *   dapat diklik untuk kembali. Langkah yang belum dilalui tetap tidak bisa
  *   diklik agar pengguna tidak melompati validasi.
  */

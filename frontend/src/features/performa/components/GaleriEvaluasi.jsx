@@ -28,10 +28,10 @@ const GRUP = [
       ["14_shap_bar_importance.png", "Kepentingan fitur (SHAP)", "Fitur paling berpengaruh terhadap keputusan."],
       ["13_shap_summary_beeswarm.png", "SHAP beeswarm", "Arah & besar pengaruh tiap fitur per pengajuan."],
       ["15_shap_dependence_top4.png", "SHAP dependence (top 4)", "Bagaimana nilai fitur mengubah kontribusinya."],
-      ["16_shap_waterfall_layak.png", "Waterfall — kasus Layak", "Rincian kontribusi pada satu keputusan Layak."],
-      ["16_shap_waterfall_tidak_layak.png", "Waterfall — kasus Tidak Layak", "Rincian kontribusi pada satu keputusan Tidak Layak."],
+      ["16_shap_waterfall_layak.png", "Waterfall - kasus Layak", "Rincian kontribusi pada satu keputusan Layak."],
+      ["16_shap_waterfall_tidak_layak.png", "Waterfall - kasus Tidak Layak", "Rincian kontribusi pada satu keputusan Tidak Layak."],
       ["17_shap_decision_plot.png", "SHAP decision plot", "Jalur keputusan beberapa pengajuan sekaligus."],
-      ["18_shap_validasi_fitur_sintetik.png", "Validasi fitur sintetik", "Peran tenor & jaminan yang lemah — dilaporkan apa adanya."],
+      ["18_shap_validasi_fitur_sintetik.png", "Validasi fitur sintetik", "Peran tenor & jaminan yang lemah - dilaporkan apa adanya."],
     ],
   },
   {

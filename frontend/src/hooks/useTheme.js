@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 const STORAGE_KEY = "kredipin-theme";
 
 /**
- * useTheme — kelola tema light/dark.
+ * useTheme - kelola tema light/dark.
  *
  * Tema disimpan di localStorage dan diterapkan ke <html data-theme="...">,
  * dibaca oleh token CSS. Default light (sesuai rencana M1); dark sudah disiapkan.

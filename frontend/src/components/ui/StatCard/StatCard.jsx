@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import styles from "./StatCard.module.css";
 
 /**
- * StatCard — kartu KPI (label, nilai utama, ikon, hint, tren opsional).
+ * StatCard - kartu KPI (label, nilai utama, ikon, hint, tren opsional).
  *
  * Props:
  * - label: judul metrik

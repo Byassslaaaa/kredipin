@@ -81,7 +81,7 @@
   }
 }
 
-/* Kembali menempel kiri, aksi utama kanan — arah navigasi terbaca dari
+/* Kembali menempel kiri, aksi utama kanan - arah navigasi terbaca dari
    posisinya, bukan hanya dari teksnya. */
 .footer {
   display: flex;

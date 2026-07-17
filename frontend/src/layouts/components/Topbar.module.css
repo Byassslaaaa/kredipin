@@ -65,7 +65,7 @@
 }
 
 /* Tombol ikon berbaur dengan topbar: tanpa border & tanpa background diam.
-   Bentuknya baru muncul saat hover — kontrol sekunder tidak perlu menuntut
+   Bentuknya baru muncul saat hover - kontrol sekunder tidak perlu menuntut
    perhatian lewat kotak permanen. */
 .iconBtn {
   display: grid;
@@ -150,7 +150,7 @@
 }
 
 @media (max-width: 720px) {
-  /* Sisakan avatar saja — nama & peran memakan ruang judul halaman. */
+  /* Sisakan avatar saja - nama & peran memakan ruang judul halaman. */
   .penggunaTeks {
     display: none;
   }
@@ -161,7 +161,7 @@
 
 /* ---------- Tombol keluar ----------
    Berlabel teks, bukan ikon silang: mengakhiri sesi adalah aksi yang
-   konsekuensinya nyata, jadi harus jelas — bukan ditebak dari simbol.
+   konsekuensinya nyata, jadi harus jelas - bukan ditebak dari simbol.
    Tetap sekunder (tanpa background diam) agar tidak bersaing dengan konten. */
 .keluarBtn {
   display: inline-flex;

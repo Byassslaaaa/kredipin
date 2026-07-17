@@ -1,7 +1,7 @@
 import Badge from "@/components/ui/Badge";
 
 /**
- * DecisionBadge — lencana keputusan kelayakan yang konsisten di seluruh aplikasi.
+ * DecisionBadge - lencana keputusan kelayakan yang konsisten di seluruh aplikasi.
  * "Layak" -> hijau (success), selain itu -> merah (danger).
  */
 export default function DecisionBadge({ keputusan, size = "md" }) {

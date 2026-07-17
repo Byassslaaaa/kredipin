@@ -13,9 +13,9 @@ const LABEL_AKSI = {
 };
 
 /**
- * JejakAudit — catatan tindakan istimewa (khusus admin, hanya baca).
+ * JejakAudit - catatan tindakan istimewa (khusus admin, hanya baca).
  *
- * Yang dicatat adalah tindakan yang MENGUBAH aturan atau akses — bukan prediksi
+ * Yang dicatat adalah tindakan yang MENGUBAH aturan atau akses - bukan prediksi
  * biasa. Riwayat prediksi punya jejaknya sendiri lewat kolom pemilik.
  *
  * Tidak ada aksi ubah/hapus di halaman ini, dan itu bukan kelalaian: log yang
@@ -31,7 +31,7 @@ export default function JejakAudit() {
     <div className={styles.page}>
       <Alert variant="info" icon="shield-check">
         Catatan ini bersifat <strong>hanya-tambah</strong>: tidak dapat diubah maupun dihapus dari
-        aplikasi — termasuk oleh admin. Log yang dapat disunting tidak bernilai sebagai bukti.
+        aplikasi - termasuk oleh admin. Log yang dapat disunting tidak bernilai sebagai bukti.
       </Alert>
 
       {error && (
@@ -62,7 +62,7 @@ export default function JejakAudit() {
             {
               key: "target",
               header: "Objek",
-              render: (r) => r.target || <span className={styles.kosong}>—</span>,
+              render: (r) => r.target || <span className={styles.kosong}>-</span>,
             },
             {
               key: "perubahan",
@@ -75,7 +75,7 @@ export default function JejakAudit() {
                     {r.nilai_baru && <span className={styles.baru}>{r.nilai_baru}</span>}
                   </span>
                 ) : (
-                  <span className={styles.kosong}>—</span>
+                  <span className={styles.kosong}>-</span>
                 ),
             },
           ]}

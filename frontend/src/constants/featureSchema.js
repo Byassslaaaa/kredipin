@@ -1,5 +1,5 @@
 /**
- * featureSchema — SINGLE SOURCE OF TRUTH untuk 20 fitur model KrediPin.
+ * featureSchema - SINGLE SOURCE OF TRUTH untuk 20 fitur model KrediPin.
  *
  * Selaras dengan kontrak API (CLAUDE.md §12) dan backend `app/schemas.py`
  * (rentang & enum DIKUNCI; di luar daftar -> 422). Dipakai oleh:

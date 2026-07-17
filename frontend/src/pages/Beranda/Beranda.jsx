@@ -3,7 +3,7 @@ import BerandaAnalis from "./BerandaAnalis";
 import BerandaAdmin from "./BerandaAdmin";
 
 /**
- * Beranda — memilih tampilan sesuai peran.
+ * Beranda - memilih tampilan sesuai peran.
  *
  * Analis dan admin punya pekerjaan yang berbeda, sehingga beranda yang sama
  * tidak melayani keduanya: metrik model tidak dapat ditindaklanjuti analis,

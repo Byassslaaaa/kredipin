@@ -1,5 +1,5 @@
 /**
- * predictService — prediksi kelayakan pinjaman (POST /predict).
+ * predictService - prediksi kelayakan pinjaman (POST /predict).
  *
  * Endpoint SAMA dipakai untuk prediksi tunggal (Analisis Nasabah Baru) maupun
  * batch (Import Data Nasabah, iterasi dari sisi klien). Tidak ada endpoint baru.

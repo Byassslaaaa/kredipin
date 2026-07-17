@@ -84,7 +84,7 @@ export const NAV_GROUPS = [
 
 /**
  * Saring navigasi sesuai peran, buang grup yang jadi kosong.
- * Dipakai Sidebar; penegakan sebenarnya tetap di backend + route guard —
+ * Dipakai Sidebar; penegakan sebenarnya tetap di backend + route guard -
  * menyembunyikan menu saja bukan kontrol keamanan.
  */
 export function navUntukPeran(peran) {
@@ -94,7 +94,7 @@ export function navUntukPeran(peran) {
   })).filter((g) => g.items.length > 0);
 }
 
-/** Semua rute yang boleh diakses satu peran — dipakai route guard. */
+/** Semua rute yang boleh diakses satu peran - dipakai route guard. */
 export function ruteUntukPeran(peran) {
   return NAV_GROUPS.flatMap((g) => g.items)
     .filter((i) => !i.peran || i.peran.includes(peran))

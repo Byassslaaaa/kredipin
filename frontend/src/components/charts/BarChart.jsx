@@ -4,7 +4,7 @@ import { useChartTheme, baseApexOptions } from "./chartTheme";
 import styles from "./Chart.module.css";
 
 /**
- * BarChart — chart batang reusable (vertikal/horizontal, satu atau banyak seri).
+ * BarChart - chart batang reusable (vertikal/horizontal, satu atau banyak seri).
  * Ditenagai ApexCharts.
  *
  * Props (TIDAK berubah dari implementasi sebelumnya):

@@ -3,7 +3,7 @@ import useBatchPredict from "@/hooks/useBatchPredict";
 import { parseCsvFile, validateParsed } from "@/utils/csv";
 
 /**
- * useImportData — orchestrator fitur "Import Data Nasabah".
+ * useImportData - orchestrator fitur "Import Data Nasabah".
  *
  * Tahap: pilih file -> parse -> validasi (header & baris) -> jalankan batch
  * (mengulang POST /predict via useBatchPredict) -> hasil & unduhan.

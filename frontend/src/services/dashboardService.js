@@ -1,5 +1,5 @@
 /**
- * dashboardService — memuat data analitik statis dari public/data/.
+ * dashboardService - memuat data analitik statis dari public/data/.
  *
  * Data ini hasil pra-proses build-time (lihat scripts/prepare-data.mjs); backend
  * TIDAK menyajikannya. Diakses lewat fetch sebagai aset statis Vite.
@@ -29,19 +29,19 @@ export const getPipeline = (opts) => getJson("pipeline.json", opts);
 /** Kebijakan ambang yang berlaku (semua peran boleh membaca). */
 export const getKebijakanAmbang = () => apiClient.get("/kebijakan/ambang").then((r) => r.data);
 
-/** Ubah ambang kebijakan — khusus admin (backend menolak 403 selain admin). */
+/** Ubah ambang kebijakan - khusus admin (backend menolak 403 selain admin). */
 export const putKebijakanAmbang = (ambang) =>
   apiClient.put("/kebijakan/ambang", { ambang }).then((r) => r.data);
 
-/** Kelola pengguna — seluruhnya khusus admin (backend menolak 403 selain admin). */
+/** Kelola pengguna - seluruhnya khusus admin (backend menolak 403 selain admin). */
 export const getUsers = () => apiClient.get("/users").then((r) => r.data);
 export const createUser = (data) => apiClient.post("/users", data).then((r) => r.data);
 export const updateUser = (id, data) => apiClient.patch(`/users/${id}`, data).then((r) => r.data);
 
-/** Jejak audit tindakan istimewa — khusus admin, hanya baca. */
+/** Jejak audit tindakan istimewa - khusus admin, hanya baca. */
 export const getAudit = (limit = 50) =>
   apiClient.get(`/audit?limit=${limit}`).then((r) => r.data);
 
-/** Ringkasan pemantauan + sinyal drift (tingkat penyimpangan) — khusus admin. */
+/** Ringkasan pemantauan + sinyal drift (tingkat penyimpangan) - khusus admin. */
 export const getMonitoring = (hari = 30) =>
   apiClient.get(`/monitoring?hari=${hari}`).then((r) => r.data);

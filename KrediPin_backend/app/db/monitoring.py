@@ -3,12 +3,12 @@ Agregasi sinyal pemantauan operasional & model.
 
 Bukan monitoring drift statistik penuh (yang butuh perbandingan distribusi fitur
 terhadap data latih). Ini pemantauan PRAKTIS dari data yang benar-benar dimiliki
-sistem: volume penilaian, komposisi keputusan, dan yang paling bernilai —
+sistem: volume penilaian, komposisi keputusan, dan yang paling bernilai -
 seberapa sering analis MENYIMPANG dari model.
 
 Kenapa tingkat penyimpangan itu proxy drift yang jujur: bila analis makin sering
 melawan rekomendasi model, itu tanda model mulai tidak sesuai kenyataan lapangan
-— sinyal paling awal dan paling murah bahwa model perlu ditinjau, jauh sebelum
+- sinyal paling awal dan paling murah bahwa model perlu ditinjau, jauh sebelum
 metrik formal tersedia (label gagal-bayar sebenarnya baru diketahui berbulan
 kemudian).
 """
@@ -58,7 +58,7 @@ def ringkasan(db: Session, hari: int = 30) -> dict:
 
 
 def tren_harian(db: Session, hari: int = 14) -> list[dict]:
-    """Volume & penyimpangan per hari — untuk grafik tren."""
+    """Volume & penyimpangan per hari - untuk grafik tren."""
     sejak = datetime.now(timezone.utc) - timedelta(days=hari)
     P = PredictionHistory
     tanggal = func.date(P.created_at)

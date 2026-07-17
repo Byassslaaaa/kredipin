@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { postPredict } from "@/services/predictService";
 
 /**
- * usePredict — prediksi kelayakan untuk SATU pengajuan (fitur inti #1).
+ * usePredict - prediksi kelayakan untuk SATU pengajuan (fitur inti #1).
  *
  * @returns {
  *   data,            // PredictResponse | null

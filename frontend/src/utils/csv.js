@@ -77,7 +77,7 @@ export function validateParsed(parseResult) {
 /** Kolom input yang benar-benar dikirim (tanpa rasio turunan). */
 const INPUT_KEYS = FEATURE_FIELDS.filter((f) => !f.derived).map((f) => f.name);
 
-/** CSV template: header fitur + satu baris contoh (tanpa rasio — dihitung server). */
+/** CSV template: header fitur + satu baris contoh (tanpa rasio - dihitung server). */
 export function buildTemplateCsv() {
   const exampleRow = FEATURE_FIELDS.filter((f) => !f.derived).reduce((acc, f) => {
     acc[f.name] = f.example;

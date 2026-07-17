@@ -1,5 +1,5 @@
 """
-Pemuatan artefak model — DILAKUKAN SEKALI saat startup (singleton).
+Pemuatan artefak model - DILAKUKAN SEKALI saat startup (singleton).
 
 Artefak berasal dari Tahap 1 dan TIDAK di-training ulang:
 - model_krediPin.pkl       : Pipeline sklearn (preprocessor + XGBClassifier)

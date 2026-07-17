@@ -3,7 +3,7 @@ Seeding pengguna awal.
 
 Dijalankan saat startup: bila tabel users masih kosong, buat satu admin dan satu
 analis dari konfigurasi. Tanpa ini sistem terkunci total setelah autentikasi
-diaktifkan — tidak ada seorang pun yang bisa login untuk membuat user pertama.
+diaktifkan - tidak ada seorang pun yang bisa login untuk membuat user pertama.
 
 Seeding hanya terjadi saat tabel BENAR-BENAR kosong, sehingga menjalankan ulang
 aplikasi tidak menimpa password yang sudah diganti pengguna.

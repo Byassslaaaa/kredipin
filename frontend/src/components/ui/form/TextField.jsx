@@ -3,7 +3,7 @@ import FieldWrapper from "./FieldWrapper";
 import styles from "./form.module.css";
 
 /**
- * TextField — input teks/angka dengan label, hint, error, dan prefix/suffix.
+ * TextField - input teks/angka dengan label, hint, error, dan prefix/suffix.
  *
  * Props utama: label, value, onChange, type ("text" | "number"), required,
  * hint, error, prefix, suffix, placeholder, min, max, step, disabled.

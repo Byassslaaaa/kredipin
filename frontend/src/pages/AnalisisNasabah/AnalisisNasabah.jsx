@@ -11,7 +11,7 @@ export default function AnalisisNasabah() {
   const toast = useToast();
 
   /**
-   * @returns {boolean} true bila prediksi berhasil — dipakai wizard untuk
+   * @returns {boolean} true bila prediksi berhasil - dipakai wizard untuk
    * memutuskan boleh/tidaknya maju ke langkah Hasil.
    */
   const handleSubmit = async () => {
@@ -52,7 +52,7 @@ export default function AnalisisNasabah() {
         groupFilled={form.groupFilled}
         loading={loading}
         // Hasil kelayakan disajikan sebagai LANGKAH TERAKHIR wizard, bukan
-        // panel terpisah — alurnya: isi data -> lihat keputusan.
+        // panel terpisah - alurnya: isi data -> lihat keputusan.
         hasilSlot={<HasilPrediksi data={data} loading={loading} error={error} />}
       />
     </div>

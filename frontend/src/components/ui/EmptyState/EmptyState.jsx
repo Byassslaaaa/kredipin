@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import styles from "./EmptyState.module.css";
 
 /**
- * EmptyState — tampilan saat data kosong / error / belum ada aksi.
+ * EmptyState - tampilan saat data kosong / error / belum ada aksi.
  *
  * Props:
  * - icon: nama ikon <Icon />

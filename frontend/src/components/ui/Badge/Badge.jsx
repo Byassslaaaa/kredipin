@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import styles from "./Badge.module.css";
 
 /**
- * Badge — label status ringkas.
+ * Badge - label status ringkas.
  *
  * Props:
  * - variant: "neutral" | "primary" | "success" | "danger" | "warning" | "info"

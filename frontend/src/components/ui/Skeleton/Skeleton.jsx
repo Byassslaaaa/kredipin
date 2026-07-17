@@ -1,7 +1,7 @@
 import styles from "./Skeleton.module.css";
 
 /**
- * Skeleton — placeholder loading (mencegah content jumping).
+ * Skeleton - placeholder loading (mencegah content jumping).
  *
  * Props:
  * - variant: "text" | "rect" | "circle"

@@ -1,5 +1,5 @@
 /**
- * ratios — hitung ketiga rasio keuangan dari field dasar.
+ * ratios - hitung ketiga rasio keuangan dari field dasar.
  *
  * PENTING: formula ini HARUS identik dengan yang dipakai backend
  * (KrediPin_backend/app/schemas.py::hitung_rasio), yang telah diverifikasi

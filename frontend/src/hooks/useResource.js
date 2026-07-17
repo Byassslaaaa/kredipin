@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * useResource — muat satu sumber async sekali saat mount (abortable).
+ * useResource - muat satu sumber async sekali saat mount (abortable).
  * Cocok untuk aset statis JSON (eksplorasi, performa model, dll).
  *
  * @param {(opts:{signal:AbortSignal})=>Promise<any>} fetcher  fungsi pengambil data (stabil).

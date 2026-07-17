@@ -14,7 +14,7 @@ const EMPTY_VALUES = FEATURE_KEYS.reduce((acc, key) => {
 }, {});
 
 /**
- * useNasabahForm — kelola state form "Analisis Nasabah Baru".
+ * useNasabahForm - kelola state form "Analisis Nasabah Baru".
  *
  * Menyediakan nilai, error, dan aksi (set, isi contoh,
  * validasi, reset, bangun payload). Validasi berdasarkan featureSchema (SSOT).
@@ -68,7 +68,7 @@ export default function useNasabahForm() {
   }, [values]);
 
   /**
-   * Validasi hanya field pada satu grup — dipakai wizard agar pengguna tidak
+   * Validasi hanya field pada satu grup - dipakai wizard agar pengguna tidak
    * dihujani error dari langkah yang belum ia isi.
    * @returns {boolean} valid
    */
@@ -97,7 +97,7 @@ export default function useNasabahForm() {
     [values],
   );
 
-  /** Jumlah field terisi pada satu grup — untuk indikator progres wizard. */
+  /** Jumlah field terisi pada satu grup - untuk indikator progres wizard. */
   const groupFilled = useCallback(
     (groupId) => {
       const keys = FEATURE_FIELDS.filter((f) => f.group === groupId).map((f) => f.name);

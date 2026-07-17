@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 /**
- * chartTheme — jembatan antara design tokens (CSS variables) dan ApexCharts.
+ * chartTheme - jembatan antara design tokens (CSS variables) dan ApexCharts.
  *
  * Nilai fallback disamakan dengan tokens.css (palet Ink + semantik emerald/merah)
  * agar konsisten bila CSS belum termuat.
@@ -42,7 +42,7 @@ export function isDarkTheme() {
 }
 
 /**
- * useChartTheme — palet chart yang IKUT BERUBAH saat tema di-toggle.
+ * useChartTheme - palet chart yang IKUT BERUBAH saat tema di-toggle.
  *
  * Chart berbasis canvas membaca warna sebagai nilai statis saat render, sehingga
  * pergantian tema tidak otomatis terlihat. Hook ini memantau atribut

@@ -4,14 +4,14 @@ Rate limiting sederhana per-IP (in-memory, tanpa dependensi eksternal).
 KENAPA ADA
 ----------
 Endpoint /predict terbuka tanpa autentikasi. Tanpa pembatasan, penyerang dapat
-mengirim ribuan variasi input untuk memetakan batas keputusan model — praktik
+mengirim ribuan variasi input untuk memetakan batas keputusan model - praktik
 yang dikenal sebagai *model extraction*. Model adalah aset utama sistem ini.
 
 BATAS KEJUJURAN PENDEKATAN INI
 ------------------------------
 Fitur inti "Import Data Nasabah" melakukan N x POST /predict dari browser
 (4 request paralel). Artinya batch yang SAH dan model extraction memiliki POLA
-AKSES YANG SAMA — keduanya hanya "banyak request dari satu IP". Rate limit
+AKSES YANG SAMA - keduanya hanya "banyak request dari satu IP". Rate limit
 karena itu TIDAK dapat membedakan keduanya, dan sengaja dibuat longgar agar
 tidak mematikan fitur inti.
 

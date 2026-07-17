@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import styles from "./PlaceholderPage.module.css";
 
 /**
- * PlaceholderPage — penanda halaman yang akan diimplementasikan pada
+ * PlaceholderPage - penanda halaman yang akan diimplementasikan pada
  * milestone berikutnya. Menjaga routing & navigasi tetap berfungsi sejak M1.
  */
 export default function PlaceholderPage({ icon = "info", title, description, milestone }) {

@@ -44,7 +44,7 @@ def get_recent(
 
     `dibuat_oleh` membatasi hasil ke milik satu pengguna (prinsip need-to-know:
     analis hanya boleh melihat penilaian yang ia buat sendiri). Bila None,
-    seluruh riwayat dikembalikan — hanya untuk peran pengawas (admin).
+    seluruh riwayat dikembalikan - hanya untuk peran pengawas (admin).
     """
     stmt = select(PredictionHistory)
     if dibuat_oleh is not None:

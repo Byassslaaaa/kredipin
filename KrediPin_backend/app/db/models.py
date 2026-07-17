@@ -51,7 +51,7 @@ class User(Base):
     """
     Pengguna sistem (analis / admin).
 
-    Password TIDAK pernah disimpan apa adanya — hanya hash PBKDF2 berikut
+    Password TIDAK pernah disimpan apa adanya - hanya hash PBKDF2 berikut
     salt-nya (lihat app/auth/security.py).
     """
 
@@ -73,7 +73,7 @@ class Kebijakan(Base):
     Kebijakan risiko yang berlaku sistem-wide. Selalu satu baris (id=1).
 
     KENAPA TERSIMPAN, BUKAN PARAMETER REQUEST: ambang adalah selera risiko
-    PERUSAHAAN. Saat dikirim per-request, ia menjadi preferensi individu —
+    PERUSAHAAN. Saat dikirim per-request, ia menjadi preferensi individu -
     dua nasabah berprofil identik bisa mendapat keputusan berbeda tergantung
     siapa yang menangani. Disimpan di sini, ambang berlaku seragam untuk semua
     analis dan perubahannya meninggalkan jejak (diubah_oleh/diubah_pada).
@@ -92,11 +92,11 @@ class AuditLog(Base):
     Jejak audit tindakan istimewa (privileged actions).
 
     HANYA-TAMBAH (append-only): tidak ada endpoint ubah/hapus. Log yang dapat
-    disunting tidak bernilai sebagai bukti — pihak yang diawasi tidak boleh
+    disunting tidak bernilai sebagai bukti - pihak yang diawasi tidak boleh
     mampu merapikan catatan pengawasnya.
 
     Yang dicatat adalah tindakan yang MENGUBAH aturan atau akses (kebijakan,
-    pengguna) — bukan prediksi biasa. Riwayat prediksi sudah punya jejaknya
+    pengguna) - bukan prediksi biasa. Riwayat prediksi sudah punya jejaknya
     sendiri lewat kolom `dibuat_oleh` pada PredictionHistory.
     """
 

@@ -42,7 +42,7 @@ export const PAGE_META = {
   },
   [ROUTES.audit]: {
     title: "Jejak Audit",
-    subtitle: "Catatan tindakan istimewa — hanya-tambah",
+    subtitle: "Catatan tindakan istimewa - hanya-tambah",
   },
   [ROUTES.dokumentasi]: {
     title: "Dokumentasi",

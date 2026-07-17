@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     # Selaraskan skema database lama dengan model terkini (lihat migrasi_ringan).
     migrasi_ringan()
 
-    # Seed pengguna awal — tanpa ini sistem terkunci total setelah autentikasi
+    # Seed pengguna awal - tanpa ini sistem terkunci total setelah autentikasi
     # diaktifkan (tidak ada yang bisa login untuk membuat user pertama).
     from app.auth.seed import seed_users
     with get_session_langsung() as db:
@@ -48,7 +48,7 @@ async def lifespan(app: FastAPI):
     if settings.SECRET_KEY.startswith("dev-only"):
         logger.warning(
             "SECRET_KEY masih memakai nilai default. WAJIB di-override lewat "
-            "environment pada deployment nyata — bila bocor, token palsu dapat dibuat."
+            "environment pada deployment nyata - bila bocor, token palsu dapat dibuat."
         )
     artifacts.load()  # model dimuat HANYA di sini (sekali)
     logger.info("Startup selesai. Ambang keputusan aktif: %.2f", settings.THRESHOLD)
@@ -64,11 +64,11 @@ app = FastAPI(
 )
 
 # Rate limit dipasang LEBIH DULU dari CORS. Middleware Starlette berjalan
-# terbalik dari urutan pemasangan, sehingga CORS membungkus respons 429 —
+# terbalik dari urutan pemasangan, sehingga CORS membungkus respons 429 -
 # tanpa ini, browser hanya melihat error CORS, bukan pesan 429 yang jelas.
 app.add_middleware(RateLimitMiddleware)
 
-# CORS — izinkan frontend React (Vite) memanggil API.
+# CORS - izinkan frontend React (Vite) memanggil API.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,

@@ -27,7 +27,7 @@ const ApiDemo = lazy(() => import("@/pages/_dev/ApiDemo"));
  * Definisi routing aplikasi. Seluruh halaman berada di dalam DashboardLayout.
  */
 export const router = createBrowserRouter([
-  // Rute publik — satu-satunya halaman yang boleh diakses tanpa sesi.
+  // Rute publik - satu-satunya halaman yang boleh diakses tanpa sesi.
   { path: "/login", element: <Login /> },
   {
     // Seluruh dashboard berada di balik gerbang autentikasi.

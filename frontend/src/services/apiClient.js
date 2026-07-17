@@ -1,5 +1,5 @@
 /**
- * apiClient — instance Axios terpusat untuk seluruh komunikasi ke backend KrediPin.
+ * apiClient - instance Axios terpusat untuk seluruh komunikasi ke backend KrediPin.
  *
  * - baseURL dibaca dari VITE_API_BASE_URL (.env), default http://localhost:8000.
  * - Interceptor menormalkan error backend ({error, detail, status_code}) menjadi
@@ -51,7 +51,7 @@ function normalizeError(error) {
   // Timeout (axios membatalkan karena melewati batas waktu).
   if (error.code === "ECONNABORTED" || /timeout/i.test(error.message || "")) {
     return new ApiError({
-      message: "Permintaan melebihi batas waktu (timeout). Server mungkin sibuk — silakan coba lagi.",
+      message: "Permintaan melebihi batas waktu (timeout). Server mungkin sibuk - silakan coba lagi.",
       isNetwork: true,
       isTimeout: true,
     });

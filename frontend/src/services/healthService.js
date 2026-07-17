@@ -1,5 +1,5 @@
 /**
- * healthService — status kesehatan backend (GET /health).
+ * healthService - status kesehatan backend (GET /health).
  */
 import apiClient from "./apiClient";
 

@@ -4,7 +4,7 @@ import { postPredict } from "@/services/predictService";
 const INITIAL_PROGRESS = { done: 0, total: 0, ok: 0, failed: 0 };
 
 /**
- * useBatchPredict — prediksi BANYAK pengajuan (fitur inti #2).
+ * useBatchPredict - prediksi BANYAK pengajuan (fitur inti #2).
  *
  * Sesuai CLAUDE.md §4: batch = MENGULANG endpoint `POST /predict` yang sudah ada
  * dari sisi klien (BUKAN endpoint baru). Iterasi dijalankan dengan *pool*

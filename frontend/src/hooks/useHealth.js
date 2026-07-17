@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getHealth } from "@/services/healthService";
 
 /**
- * useHealth — pantau status kesehatan backend (GET /health).
+ * useHealth - pantau status kesehatan backend (GET /health).
  *
  * @param {object} opts { auto = true } ambil otomatis saat mount.
  * @returns { data, loading, error, refetch }

@@ -28,7 +28,7 @@
 }
 
 @media (max-width: 640px) {
-  /* Di layar sempit cukup ikonnya — teks memakan ruang judul halaman. */
+  /* Di layar sempit cukup ikonnya - teks memakan ruang judul halaman. */
   .label {
     display: none;
   }

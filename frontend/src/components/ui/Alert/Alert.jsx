@@ -9,7 +9,7 @@ const ICONS = {
 };
 
 /**
- * Alert — kotak pesan kontekstual (info, sukses, peringatan, bahaya).
+ * Alert - kotak pesan kontekstual (info, sukses, peringatan, bahaya).
  * Dipakai antara lain untuk menampilkan disclaimer prediksi & pesan error.
  *
  * Props:

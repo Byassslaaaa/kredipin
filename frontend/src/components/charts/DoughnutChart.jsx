@@ -4,7 +4,7 @@ import { useChartTheme, baseApexOptions } from "./chartTheme";
 import styles from "./Chart.module.css";
 
 /**
- * DoughnutChart — chart donat reusable untuk distribusi/komposisi.
+ * DoughnutChart - chart donat reusable untuk distribusi/komposisi.
  * Ditenagai ApexCharts.
  *
  * Props (TIDAK berubah dari implementasi sebelumnya):

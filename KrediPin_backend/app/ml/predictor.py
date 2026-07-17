@@ -3,7 +3,7 @@ Logika inferensi KrediPin.
 
 Mengembalikan keputusan, probabilitas_layak, confidence, dan 5 faktor pendukung
 (kontribusi SHAP teragregasi dari fitur one-hot ke fitur asal) menggunakan
-`pred_contribs` bawaan XGBoost — tanpa dependensi paket `shap`.
+`pred_contribs` bawaan XGBoost - tanpa dependensi paket `shap`.
 """
 import logging
 from typing import List
@@ -94,7 +94,7 @@ def predict(features: dict, art: ModelArtifacts, threshold: float | None = None)
         # Confidence = keyakinan pada KEPUTUSAN YANG DIAMBIL.
         #
         # Sebelumnya memakai max(p, 1-p), yang sebenarnya mengukur keyakinan pada
-        # keputusan argmax (ambang 0.5) — bukan pada keputusan hasil ambang.
+        # keputusan argmax (ambang 0.5) - bukan pada keputusan hasil ambang.
         # Akibatnya, begitu ambang digeser dari 0.5, angkanya salah arti: pada
         # ambang 0.2 dengan p=0.03 keputusannya "Tidak Layak" namun confidence
         # terbaca 97% seolah yakin "Layak".

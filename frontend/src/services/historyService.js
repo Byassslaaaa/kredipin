@@ -1,5 +1,5 @@
 /**
- * historyService — riwayat prediksi terbaru (GET /history?limit=N).
+ * historyService - riwayat prediksi terbaru (GET /history?limit=N).
  */
 import apiClient from "./apiClient";
 

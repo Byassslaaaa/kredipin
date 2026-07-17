@@ -3,7 +3,7 @@ import KebijakanAmbang from "@/components/common/KebijakanAmbang";
 import styles from "./ValidationSummary.module.css";
 
 /**
- * ValidationSummary — laporan hasil validasi CSV + kontrol untuk memulai batch.
+ * ValidationSummary - laporan hasil validasi CSV + kontrol untuk memulai batch.
  */
 export default function ValidationSummary({ validation, onStart, onReset, canStart }) {
   if (!validation) return null;

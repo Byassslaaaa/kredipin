@@ -110,19 +110,19 @@ export default function PerformaModel() {
         <Card title="Interpretasi" subtitle="Makna metrik untuk konteks kredit" icon="info">
           <ul className={styles.interpret}>
             <li>
-              <strong>Recall {formatPercent(ev.recall)}</strong> — dari seluruh pemohon yang
+              <strong>Recall {formatPercent(ev.recall)}</strong> - dari seluruh pemohon yang
               sebenarnya Layak, sebagian besar berhasil dikenali (sedikit yang terlewat).
             </li>
             <li>
-              <strong>Precision {formatPercent(ev.precision)}</strong> — dari yang diprediksi Layak,
+              <strong>Precision {formatPercent(ev.precision)}</strong> - dari yang diprediksi Layak,
               mayoritas memang Layak (risiko salah-setuju rendah).
             </li>
             <li>
-              <strong>ROC-AUC {formatPercent(ev.roc_auc)}</strong> — model sangat baik membedakan
+              <strong>ROC-AUC {formatPercent(ev.roc_auc)}</strong> - model sangat baik membedakan
               Layak vs Tidak Layak pada berbagai ambang.
             </li>
             <li>
-              <strong>Akurasi {formatPercent(ev.accuracy)}</strong> — proporsi keputusan yang benar
+              <strong>Akurasi {formatPercent(ev.accuracy)}</strong> - proporsi keputusan yang benar
               secara keseluruhan.
             </li>
           </ul>
@@ -130,8 +130,8 @@ export default function PerformaModel() {
       </div>
 
       <Card
-        title="Feature Importance — Permutation"
-        subtitle="Rata-rata penurunan skor model saat nilai fitur diacak (lebih robust) — 12 teratas"
+        title="Feature Importance - Permutation"
+        subtitle="Rata-rata penurunan skor model saat nilai fitur diacak (lebih robust) - 12 teratas"
         icon="trending-up"
       >
         <BarChart
@@ -150,8 +150,8 @@ export default function PerformaModel() {
       </Card>
 
       <Card
-        title="Feature Importance — Gain (bawaan XGBoost)"
-        subtitle="Kontribusi rata-rata pada pemecahan pohon, per kolom — 12 teratas"
+        title="Feature Importance - Gain (bawaan XGBoost)"
+        subtitle="Kontribusi rata-rata pada pemecahan pohon, per kolom - 12 teratas"
         icon="bar-chart"
       >
         <BarChart
@@ -175,7 +175,7 @@ export default function PerformaModel() {
             {HYPERPARAMS.map(([key, label]) => (
               <div key={key} className={styles.paramRow}>
                 <dt className={styles.paramLabel}>{label}</dt>
-                <dd className={`${styles.paramValue} num`}>{String(hp[key] ?? "—")}</dd>
+                <dd className={`${styles.paramValue} num`}>{String(hp[key] ?? "-")}</dd>
               </div>
             ))}
           </dl>
@@ -189,7 +189,7 @@ export default function PerformaModel() {
             </li>
             <li>
               Fitur sintetik <strong>tenor_bulan</strong> &amp; <strong>jaminan</strong> berperan
-              sebagai <em>modifier sekunder</em> — peringkat importance sangat rendah (dilaporkan apa
+              sebagai <em>modifier sekunder</em> - peringkat importance sangat rendah (dilaporkan apa
               adanya, tanpa manipulasi).
             </li>
             <li>

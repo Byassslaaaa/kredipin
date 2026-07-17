@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getHistory } from "@/services/historyService";
 
 /**
- * useHistory — ambil riwayat prediksi terbaru (GET /history?limit=N).
+ * useHistory - ambil riwayat prediksi terbaru (GET /history?limit=N).
  *
  * @param {object} opts { limit = 20, auto = true }
  * @returns { data, loading, error, refetch }

@@ -3,7 +3,7 @@ import { login as loginApi, logout as logoutApi, pulihkanSesi } from "@/services
 import { ambilUser } from "@/services/tokenStore";
 
 /**
- * AuthContext — satu sumber kebenaran status sesi untuk seluruh aplikasi.
+ * AuthContext - satu sumber kebenaran status sesi untuk seluruh aplikasi.
  *
  * Context (bukan hook lokal seperti useTheme) karena banyak komponen di cabang
  * berbeda perlu status yang SAMA: router, topbar, dan halaman terproteksi.

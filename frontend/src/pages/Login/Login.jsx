@@ -10,10 +10,10 @@ import styles from "./Login.module.css";
 const EASE = [0.32, 0.72, 0, 1];
 
 /**
- * Login — gerbang masuk sistem.
+ * Login - gerbang masuk sistem.
  *
  * Tata letak split: panel identitas (kiri) + form (kanan). Sengaja BUKAN kartu
- * melayang di tengah layar — pola itu generik dan menyia-nyiakan ruang untuk
+ * melayang di tengah layar - pola itu generik dan menyia-nyiakan ruang untuk
  * menjelaskan sistem apa yang sedang dimasuki.
  *
  * Tidak memakai elemen <form> HTML; submit lewat handler onClick (CLAUDE.md).
@@ -90,7 +90,7 @@ export default function Login() {
           </ul>
 
           <p className={styles.catatan}>
-            Hasil sistem ini adalah <strong>alat bantu</strong> — keputusan kredit final tetap
+            Hasil sistem ini adalah <strong>alat bantu</strong> - keputusan kredit final tetap
             berada pada analis dan komite kredit.
           </p>
         </motion.div>

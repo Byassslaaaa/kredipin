@@ -3,7 +3,7 @@ import Spinner from "@/components/ui/Spinner";
 import styles from "./Button.module.css";
 
 /**
- * Button — tombol serbaguna.
+ * Button - tombol serbaguna.
  *
  * Props:
  * - variant: "primary" | "secondary" | "ghost" | "danger" | "success"

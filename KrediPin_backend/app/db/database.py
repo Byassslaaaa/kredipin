@@ -83,7 +83,7 @@ def migrasi_ringan() -> None:
     Tambahkan kolom yang hilang pada tabel yang SUDAH ADA.
 
     KENAPA PERLU: Base.metadata.create_all() hanya membuat tabel yang belum ada
-    — ia TIDAK mengubah tabel lama. Akibatnya, saat kolom audit (dibuat_oleh,
+    - ia TIDAK mengubah tabel lama. Akibatnya, saat kolom audit (dibuat_oleh,
     versi_model) ditambahkan ke model, database produksi yang sudah berisi data
     tetap memakai skema lama, sehingga setiap INSERT/SELECT gagal dengan
     "no such column" -> HTTP 500.

@@ -1,7 +1,7 @@
 import styles from "./ProgressBar.module.css";
 
 /**
- * ProgressBar — bar progres horizontal dengan penanda ambang (threshold) opsional.
+ * ProgressBar - bar progres horizontal dengan penanda ambang (threshold) opsional.
  *
  * Props:
  * - value: 0..100 (persen)

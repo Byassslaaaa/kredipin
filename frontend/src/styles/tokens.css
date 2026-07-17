@@ -1,8 +1,8 @@
 /**
- * Design Tokens — KrediPin
+ * Design Tokens - KrediPin
  * Single source of truth untuk warna, spacing, radius, tipografi, shadow, dll.
  *
- * ARAH DESAIN — "Soft Structuralism / Ink":
+ * ARAH DESAIN - "Soft Structuralism / Ink":
  * - Netral berbasis ZINC (tanpa tint biru) → satu keluarga abu-abu yang konsisten.
  * - Primary = INK (near-black di light, near-white di dark) untuk chrome UI.
  *   Menghindari aksen "AI blue/violet" yang generik; identitas datang dari
@@ -17,10 +17,10 @@
 
 :root {
   /* ============================================================
-     BRAND — palet mentah (raw scale)
+     BRAND - palet mentah (raw scale)
      ============================================================ */
 
-  /* Netral: ZINC — satu keluarga, tanpa campuran warm/cool. */
+  /* Netral: ZINC - satu keluarga, tanpa campuran warm/cool. */
   --zinc-50: #fafafa;
   --zinc-100: #f4f4f5;
   --zinc-200: #e4e4e7;
@@ -58,10 +58,10 @@
   --amber-600: #d97706;
 
   /* ============================================================
-     SEMANTIC — dipakai komponen (LIGHT THEME default)
+     SEMANTIC - dipakai komponen (LIGHT THEME default)
      ============================================================ */
 
-  /* Brand — ink, bukan biru. */
+  /* Brand - ink, bukan biru. */
   --color-primary: var(--zinc-900);
   --color-primary-hover: var(--zinc-800);
   --color-primary-active: var(--zinc-950);
@@ -125,7 +125,7 @@
   --sidebar-active-bg: var(--zinc-100);
 
   /* ============================================================
-     TYPOGRAPHY — Geist (grotesk geometris, angka tabular kuat)
+     TYPOGRAPHY - Geist (grotesk geometris, angka tabular kuat)
      ============================================================ */
   --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -138,7 +138,7 @@
   --text-2xl: 1.5rem; /* 24 */
   --text-3xl: 1.875rem; /* 30 */
   --text-4xl: 2.25rem; /* 36 */
-  --text-5xl: 3rem; /* 48 — display */
+  --text-5xl: 3rem; /* 48 - display */
 
   --fw-light: 300;
   --fw-regular: 400;
@@ -176,7 +176,7 @@
   --space-20: 5rem;
 
   /* ============================================================
-     RADIUS — bervariasi: ketat di elemen dalam, lembut di kontainer
+     RADIUS - bervariasi: ketat di elemen dalam, lembut di kontainer
      ============================================================ */
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -186,7 +186,7 @@
   --radius-full: 9999px;
 
   /* ============================================================
-     SHADOW — di-tint hue netral (bukan hitam murni), diffused
+     SHADOW - di-tint hue netral (bukan hitam murni), diffused
      ============================================================ */
   --shadow-xs: 0 1px 2px rgba(9, 9, 11, 0.04);
   --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.05), 0 1px 1px rgba(9, 9, 11, 0.03);
@@ -204,7 +204,7 @@
   --content-max-width: 1280px;
 
   /* ============================================================
-     MOTION — kurva spring-like, bukan linear/ease-in-out
+     MOTION - kurva spring-like, bukan linear/ease-in-out
      ============================================================ */
   --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -224,11 +224,11 @@
   --z-toast: 50;
 
   /* ============================================================
-     CHART PALETTE — dipilih agar terbaca di light & dark
+     CHART PALETTE - dipilih agar terbaca di light & dark
      (chart-1/2 sengaja = semantik Layak/Tidak Layak)
      ============================================================ */
-  --chart-1: #059669; /* emerald — Layak */
-  --chart-2: #dc2626; /* merah — Tidak Layak */
+  --chart-1: #059669; /* emerald - Layak */
+  --chart-2: #dc2626; /* merah - Tidak Layak */
   --chart-3: #d97706; /* amber */
   --chart-4: #0e7490; /* teal gelap */
   --chart-5: #7c3aed; /* violet */

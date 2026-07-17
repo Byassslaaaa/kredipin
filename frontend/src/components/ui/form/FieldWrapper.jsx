@@ -1,7 +1,7 @@
 import styles from "./form.module.css";
 
 /**
- * FieldWrapper — kerangka konsisten untuk setiap kontrol form:
+ * FieldWrapper - kerangka konsisten untuk setiap kontrol form:
  * label (dengan tanda wajib), area kontrol, lalu hint atau pesan error.
  * Dipakai bersama oleh TextField, Select, dan RadioGroup (no duplicated code).
  */

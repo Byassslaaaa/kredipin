@@ -46,7 +46,7 @@ def auth(client):
     Header Authorization untuk endpoint terproteksi.
 
     Memakai kredensial seed yang dibuat otomatis saat startup (lihat
-    app/auth/seed.py) — tanpa itu sistem terkunci total setelah autentikasi
+    app/auth/seed.py) - tanpa itu sistem terkunci total setelah autentikasi
     diaktifkan.
     """
     r = client.post(
@@ -90,7 +90,7 @@ def test_admin_tak_boleh_menilai_kredit(client, auth_admin):
     Segregation of duties: admin mengatur sistem, analis memutus kredit.
 
     Bila admin bisa menyetel ambang SEKALIGUS meloloskan pengajuan, kendali
-    internal jadi tak berarti — satu orang mengendalikan aturan dan hasilnya.
+    internal jadi tak berarti - satu orang mengendalikan aturan dan hasilnya.
     """
     r = client.post("/predict", json=INPUT_VALID, headers=auth_admin)
     assert r.status_code == 403
@@ -203,8 +203,8 @@ def test_rate_limit_melindungi_predict(client, monkeypatch):
     """
     /predict dibatasi per-IP untuk mengerem model extraction.
 
-    Batas asli (600/menit) sengaja longgar agar fitur Import Data Nasabah —
-    yang melakukan N x POST /predict — tidak mati. Di sini batasnya diturunkan
+    Batas asli (600/menit) sengaja longgar agar fitur Import Data Nasabah -
+    yang melakukan N x POST /predict - tidak mati. Di sini batasnya diturunkan
     sementara agar perilakunya dapat diuji tanpa mengirim 600 request.
     """
     from app.core import rate_limit
@@ -215,7 +215,7 @@ def test_rate_limit_melindungi_predict(client, monkeypatch):
     boleh = [limiter.izinkan("1.2.3.4")[0] for _ in range(5)]
     assert boleh == [True, True, True, False, False]
 
-    # IP berbeda punya kuota sendiri — batch satu pengguna tidak memblokir yang lain.
+    # IP berbeda punya kuota sendiri - batch satu pengguna tidak memblokir yang lain.
     assert limiter.izinkan("9.9.9.9")[0] is True
 
 
@@ -262,7 +262,7 @@ def test_login_semua_salah_seragam_401(client, pw):
 
 def test_login_username_tidak_ada_pesannya_sama(client):
     """
-    Pesan galat harus IDENTIK dengan kasus password salah — membedakannya akan
+    Pesan galat harus IDENTIK dengan kasus password salah - membedakannya akan
     membocorkan username mana yang terdaftar (user enumeration).
     """
     a = client.post("/auth/login", json={"username": "hantu", "password": "apa-saja-123"})
@@ -317,7 +317,7 @@ def test_analis_tak_boleh_ubah_kebijakan(client, auth):
     Ambang = kebijakan risiko perusahaan, bukan preferensi analis.
 
     Bila tiap analis bebas menggesernya, dua nasabah identik bisa mendapat
-    keputusan berbeda tergantung siapa yang menangani — ketidakkonsistenan yang
+    keputusan berbeda tergantung siapa yang menangani - ketidakkonsistenan yang
     justru jadi alasan sistem ini dibangun.
     """
     assert client.put("/kebijakan/ambang", json={"ambang": 0.8}, headers=auth).status_code == 403
@@ -408,7 +408,7 @@ def test_admin_buat_pengguna_lalu_bisa_login(client, auth_admin):
     r = client.post("/users", json=baru, headers=auth_admin)
     assert r.status_code in (201, 409)  # 409 bila test dijalankan ulang
 
-    # Pengguna baru harus benar-benar dapat dipakai — bukan sekadar tersimpan.
+    # Pengguna baru harus benar-benar dapat dipakai - bukan sekadar tersimpan.
     masuk = client.post(
         "/auth/login", json={"username": "analis2", "password": "rahasia123"}
     )
@@ -469,7 +469,7 @@ def test_analis_tak_boleh_baca_audit(client, auth):
 def test_perubahan_kebijakan_tercatat_lama_ke_baru(client, auth_admin):
     """
     Auditor harus dapat menjawab: siapa mengubah ambang, kapan, dari berapa ke
-    berapa. Nilai lama WAJIB ikut — tanpanya, log tidak membuktikan apa pun.
+    berapa. Nilai lama WAJIB ikut - tanpanya, log tidak membuktikan apa pun.
     """
     client.put("/kebijakan/ambang", json={"ambang": 0.5}, headers=auth_admin)
     client.put("/kebijakan/ambang", json={"ambang": 0.75}, headers=auth_admin)

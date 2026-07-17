@@ -2,7 +2,7 @@ import Icon from "@/components/ui/Icon";
 import styles from "./Card.module.css";
 
 /**
- * Card — kontainer permukaan serbaguna.
+ * Card - kontainer permukaan serbaguna.
  *
  * Props:
  * - title / subtitle: header opsional

@@ -141,7 +141,7 @@ export default function BerandaAdmin() {
                   <span className={styles.metricLabel}>{METRIC_LABELS[key]}</span>
                   <ProgressBar value={val * 100} tone="success" size="sm" className={styles.metricBar} />
                   <span className={`${styles.metricVal} num`}>
-                    {loading ? "—" : formatPercent(val)}
+                    {loading ? "-" : formatPercent(val)}
                   </span>
                 </div>
               );
@@ -163,7 +163,7 @@ export default function BerandaAdmin() {
         )}
       </Card>
 
-      {/* Kebijakan risiko — wewenang admin */}
+      {/* Kebijakan risiko - wewenang admin */}
       <Card
         title="Kebijakan Ambang Keputusan"
         subtitle="Berlaku untuk seluruh penilaian oleh semua analis"
@@ -180,12 +180,12 @@ export default function BerandaAdmin() {
           <div className={styles.statusItem}>
             <span className={styles.statusLabel}>Model</span>
             <span className={styles.statusValue}>
-              {health?.model_dimuat ? "Dimuat" : summary ? "XGBoost" : "—"}
+              {health?.model_dimuat ? "Dimuat" : summary ? "XGBoost" : "-"}
             </span>
           </div>
           <div className={styles.statusItem}>
             <span className={styles.statusLabel}>Versi API</span>
-            <span className={styles.statusValue}>{health?.versi || "—"}</span>
+            <span className={styles.statusValue}>{health?.versi || "-"}</span>
           </div>
           <div className={styles.statusItem}>
             <span className={styles.statusLabel}>Kurs acuan</span>
@@ -198,7 +198,7 @@ export default function BerandaAdmin() {
 
       <Alert variant="info" icon="info">
         Seluruh hasil prediksi {`KrediPin`} bersifat <strong>alat bantu</strong> pengambilan
-        keputusan berbasis model statistik — <strong>bukan keputusan akhir</strong>. Keputusan
+        keputusan berbasis model statistik - <strong>bukan keputusan akhir</strong>. Keputusan
         kredit final tetap berada pada analis/komite kredit.
       </Alert>
     </div>

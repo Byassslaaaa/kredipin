@@ -1,5 +1,5 @@
 {
-  "name": "KrediPin — Sistem Pendukung Keputusan Kelayakan Pinjaman",
+  "name": "KrediPin - Sistem Pendukung Keputusan Kelayakan Pinjaman",
   "short_name": "KrediPin",
   "description": "Prediksi kelayakan pinjaman digital berbasis machine learning (XGBoost).",
   "lang": "id",

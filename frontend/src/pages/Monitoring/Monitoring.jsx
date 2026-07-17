@@ -7,10 +7,10 @@ import { formatNumber, formatPercent } from "@/utils/format";
 import styles from "./Monitoring.module.css";
 
 /**
- * Monitoring — pemantauan operasional & sinyal drift (khusus admin).
+ * Monitoring - pemantauan operasional & sinyal drift (khusus admin).
  *
  * Sinyal utama: TINGKAT PENYIMPANGAN analis dari model. Ini proxy drift yang
- * paling dini dan murah — bila analis makin sering melawan rekomendasi, model
+ * paling dini dan murah - bila analis makin sering melawan rekomendasi, model
  * mulai tidak sesuai kenyataan lapangan, jauh sebelum label gagal-bayar
  * sebenarnya diketahui (yang baru muncul berbulan kemudian).
  */
@@ -50,7 +50,7 @@ export default function Monitoring() {
         ) : waspada ? (
           <>
             Tingkat penyimpangan <strong>{formatPercent(simpang)}</strong> tergolong tinggi. Analis
-            sering melawan rekomendasi model — pertimbangkan meninjau ulang model atau ambang kebijakan.
+            sering melawan rekomendasi model - pertimbangkan meninjau ulang model atau ambang kebijakan.
           </>
         ) : (
           <>
@@ -68,7 +68,7 @@ export default function Monitoring() {
         <StatCard label="Total Penilaian" value={formatNumber(data.total_penilaian)} icon="database" tone="primary" hint="pengajuan diproses" />
         <StatCard label="Sudah Diputus" value={formatNumber(data.sudah_diputus)} icon="check-circle" tone="success" hint="oleh analis" />
         <StatCard label="Menyimpang dari Model" value={formatNumber(data.menyimpang)} icon="alert-triangle" tone={data.menyimpang ? "warning" : "neutral"} hint="keputusan berbeda" />
-        <StatCard label="Tingkat Penyimpangan" value={simpang == null ? "—" : formatPercent(simpang)} icon="trending-up" tone={waspada ? "danger" : "primary"} hint="sinyal drift" />
+        <StatCard label="Tingkat Penyimpangan" value={simpang == null ? "-" : formatPercent(simpang)} icon="trending-up" tone={waspada ? "danger" : "primary"} hint="sinyal drift" />
       </div>
 
       <Card title="Volume Penilaian Harian" subtitle="Total vs jumlah yang menyimpang dari model" icon="bar-chart">

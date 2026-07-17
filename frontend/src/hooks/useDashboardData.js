@@ -6,7 +6,7 @@ import {
 } from "@/services/dashboardService";
 
 /**
- * useDashboardData — muat data untuk halaman Beranda secara paralel:
+ * useDashboardData - muat data untuk halaman Beranda secara paralel:
  * summary.json, analitik_kpi.json, analitik_bisnis.json.
  *
  * @returns { summary, kpi, bisnis, loading, error }

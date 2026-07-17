@@ -1,5 +1,5 @@
 /**
- * Icon — komponen SVG ringan (gaya Lucide, stroke 24x24).
+ * Icon - komponen SVG ringan (gaya Lucide, stroke 24x24).
  * Memakai SVG, BUKAN emoji (sesuai aturan UI/UX Pro Max).
  *
  * Penggunaan: <Icon name="home" size={20} />

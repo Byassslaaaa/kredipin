@@ -40,7 +40,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def validation_handler(request: Request, exc: RequestValidationError):
-        # 422 — input tidak valid (rentang/enum/tipe). Rapikan pesannya.
+        # 422 - input tidak valid (rentang/enum/tipe). Rapikan pesannya.
         ringkas = []
         for e in exc.errors():
             lokasi = " -> ".join(str(x) for x in e.get("loc", []) if x != "body")
@@ -71,7 +71,7 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def unhandled_handler(request: Request, exc: Exception):
-        # 500 — fallback untuk error tak terduga.
+        # 500 - fallback untuk error tak terduga.
         logger.exception("Kesalahan tak tertangani: %s", exc)
         return _json(
             status.HTTP_500_INTERNAL_SERVER_ERROR,

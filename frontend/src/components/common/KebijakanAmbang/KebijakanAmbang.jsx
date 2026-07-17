@@ -9,10 +9,10 @@ const MIN = 0.2;
 const MAKS = 0.9;
 
 /**
- * KebijakanAmbang — menampilkan ambang keputusan yang BERLAKU.
+ * KebijakanAmbang - menampilkan ambang keputusan yang BERLAKU.
  *
  * Analis: read-only. Ambang adalah selera risiko perusahaan, bukan preferensi
- * individu — bila tiap analis bebas menggesernya, dua nasabah berprofil identik
+ * individu - bila tiap analis bebas menggesernya, dua nasabah berprofil identik
  * bisa mendapat keputusan berbeda tergantung siapa yang menangani.
  *
  * Admin: dapat mengubahnya (mewakili komite risiko), dan perubahan tercatat

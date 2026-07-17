@@ -3,11 +3,11 @@ import { ruteUntukPeran } from "@/constants/navigation";
 import { useAuth } from "./AuthContext";
 
 /**
- * RequireRole — gerbang rute berbasis peran.
+ * RequireRole - gerbang rute berbasis peran.
  *
  * Menyembunyikan menu di sidebar TIDAK cukup: pengguna bisa mengetik URL
  * langsung. Guard ini menolak rute yang bukan haknya. Penegakan sebenarnya
- * tetap di backend (403) — ini lapisan UX agar pengguna tidak terdampar di
+ * tetap di backend (403) - ini lapisan UX agar pengguna tidak terdampar di
  * halaman yang datanya tak akan pernah dimuat.
  */
 export default function RequireRole() {

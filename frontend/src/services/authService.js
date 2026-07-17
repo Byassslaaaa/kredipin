@@ -1,5 +1,5 @@
 /**
- * authService — login, pemulihan sesi, dan logout.
+ * authService - login, pemulihan sesi, dan logout.
  * Dibangun di atas apiClient (token disisipkan otomatis oleh interceptor).
  */
 import apiClient from "./apiClient";

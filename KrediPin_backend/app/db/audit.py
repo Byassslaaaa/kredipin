@@ -1,7 +1,7 @@
 """
 Pencatatan jejak audit.
 
-Sengaja hanya menyediakan CATAT dan BACA — tidak ada ubah/hapus. Log yang dapat
+Sengaja hanya menyediakan CATAT dan BACA - tidak ada ubah/hapus. Log yang dapat
 disunting tidak bernilai sebagai bukti.
 """
 from typing import List, Optional
@@ -26,7 +26,7 @@ def catat(
 
     Kegagalan pencatatan TIDAK boleh menggagalkan tindakannya: audit adalah
     catatan pendamping, bukan syarat. Namun kegagalannya juga tidak boleh
-    senyap — karena itu di-log sebagai peringatan agar terlihat operator.
+    senyap - karena itu di-log sebagai peringatan agar terlihat operator.
     """
     import logging
 

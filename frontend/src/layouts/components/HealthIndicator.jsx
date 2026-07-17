@@ -3,10 +3,10 @@ import Icon from "@/components/ui/Icon";
 import styles from "./HealthIndicator.module.css";
 
 /**
- * HealthIndicator — peringatan koneksi backend (GET /health).
+ * HealthIndicator - peringatan koneksi backend (GET /health).
  *
  * Sengaja TIDAK menampilkan apa pun saat layanan normal. Sistem produksi tidak
- * memamerkan lencana "Backend aktif" secara permanen — status sehat adalah
+ * memamerkan lencana "Backend aktif" secara permanen - status sehat adalah
  * kondisi yang diharapkan, bukan informasi. Indikator hanya muncul ketika ada
  * masalah, sehingga kehadirannya benar-benar berarti.
  */

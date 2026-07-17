@@ -3,7 +3,7 @@
   width: 100%;
 }
 
-/* ApexCharts menyisipkan tooltip/legend sebagai elemen sendiri — pastikan
+/* ApexCharts menyisipkan tooltip/legend sebagai elemen sendiri - pastikan
    tipografinya mewarisi token aplikasi, bukan default pustaka. */
 .wrap :global(.apexcharts-tooltip) {
   border-radius: var(--radius-md);
@@ -36,7 +36,7 @@
   text-align: center;
 }
 
-/* Legend di bawah membuat donat tergeser ke atas — ikuti agar tetap di lubangnya. */
+/* Legend di bawah membuat donat tergeser ke atas - ikuti agar tetap di lubangnya. */
 .centerWithLegend {
   top: 42%;
 }

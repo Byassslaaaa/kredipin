@@ -9,16 +9,16 @@ import { formatDateTime, formatNumber, formatPercent } from "@/utils/format";
 import styles from "./BerandaAnalis.module.css";
 
 /**
- * BerandaAnalis — beranda untuk petugas kredit.
+ * BerandaAnalis - beranda untuk petugas kredit.
  *
  * Sengaja TIDAK menampilkan metrik model (accuracy/ROC-AUC) maupun statistik
  * dataset. Bagi analis, angka itu bukan alat kerja: ia tidak bisa
  * menindaklanjutinya, dan menempatkannya di depan justru menggeser fokus dari
- * pekerjaan sesungguhnya — menilai pengajuan. Yang ditampilkan hanya hal yang
+ * pekerjaan sesungguhnya - menilai pengajuan. Yang ditampilkan hanya hal yang
  * dapat ia tindak lanjuti: pekerjaannya sendiri dan pintu masuk ke tugasnya.
  *
  * Riwayat yang dibaca sudah difilter server per pemilik (need-to-know), sehingga
- * angka di sini adalah hasil kerja analis yang sedang login — bukan gabungan.
+ * angka di sini adalah hasil kerja analis yang sedang login - bukan gabungan.
  */
 export default function BerandaAnalis() {
   const navigate = useNavigate();

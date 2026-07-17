@@ -3,7 +3,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import styles from "./Table.module.css";
 
 /**
- * Table — tabel data berbasis konfigurasi kolom (data-driven, reusable).
+ * Table - tabel data berbasis konfigurasi kolom (data-driven, reusable).
  *
  * Props:
  * - columns: Array<{
@@ -82,7 +82,7 @@ export default function Table({
                     col.mono ? "num" : ""
                   }`}
                 >
-                  {col.render ? col.render(row, index) : row[col.key] ?? "—"}
+                  {col.render ? col.render(row, index) : row[col.key] ?? "-"}
                 </td>
               ))}
             </tr>

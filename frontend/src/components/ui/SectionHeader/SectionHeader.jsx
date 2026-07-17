@@ -1,7 +1,7 @@
 import styles from "./SectionHeader.module.css";
 
 /**
- * SectionHeader — judul + deskripsi + aksi untuk sebuah bagian/halaman konten.
+ * SectionHeader - judul + deskripsi + aksi untuk sebuah bagian/halaman konten.
  * (Judul utama halaman ada di Topbar; ini untuk bagian di dalam konten.)
  */
 export default function SectionHeader({ title, description, actions, as = "h2", className = "" }) {
