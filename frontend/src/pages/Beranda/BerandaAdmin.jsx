@@ -7,7 +7,6 @@ import useHealth from "@/hooks/useHealth";
 import { ROUTES } from "@/constants/navigation";
 import { formatNumber, formatPercent } from "@/utils/format";
 import KebijakanAmbang from "@/components/common/KebijakanAmbang";
-import HeroBanner from "./components/HeroBanner";
 import RiskProfileComparison from "./components/RiskProfileComparison";
 import styles from "./Beranda.module.css";
 
@@ -31,7 +30,6 @@ export default function BerandaAdmin() {
 
   return (
     <div className={styles.page}>
-      <HeroBanner />
 
       {error && (
         <Alert variant="warning" title="Data analitik tidak tersedia">
@@ -177,14 +175,8 @@ export default function BerandaAdmin() {
       {/* Status sistem */}
       <Card padding="sm">
         <div className={styles.statusBar}>
-          <div className={styles.statusItem}>
-            <span className={styles.statusLabel}>Ambang keputusan</span>
-            <span className={styles.statusValue}>
-              {health?.threshold_aktif != null
-                ? formatPercent(health.threshold_aktif)
-                : formatPercent(summary?.ambang_keputusan ?? 0.5)}
-            </span>
-          </div>
+          {/* Ambang tidak ditampilkan di sini: sudah ada kartu Kebijakan Ambang
+              di atas yang menampilkannya sekaligus dapat diubah. */}
           <div className={styles.statusItem}>
             <span className={styles.statusLabel}>Model</span>
             <span className={styles.statusValue}>

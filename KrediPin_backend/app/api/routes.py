@@ -431,6 +431,8 @@ async def history(
             probabilitas_layak=r.probabilitas_layak,
             confidence=r.confidence,
             threshold=r.threshold,
+            dibuat_oleh=r.dibuat_oleh,
+            keputusan_analis=r.keputusan_analis,
         )
         for r in rows
     ]

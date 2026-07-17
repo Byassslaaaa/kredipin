@@ -27,3 +27,9 @@
     width: 100%;
   }
 }
+
+.belum {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+}

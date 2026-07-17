@@ -196,10 +196,15 @@ class RootResponse(BaseModel):
 class HistoryItem(BaseModel):
     id: int
     waktu: datetime
-    keputusan: str
+    keputusan: str  # rekomendasi model
     probabilitas_layak: float
     confidence: float
     threshold: float
+    # Pemilik penilaian. Diisi untuk admin (yang melihat riwayat semua analis);
+    # bagi analis nilainya = dirinya sendiri.
+    dibuat_oleh: Optional[str] = None
+    # Keputusan akhir analis (None bila belum diputus).
+    keputusan_analis: Optional[str] = None
 
 
 class ErrorResponse(BaseModel):

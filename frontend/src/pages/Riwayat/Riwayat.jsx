@@ -3,6 +3,7 @@ import { Alert, Button, Card, EmptyState, StatCard, Table } from "@/components/u
 import { Select } from "@/components/ui/form";
 import DecisionBadge from "@/components/common/DecisionBadge";
 import useHistory from "@/hooks/useHistory";
+import { useAuth } from "@/features/auth/AuthContext";
 import { formatDateTime, formatNumber, formatPercent } from "@/utils/format";
 import styles from "./Riwayat.module.css";
 
@@ -11,6 +12,8 @@ const LIMIT_OPTIONS = [10, 20, 50, 100];
 export default function Riwayat() {
   const [limit, setLimit] = useState(20);
   const { data, loading, error, refetch } = useHistory({ limit });
+  const { user } = useAuth();
+  const admin = user?.peran === "admin";
 
   const ringkasan = useMemo(() => {
     const layak = data.filter((r) => r.keputusan === "Layak").length;
@@ -26,8 +29,9 @@ export default function Riwayat() {
   return (
     <div className={styles.page}>
       <Alert variant="info" icon="info">
-        Riwayat prediksi terbaru dari <code>GET /history</code> untuk audit ringan. Setiap prediksi
-        (tunggal maupun batch) tersimpan otomatis di server. Memerlukan backend aktif.
+        {admin
+          ? "Sebagai admin, Anda melihat riwayat penilaian SELURUH analis (pengawasan). Kolom Analis menunjukkan pemiliknya."
+          : "Riwayat menampilkan penilaian yang ANDA buat. Setiap penilaian tersimpan otomatis di server."}
       </Alert>
 
       <div className={styles.kpiGrid}>
@@ -79,10 +83,27 @@ export default function Riwayat() {
             columns={[
               { key: "id", header: "ID", mono: true, align: "right", width: "70px" },
               { key: "waktu", header: "Waktu", render: (r) => formatDateTime(r.waktu) },
+              ...(admin
+                ? [{
+                    key: "dibuat_oleh",
+                    header: "Analis",
+                    render: (r) => r.dibuat_oleh || "—",
+                  }]
+                : []),
               {
                 key: "keputusan",
-                header: "Keputusan",
+                header: "Rekomendasi Model",
                 render: (r) => <DecisionBadge keputusan={r.keputusan} size="sm" />,
+              },
+              {
+                key: "keputusan_analis",
+                header: "Keputusan Analis",
+                render: (r) =>
+                  r.keputusan_analis ? (
+                    <DecisionBadge keputusan={r.keputusan_analis} size="sm" />
+                  ) : (
+                    <span className={styles.belum}>belum diputus</span>
+                  ),
               },
               {
                 key: "probabilitas_layak",

@@ -3,6 +3,7 @@ import { Alert, Card, EmptyState, Skeleton, StatCard } from "@/components/ui";
 import { BarChart } from "@/components/charts";
 import { getChartColors } from "@/components/charts/chartTheme";
 import ConfusionMatrix from "@/features/performa/components/ConfusionMatrix";
+import GaleriEvaluasi from "@/features/performa/components/GaleriEvaluasi";
 import useResource from "@/hooks/useResource";
 import { getFeatureImportance, getModelInfo } from "@/services/dashboardService";
 import { formatPercent } from "@/utils/format";
@@ -199,6 +200,8 @@ export default function PerformaModel() {
           </ul>
         </Card>
       </div>
+
+      <GaleriEvaluasi />
     </div>
   );
 }
