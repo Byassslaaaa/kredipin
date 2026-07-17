@@ -76,3 +76,27 @@ class Kebijakan(Base):
     ambang: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
     diubah_oleh: Mapped[str | None] = mapped_column(String(64), nullable=True)
     diubah_pada: Mapped[datetime] = mapped_column(DateTime, default=_now, nullable=False)
+
+
+class AuditLog(Base):
+    """
+    Jejak audit tindakan istimewa (privileged actions).
+
+    HANYA-TAMBAH (append-only): tidak ada endpoint ubah/hapus. Log yang dapat
+    disunting tidak bernilai sebagai bukti — pihak yang diawasi tidak boleh
+    mampu merapikan catatan pengawasnya.
+
+    Yang dicatat adalah tindakan yang MENGUBAH aturan atau akses (kebijakan,
+    pengguna) — bukan prediksi biasa. Riwayat prediksi sudah punya jejaknya
+    sendiri lewat kolom `dibuat_oleh` pada PredictionHistory.
+    """
+
+    __tablename__ = "audit_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    waktu: Mapped[datetime] = mapped_column(DateTime, default=_now, nullable=False, index=True)
+    aktor: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    aksi: Mapped[str] = mapped_column(String(48), nullable=False)
+    target: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    nilai_lama: Mapped[str | None] = mapped_column(Text, nullable=True)
+    nilai_baru: Mapped[str | None] = mapped_column(Text, nullable=True)

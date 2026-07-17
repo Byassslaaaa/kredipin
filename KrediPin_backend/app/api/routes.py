@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app import __version__
 from app.config import settings
 from app.db.database import check_db, get_session
+from app.db import audit as audit_repo
 from app.db import kebijakan as kebijakan_repo
 from app.db.repository import get_recent, save_prediction
 from app.ml.model_loader import ModelArtifacts, get_artifacts
@@ -22,7 +23,7 @@ from app.auth.deps import get_current_user, require_admin
 from app.auth.security import buat_token, hash_password, verify_password
 from app.db.models import User
 from app.schemas import (
-    HealthResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
+    AuditItem, HealthResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
     PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserBuatRequest,
     UserInfo, UserItem, UserUbahRequest,
 )
@@ -89,6 +90,25 @@ async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
     return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
 
 
+@router.get("/audit", response_model=list[AuditItem], tags=["audit"])
+async def jejak_audit(
+    limit: int = 50,
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> list[AuditItem]:
+    """
+    Jejak audit tindakan istimewa — khusus admin, HANYA BACA.
+
+    Tidak ada endpoint ubah/hapus: log yang dapat disunting tidak bernilai
+    sebagai bukti.
+    """
+    limit = max(1, min(limit, 200))
+    return [
+        AuditItem.model_validate(r, from_attributes=True)
+        for r in audit_repo.terbaru(db, limit=limit)
+    ]
+
+
 @router.get("/users", response_model=list[UserItem], tags=["pengguna"])
 async def daftar_pengguna(
     db: Session = Depends(get_session),
@@ -119,6 +139,9 @@ async def buat_pengguna(
     db.add(row)
     db.commit()
     db.refresh(row)
+    audit_repo.catat(
+        db, aktor=admin.username, aksi="buat_pengguna", target=row.username, nilai_baru=row.peran
+    )
     logger.warning("Pengguna '%s' (%s) dibuat oleh %s", row.username, row.peran, admin.username)
     return UserItem.model_validate(row, from_attributes=True)
 
@@ -148,6 +171,9 @@ async def ubah_pengguna(
         if payload.peran is not None and payload.peran != "admin":
             raise HTTPException(status_code=400, detail="Tidak dapat menurunkan peran sendiri.")
 
+    # Rekam kondisi SEBELUM diubah agar audit memuat nilai lama -> baru.
+    sebelum = f"peran={row.peran}, aktif={row.aktif}"
+
     if payload.nama is not None:
         row.nama = payload.nama
     if payload.peran is not None:
@@ -159,6 +185,18 @@ async def ubah_pengguna(
 
     db.commit()
     db.refresh(row)
+
+    audit_repo.catat(
+        db,
+        aktor=admin.username,
+        aksi="ubah_pengguna",
+        target=row.username,
+        nilai_lama=sebelum,
+        nilai_baru=(
+            f"peran={row.peran}, aktif={row.aktif}"
+            + (", password diubah" if payload.password is not None else "")
+        ),
+    )
     logger.warning("Pengguna '%s' diubah oleh %s", row.username, admin.username)
     return UserItem.model_validate(row, from_attributes=True)
 
@@ -187,9 +225,18 @@ async def ubah_ambang(
     Perubahan dicatat beserta pelakunya: auditor harus dapat menjawab "siapa
     yang melonggarkan ambang, dan kapan?".
     """
+    lama = kebijakan_repo.ambil(db).ambang
     row = kebijakan_repo.ubah_ambang(db, payload.ambang, admin.username)
+    audit_repo.catat(
+        db,
+        aktor=admin.username,
+        aksi="ubah_kebijakan_ambang",
+        target="ambang",
+        nilai_lama=f"{lama:.2f}",
+        nilai_baru=f"{row.ambang:.2f}",
+    )
     logger.warning(
-        "Kebijakan ambang diubah menjadi %.2f oleh %s", row.ambang, admin.username
+        "Kebijakan ambang diubah %.2f -> %.2f oleh %s", lama, row.ambang, admin.username
     )
     return KebijakanResponse(
         ambang=row.ambang, diubah_oleh=row.diubah_oleh, diubah_pada=row.diubah_pada

@@ -446,3 +446,48 @@ def test_nonaktifkan_pengguna_memutus_aksesnya(client, auth_admin):
 
     # Token lama harus langsung tidak berlaku, tanpa menunggu kedaluwarsa.
     assert client.get("/auth/me", headers=h).status_code == 401
+
+
+# ============================ Jejak Audit ============================
+
+def test_analis_tak_boleh_baca_audit(client, auth):
+    """Yang diawasi tidak boleh membaca catatan pengawasnya."""
+    assert client.get("/audit", headers=auth).status_code == 403
+
+
+def test_perubahan_kebijakan_tercatat_lama_ke_baru(client, auth_admin):
+    """
+    Auditor harus dapat menjawab: siapa mengubah ambang, kapan, dari berapa ke
+    berapa. Nilai lama WAJIB ikut — tanpanya, log tidak membuktikan apa pun.
+    """
+    client.put("/kebijakan/ambang", json={"ambang": 0.5}, headers=auth_admin)
+    client.put("/kebijakan/ambang", json={"ambang": 0.75}, headers=auth_admin)
+
+    log = client.get("/audit?limit=20", headers=auth_admin).json()
+    baris = next(x for x in log if x["aksi"] == "ubah_kebijakan_ambang")
+    assert baris["aktor"] == settings.SEED_ADMIN_USER
+    assert baris["nilai_lama"] == "0.50"
+    assert baris["nilai_baru"] == "0.75"
+
+    client.put("/kebijakan/ambang", json={"ambang": 0.5}, headers=auth_admin)
+
+
+def test_pembuatan_pengguna_tercatat(client, auth_admin):
+    client.post(
+        "/users",
+        json={"username": "terauditlah", "nama": "Ter Audit", "password": "rahasia123"},
+        headers=auth_admin,
+    )
+    log = client.get("/audit?limit=20", headers=auth_admin).json()
+    assert any(
+        x["aksi"] == "buat_pengguna" and x["target"] == "terauditlah" for x in log
+    )
+
+
+def test_audit_tak_bisa_diubah_atau_dihapus(client, auth_admin):
+    """
+    Append-only: log yang dapat disunting tidak bernilai sebagai bukti.
+    Tidak boleh ada endpoint tulis apa pun pada /audit.
+    """
+    assert client.post("/audit", json={}, headers=auth_admin).status_code == 405
+    assert client.delete("/audit/1", headers=auth_admin).status_code in (404, 405)

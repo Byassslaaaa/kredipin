@@ -37,3 +37,7 @@ export const putKebijakanAmbang = (ambang) =>
 export const getUsers = () => apiClient.get("/users").then((r) => r.data);
 export const createUser = (data) => apiClient.post("/users", data).then((r) => r.data);
 export const updateUser = (id, data) => apiClient.patch(`/users/${id}`, data).then((r) => r.data);
+
+/** Jejak audit tindakan istimewa — khusus admin, hanya baca. */
+export const getAudit = (limit = 50) =>
+  apiClient.get(`/audit?limit=${limit}`).then((r) => r.data);

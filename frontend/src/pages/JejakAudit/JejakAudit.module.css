@@ -1,0 +1,37 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.aksi {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+/* Perubahan nilai dibaca sebagai satu kalimat: lama -> baru. */
+.perubahan {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.lama {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.baru {
+  color: var(--color-text);
+  font-weight: var(--fw-semibold);
+}
+
+.panah {
+  color: var(--color-text-muted);
+}
+
+.kosong {
+  color: var(--color-text-muted);
+}

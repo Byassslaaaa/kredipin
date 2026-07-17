@@ -28,6 +28,7 @@ export const ROUTES = {
   performa: "/performa-model",
   riwayat: "/riwayat",
   pengguna: "/kelola-pengguna",
+  audit: "/jejak-audit",
   dokumentasi: "/dokumentasi",
 };
 
@@ -68,6 +69,7 @@ export const NAV_GROUPS = [
       { to: ROUTES.proses, label: "Proses Data (Colab)", icon: "database", peran: ["admin"] },
       { to: ROUTES.performa, label: "Performa Model", icon: "gauge", peran: ["admin"] },
       { to: ROUTES.pengguna, label: "Kelola Pengguna", icon: "users", peran: ["admin"] },
+      { to: ROUTES.audit, label: "Jejak Audit", icon: "shield-check", peran: ["admin"] },
     ],
   },
   {

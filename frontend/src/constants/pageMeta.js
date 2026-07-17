@@ -36,6 +36,10 @@ export const PAGE_META = {
     title: "Kelola Pengguna",
     subtitle: "Buat & atur akun analis dan admin",
   },
+  [ROUTES.audit]: {
+    title: "Jejak Audit",
+    subtitle: "Catatan tindakan istimewa — hanya-tambah",
+  },
   [ROUTES.dokumentasi]: {
     title: "Dokumentasi",
     subtitle: "Panduan sistem, metodologi, & kontrak API",

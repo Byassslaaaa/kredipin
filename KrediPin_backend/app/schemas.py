@@ -298,3 +298,15 @@ class UserUbahRequest(BaseModel):
     password: Optional[str] = Field(None, min_length=8, max_length=128)
     peran: Optional[Peran] = None
     aktif: Optional[bool] = None
+
+
+class AuditItem(BaseModel):
+    """Satu baris jejak audit."""
+
+    id: int
+    waktu: datetime
+    aktor: str
+    aksi: str
+    target: Optional[str] = None
+    nilai_lama: Optional[str] = None
+    nilai_baru: Optional[str] = None

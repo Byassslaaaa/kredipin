@@ -16,6 +16,7 @@ const PerformaModel = lazy(() => import("@/pages/PerformaModel"));
 const Riwayat = lazy(() => import("@/pages/Riwayat"));
 const Dokumentasi = lazy(() => import("@/pages/Dokumentasi"));
 const KelolaPengguna = lazy(() => import("@/pages/KelolaPengguna"));
+const JejakAudit = lazy(() => import("@/pages/JejakAudit"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Login = lazy(() => import("@/pages/Login"));
 const UIShowcase = lazy(() => import("@/pages/_dev/UIShowcase"));
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
           { path: ROUTES.performa, element: <PerformaModel /> },
           { path: ROUTES.riwayat, element: <Riwayat /> },
           { path: ROUTES.pengguna, element: <KelolaPengguna /> },
+          { path: ROUTES.audit, element: <JejakAudit /> },
           { path: ROUTES.dokumentasi, element: <Dokumentasi /> },
           { path: "dev/ui", element: <UIShowcase /> },
           { path: "dev/api", element: <ApiDemo /> },
