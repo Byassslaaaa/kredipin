@@ -49,6 +49,21 @@ Nasabah **sama persis** (hutang Rp270 jt, pendapatan Rp900 jt → rasio sebenarn
 Ini **persis** risiko *"Input tidak divalidasi / manipulasi input"* yang tercantum
 pada tabel Analisis Keamanan (§13) — dan ternyata belum termitigasi.
 
+### Bukti SESUDAH perbaikan (diuji ulang ke API live)
+Eksploit yang sama diulang setelah perbaikan ter-deploy:
+
+| `rasio_hutang` dikirim | SEBELUM | **SESUDAH** |
+|---|---|---|
+| 0.30 (jujur) | Layak 100,0% | Layak 100,0% |
+| 2.0 | Tidak Layak 0,3% ❌ | **Layak 100,0%** ✅ |
+| 5.0 | Tidak Layak 0,3% ❌ | **Layak 100,0%** ✅ |
+| 9.9 | Tidak Layak 0,3% ❌ | **Layak 100,0%** ✅ |
+
+→ Seluruh hasil **identik**: nilai kiriman klien tidak lagi berpengaruh sama
+sekali. Celah tertutup, diverifikasi pada sistem yang berjalan.
+
+Ambang ekstrem juga terbukti ditolak: `threshold=0.0` → **HTTP 422**.
+
 ### Perbaikan
 Rasio kini **dihitung server** dari field dasar; nilai kiriman klien diabaikan.
 

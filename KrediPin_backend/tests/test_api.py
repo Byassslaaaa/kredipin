@@ -158,3 +158,29 @@ def test_404(client):
     r = client.get("/tidak-ada")
     assert r.status_code == 404
     assert r.json()["error"] == "Endpoint tidak ditemukan."
+
+
+def test_rate_limit_melindungi_predict(client, monkeypatch):
+    """
+    /predict dibatasi per-IP untuk mengerem model extraction.
+
+    Batas asli (600/menit) sengaja longgar agar fitur Import Data Nasabah —
+    yang melakukan N x POST /predict — tidak mati. Di sini batasnya diturunkan
+    sementara agar perilakunya dapat diuji tanpa mengirim 600 request.
+    """
+    from app.core import rate_limit
+
+    limiter = rate_limit.RateLimiter(maks=3, jendela_detik=60)
+    monkeypatch.setattr(limiter, "maks", 3)
+
+    boleh = [limiter.izinkan("1.2.3.4")[0] for _ in range(5)]
+    assert boleh == [True, True, True, False, False]
+
+    # IP berbeda punya kuota sendiri — batch satu pengguna tidak memblokir yang lain.
+    assert limiter.izinkan("9.9.9.9")[0] is True
+
+
+def test_rate_limit_tidak_menyentuh_endpoint_lain(client):
+    """Hanya /predict yang dibatasi; /health harus tetap bebas diakses."""
+    for _ in range(10):
+        assert client.get("/health").status_code == 200

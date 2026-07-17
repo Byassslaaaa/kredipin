@@ -58,6 +58,14 @@ class Settings(BaseSettings):
     # parsing (mendukung dua format: dipisah koma ATAU JSON list).
     # Default mencakup port fallback Vite (5173-5175) untuk localhost & 127.0.0.1,
     # sehingga dev server di port mana pun tidak terblokir CORS saat pengembangan.
+    # --- Rate limit /predict (per IP) ---
+    #
+    # Sengaja LONGGAR: fitur inti "Import Data Nasabah" melakukan N x POST
+    # /predict dari browser, sehingga batas ketat akan mematikannya. Ini pagar
+    # penyalahgunaan kasar, bukan pengganti autentikasi.
+    RATE_LIMIT_MAX: int = 600
+    RATE_LIMIT_WINDOW: int = 60  # detik
+
     CORS_ORIGINS: Annotated[List[str], NoDecode] = [
         "http://localhost:5173",
         "http://localhost:5174",

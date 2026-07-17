@@ -16,6 +16,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.rate_limit import RateLimitMiddleware
+
 from app.api.routes import router
 from app.config import settings
 from app.core.exceptions import register_exception_handlers
@@ -46,6 +48,11 @@ app = FastAPI(
     version=settings.APP_VERSION,
     lifespan=lifespan,
 )
+
+# Rate limit dipasang LEBIH DULU dari CORS. Middleware Starlette berjalan
+# terbalik dari urutan pemasangan, sehingga CORS membungkus respons 429 —
+# tanpa ini, browser hanya melihat error CORS, bukan pesan 429 yang jelas.
+app.add_middleware(RateLimitMiddleware)
 
 # CORS — izinkan frontend React (Vite) memanggil API.
 app.add_middleware(
