@@ -85,10 +85,11 @@ def test_predict_valid(client, auth):
     assert body["id_riwayat"] is not None
 
 
-def test_predict_threshold_override(client, auth):
-    # 0.8 masih dalam rentang kebijakan yang diizinkan (0.2-0.9).
+def test_predict_threshold_override(client, auth_admin):
+    # 0.8 dalam rentang kebijakan (0.2-0.9). Memakai admin: sejak pemisahan
+    # peran, hanya admin yang boleh menggeser ambang.
     payload = dict(INPUT_VALID, threshold=0.8)
-    r = client.post("/predict", json=payload, headers=auth)
+    r = client.post("/predict", json=payload, headers=auth_admin)
     assert r.status_code == 200
     assert r.json()["threshold"] == 0.8
 
@@ -134,14 +135,14 @@ def test_rasio_kiriman_klien_diabaikan(client, auth):
     assert ngawur["probabilitas_layak"] == jujur["probabilitas_layak"]
 
 
-def test_confidence_mengikuti_keputusan(client, auth):
+def test_confidence_mengikuti_keputusan(client, auth_admin):
     """
     confidence harus menyatakan keyakinan pada KEPUTUSAN YANG DIAMBIL.
 
     Regresi: rumus lama max(p, 1-p) mengukur keyakinan pada argmax (0.5),
     sehingga salah arti begitu ambang digeser.
     """
-    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9), headers=auth).json()
+    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9), headers=auth_admin).json()
     p = body["probabilitas_layak"]
     harapan = p if body["keputusan"] == "Layak" else 1.0 - p
     assert abs(body["confidence"] - harapan) < 1e-4
@@ -267,3 +268,70 @@ def test_prediksi_mencatat_pemiliknya(client, auth):
             select(PredictionHistory).order_by(PredictionHistory.id.desc())
         ).scalars().first()
     assert baris.dibuat_oleh == settings.SEED_ANALIS_USER
+
+
+# ======================= Pemisahan peran (RBAC) =======================
+
+@pytest.fixture(scope="module")
+def auth_admin(client):
+    r = client.post(
+        "/auth/login",
+        json={"username": settings.SEED_ADMIN_USER, "password": settings.SEED_ADMIN_PASSWORD},
+    )
+    assert r.status_code == 200, r.text
+    return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+
+def test_analis_tak_boleh_menggeser_ambang(client, auth):
+    """
+    Ambang = kebijakan risiko perusahaan, bukan preferensi analis.
+
+    Bila tiap analis bebas menggesernya, dua nasabah identik bisa mendapat
+    keputusan berbeda tergantung siapa yang menangani — ketidakkonsistenan yang
+    justru jadi alasan sistem ini dibangun.
+    """
+    r = client.post("/predict", json=dict(INPUT_VALID, threshold=0.8), headers=auth)
+    assert r.status_code == 403
+
+
+def test_analis_tetap_bisa_menilai_tanpa_ambang(client, auth):
+    """Pembatasan di atas tidak boleh menghalangi pekerjaan utama analis."""
+    r = client.post("/predict", json=INPUT_VALID, headers=auth)
+    assert r.status_code == 200
+    assert r.json()["threshold"] == 0.5  # ambang kebijakan yang berlaku
+
+
+def test_admin_boleh_menggeser_ambang(client, auth_admin):
+    r = client.post("/predict", json=dict(INPUT_VALID, threshold=0.8), headers=auth_admin)
+    assert r.status_code == 200
+    assert r.json()["threshold"] == 0.8
+
+
+def test_analis_hanya_melihat_riwayatnya_sendiri(client, auth, auth_admin):
+    """
+    Need-to-know: analis tidak boleh melihat keputusan kredit analis lain.
+    Filter diterapkan dari identitas token, bukan parameter dari klien.
+    """
+    client.post("/predict", json=INPUT_VALID, headers=auth_admin)
+    client.post("/predict", json=INPUT_VALID, headers=auth)
+
+    r = client.get("/history?limit=100", headers=auth)
+    assert r.status_code == 200
+    # Seluruh baris yang terlihat analis harus miliknya sendiri.
+    from app.db.database import get_session_langsung
+    from app.db.models import PredictionHistory
+    from sqlalchemy import select
+
+    ids = {b["id"] for b in r.json()}
+    with get_session_langsung() as db:
+        rows = db.execute(
+            select(PredictionHistory).where(PredictionHistory.id.in_(ids))
+        ).scalars().all() if ids else []
+    assert all(x.dibuat_oleh == settings.SEED_ANALIS_USER for x in rows)
+
+
+def test_admin_melihat_seluruh_riwayat(client, auth, auth_admin):
+    client.post("/predict", json=INPUT_VALID, headers=auth)
+    r = client.get("/history?limit=100", headers=auth_admin)
+    assert r.status_code == 200
+    assert len(r.json()) >= 1

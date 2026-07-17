@@ -104,6 +104,22 @@ async def predict_endpoint(
 
     Alur: validasi (Pydantic) -> inferensi model -> simpan riwayat -> kembalikan hasil.
     """
+    # Ambang keputusan = KEBIJAKAN RISIKO perusahaan, bukan preferensi individu.
+    #
+    # Bila tiap analis bebas menggeser ambang, dua nasabah dengan profil identik
+    # bisa mendapat keputusan berbeda hanya karena ditangani orang berbeda —
+    # yaitu ketidakkonsistenan yang justru menjadi alasan sistem ini dibangun.
+    # Karena itu override hanya diizinkan bagi admin (mewakili komite risiko);
+    # analis memakai ambang kebijakan yang berlaku.
+    if payload.threshold is not None and user.peran != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Ambang keputusan adalah kebijakan risiko dan hanya dapat diubah "
+                "admin. Penilaian Anda memakai ambang kebijakan yang berlaku."
+            ),
+        )
+
     hasil = predict(payload.features(), art, threshold=payload.threshold)
 
     record = save_prediction(
@@ -137,7 +153,12 @@ async def history(
 ) -> list[HistoryItem]:
     """Ambil riwayat prediksi terbaru (default 20)."""
     limit = max(1, min(limit, 100))
-    rows = get_recent(db, limit=limit)
+
+    # Need-to-know: analis hanya melihat penilaian yang ia buat sendiri; admin
+    # (peran pengawas) melihat seluruhnya. Filter diterapkan di SERVER dari
+    # identitas token — bukan dari parameter yang bisa dikirim klien.
+    pemilik = None if user.peran == "admin" else user.username
+    rows = get_recent(db, limit=limit, dibuat_oleh=pemilik)
     return [
         HistoryItem(
             id=r.id,

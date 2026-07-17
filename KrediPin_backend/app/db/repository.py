@@ -36,9 +36,20 @@ def save_prediction(
     return record
 
 
-def get_recent(db: Session, limit: int = 20) -> List[PredictionHistory]:
-    """Ambil riwayat prediksi terbaru."""
-    stmt = select(PredictionHistory).order_by(PredictionHistory.id.desc()).limit(limit)
+def get_recent(
+    db: Session, limit: int = 20, dibuat_oleh: str | None = None
+) -> List[PredictionHistory]:
+    """
+    Ambil riwayat prediksi terbaru.
+
+    `dibuat_oleh` membatasi hasil ke milik satu pengguna (prinsip need-to-know:
+    analis hanya boleh melihat penilaian yang ia buat sendiri). Bila None,
+    seluruh riwayat dikembalikan — hanya untuk peran pengawas (admin).
+    """
+    stmt = select(PredictionHistory)
+    if dibuat_oleh is not None:
+        stmt = stmt.where(PredictionHistory.dibuat_oleh == dibuat_oleh)
+    stmt = stmt.order_by(PredictionHistory.id.desc()).limit(limit)
     return list(db.scalars(stmt).all())
 
 

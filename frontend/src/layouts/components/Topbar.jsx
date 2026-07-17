@@ -62,12 +62,13 @@ export default function Topbar({ title, subtitle, onToggleSidebar, theme, onTogg
         {user && (
           <button
             type="button"
-            className={styles.iconBtn}
+            className={styles.keluarBtn}
             onClick={logout}
             aria-label="Keluar dari sesi"
-            title="Keluar"
+            title="Keluar dari sesi"
           >
-            <Icon name="x" size={19} />
+            <Icon name="log-out" size={17} />
+            <span className={styles.keluarLabel}>Keluar</span>
           </button>
         )}
       </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui";
 import usePredict from "@/hooks/usePredict";
 import { NATIVE_THRESHOLD } from "@/utils/prediction";
+import { useAuth } from "@/features/auth/AuthContext";
 import useNasabahForm from "@/features/analisis-nasabah/useNasabahForm";
 import NasabahForm from "@/features/analisis-nasabah/components/NasabahForm";
 import HasilPrediksi from "@/features/analisis-nasabah/components/HasilPrediksi";
@@ -10,6 +11,9 @@ import styles from "./AnalisisNasabah.module.css";
 export default function AnalisisNasabah() {
   const form = useNasabahForm();
   const { data, loading, error, predict } = usePredict();
+  const { user } = useAuth();
+  // Ambang = kebijakan risiko; hanya admin yang boleh menggesernya (backend 403).
+  const bolehAturAmbang = user?.peran === "admin";
   const toast = useToast();
   const [threshold, setThreshold] = useState(0.5);
   // Ambang mati = keputusan murni XGBoost (patokan native 50%).
@@ -25,8 +29,10 @@ export default function AnalisisNasabah() {
       return false;
     }
     try {
-      const effectiveThreshold = ambangAktif ? threshold : NATIVE_THRESHOLD;
-      const payload = { ...form.getPayload(), threshold: effectiveThreshold };
+      // Analis TIDAK mengirim threshold sama sekali -> backend memakai ambang
+      // kebijakan. Mengirimnya akan ditolak 403.
+      const payload = { ...form.getPayload() };
+      if (bolehAturAmbang && ambangAktif) payload.threshold = threshold;
       const result = await predict(payload);
       if (result) {
         toast.success(

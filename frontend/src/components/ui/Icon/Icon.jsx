@@ -6,6 +6,15 @@
  */
 
 const PATHS = {
+  // Pintu + panah keluar. Ikon "x" TIDAK dipakai untuk logout: silang berarti
+  // "tutup/batal", sehingga menyesatkan untuk aksi mengakhiri sesi.
+  "log-out": (
+    <>
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <path d="m16 17 5-5-5-5" />
+      <path d="M21 12H9" />
+    </>
+  ),
   home: (
     <>
       <path d="M3 9.5 12 3l9 6.5" />

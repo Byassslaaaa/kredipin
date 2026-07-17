@@ -96,6 +96,7 @@ export default function NasabahForm({
   onAmbangToggle,
   loading,
   hasilSlot,
+  bolehAturAmbang = false,
 }) {
   const kurangiGerak = useReducedMotion();
   const [langkah, setLangkah] = useState(0);
@@ -248,12 +249,26 @@ export default function NasabahForm({
                     </span>
                     <h4 className={styles.groupTitle}>Pengaturan Keputusan</h4>
                   </div>
-                  <ThresholdControl
-                    value={threshold}
-                    onChange={onThresholdChange}
-                    enabled={ambangAktif}
-                    onToggle={onAmbangToggle}
-                  />
+                  {bolehAturAmbang ? (
+                    <ThresholdControl
+                      value={threshold}
+                      onChange={onThresholdChange}
+                      enabled={ambangAktif}
+                      onToggle={onAmbangToggle}
+                    />
+                  ) : (
+                    // Analis melihat kebijakan, bukan kontrol. Menyembunyikan
+                    // slider (bukan sekadar men-disable) agar tidak terkesan
+                    // "boleh diubah tapi sedang rusak".
+                    <p className={styles.ambangInfo}>
+                      <Icon name="shield-check" size={15} />
+                      <span>
+                        Penilaian memakai <strong>ambang kebijakan</strong> yang ditetapkan
+                        komite risiko. Ambang hanya dapat diubah admin agar keputusan tetap
+                        konsisten antar analis.
+                      </span>
+                    </p>
+                  )}
                 </div>
               )}
             </motion.section>
