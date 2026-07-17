@@ -1,4 +1,4 @@
-# KrediPin — Frontend (Tahap 3)
+# KrediPin - Frontend (Tahap 3)
 
 Antarmuka web KrediPin: **React + Vite** dengan **CSS Modules**. Mengonsumsi backend
 FastAPI (lihat `../KrediPin_backend`) tanpa mengubah kontrak API.
@@ -52,8 +52,8 @@ src/
 
 ## Catatan arsitektur
 
-- **Frontend mengikuti backend** — tidak ada endpoint baru. Batch CSV (Import Data)
+- **Frontend mengikuti backend** - tidak ada endpoint baru. Batch CSV (Import Data)
   diimplementasikan dengan mengulang `POST /predict` dari sisi klien.
 - **Nilai uang dalam IDR** (sesuai kontrak API); tidak ada konversi ganda.
-- **Styling hanya CSS Modules** — tanpa Tailwind/Bootstrap/MUI/inline style.
+- **Styling hanya CSS Modules** - tanpa Tailwind/Bootstrap/MUI/inline style.
 - Tema light sebagai default; design tokens sudah disiapkan untuk dark mode.

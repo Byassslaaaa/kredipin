@@ -1,6 +1,6 @@
-# KrediPin — Backend FastAPI
+# KrediPin - Backend FastAPI
 
-REST API untuk **KrediPin — Sistem Pendukung Keputusan Kelayakan Pinjaman Digital**.
+REST API untuk **KrediPin - Sistem Pendukung Keputusan Kelayakan Pinjaman Digital**.
 Backend ini melayani inferensi model **XGBoost** (artefak Tahap 1) sebagai *model-as-a-service*
 dan dikonsumsi oleh frontend **React** (Tahap 3).
 
@@ -22,7 +22,7 @@ SQLite (database/krediPin_history.db)
 ```
 
 Model `.pkl` dimuat **sekali** saat startup (tidak ada *training ulang* per request). Karena artefak
-adalah objek Python (pipeline sklearn + XGBoost), inferensi dilayani oleh Python/FastAPI — pola MLOps
+adalah objek Python (pipeline sklearn + XGBoost), inferensi dilayani oleh Python/FastAPI - pola MLOps
 standar *model-as-a-service*.
 
 ## 2. Struktur Proyek

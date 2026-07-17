@@ -46,13 +46,16 @@
 .merek {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
-/* Logo KrediPin (mark putih) langsung di atas panel gelap (--zinc-950). */
+/* Logo KrediPin (mark putih) langsung di atas panel gelap (--zinc-950).
+   Margin negatif kecil menutup padding transparan bawaan PNG agar mark
+   tidak terlihat berjarak jauh dari tulisan. */
 .logo {
   display: block;
   object-fit: contain;
+  margin-right: calc(-1 * var(--space-1));
 }
 
 .merekNama {

@@ -19,7 +19,20 @@ export default function Sidebar({ open, onNavigate }) {
     >
       <div className={styles.brand}>
         <span className={styles.logo} aria-hidden="true">
-          <img src="/brand/logo-white.png" alt="" className={styles.logoImg} width={22} height={22} />
+          <img
+            src="/brand/logo-black.png"
+            alt=""
+            className={`${styles.logoImg} ${styles.logoLight}`}
+            width={30}
+            height={30}
+          />
+          <img
+            src="/brand/logo-white.png"
+            alt=""
+            className={`${styles.logoImg} ${styles.logoDark}`}
+            width={30}
+            height={30}
+          />
         </span>
         <span className={styles.brandText}>
           <span className={styles.brandName}>{APP.name}</span>
