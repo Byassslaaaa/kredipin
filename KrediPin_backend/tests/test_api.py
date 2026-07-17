@@ -102,7 +102,7 @@ def test_predict_threshold_ekstrem_ditolak(client, auth, nilai):
     dinyatakan Layak (probabilitas >= 0 selalu benar), sehingga model
     ter-bypass total dan nasabah berisiko tinggi pun lolos.
     """
-    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai, headers=auth))
+    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai), headers=auth)
     assert r.status_code == 422
 
 
@@ -126,6 +126,7 @@ def test_rasio_kiriman_klien_diabaikan(client, auth):
             rasio_pinjaman_terhadap_pendapatan=49.0,
             rasio_pembayaran_terhadap_pendapatan=9.9,
         ),
+        headers=auth,
     ).json()
 
     # Hasil harus IDENTIK: rasio kiriman tidak berpengaruh sama sekali.
@@ -140,7 +141,7 @@ def test_confidence_mengikuti_keputusan(client, auth):
     Regresi: rumus lama max(p, 1-p) mengukur keyakinan pada argmax (0.5),
     sehingga salah arti begitu ambang digeser.
     """
-    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9, headers=auth)).json()
+    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9), headers=auth).json()
     p = body["probabilitas_layak"]
     harapan = p if body["keputusan"] == "Layak" else 1.0 - p
     assert abs(body["confidence"] - harapan) < 1e-4
