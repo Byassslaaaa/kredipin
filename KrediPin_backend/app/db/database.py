@@ -106,6 +106,9 @@ def migrasi_ringan() -> None:
     tambahan = {
         "dibuat_oleh": "VARCHAR(64)",
         "versi_model": "VARCHAR(32)",
+        "keputusan_analis": "VARCHAR(16)",
+        "alasan": "TEXT",
+        "diputus_pada": "DATETIME",
     }
 
     with engine.begin() as conn:

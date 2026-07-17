@@ -7,6 +7,7 @@ Definisi endpoint KrediPin.
 - GET  /history   : riwayat prediksi terbaru (audit ringan)
 """
 import logging
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -16,6 +17,7 @@ from app.config import settings
 from app.db.database import check_db, get_session
 from app.db import audit as audit_repo
 from app.db import kebijakan as kebijakan_repo
+from app.db.models import PredictionHistory
 from app.db.repository import get_recent, save_prediction
 from app.ml.model_loader import ModelArtifacts, get_artifacts
 from app.ml.predictor import predict
@@ -23,7 +25,7 @@ from app.auth.deps import get_current_user, require_admin
 from app.auth.security import buat_token, hash_password, verify_password
 from app.db.models import User
 from app.schemas import (
-    AuditItem, HealthResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
+    AuditItem, HealthResponse, KeputusanAnalisRequest, KeputusanAnalisResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
     PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserBuatRequest,
     UserInfo, UserItem, UserUbahRequest,
 )
@@ -305,6 +307,85 @@ async def predict_endpoint(
         disclaimer=hasil["disclaimer"],
         id_riwayat=record.id,
         waktu=record.created_at,
+    )
+
+
+@router.post(
+    "/history/{riwayat_id}/keputusan",
+    response_model=KeputusanAnalisResponse,
+    tags=["prediksi"],
+)
+async def putuskan(
+    riwayat_id: int,
+    payload: KeputusanAnalisRequest,
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> KeputusanAnalisResponse:
+    """
+    Catat keputusan AKHIR analis atas satu penilaian.
+
+    Model hanya merekomendasikan; yang memutuskan tetap manusia. Endpoint ini
+    memisahkan keduanya secara eksplisit sehingga sistem tetap berstatus alat
+    bantu, bukan penentu.
+
+    Aturan: bila keputusan analis BERBEDA dari rekomendasi model, `alasan` wajib
+    diisi. Menyimpang itu sah — analis melihat hal yang tak terlihat model —
+    tetapi harus dapat dipertanggungjawabkan. Sekaligus memberi bahan evaluasi:
+    bila model sering dilawan, itu sinyal model perlu ditinjau.
+    """
+    row = db.get(PredictionHistory, riwayat_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Riwayat penilaian tidak ditemukan.")
+
+    # Need-to-know: hanya pemiliknya yang boleh memutuskan. Admin pun tidak —
+    # ia tidak menilai kredit (pemisahan tugas).
+    if row.dibuat_oleh != user.username:
+        raise HTTPException(
+            status_code=403,
+            detail="Hanya analis yang membuat penilaian ini yang dapat memutuskannya.",
+        )
+
+    menyimpang = payload.keputusan_analis != row.keputusan
+    alasan = (payload.alasan or "").strip()
+
+    if menyimpang and len(alasan) < 10:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                f"Keputusan Anda ({payload.keputusan_analis}) berbeda dari rekomendasi "
+                f"model ({row.keputusan}). Alasan wajib diisi, minimal 10 karakter, "
+                "agar keputusan dapat dipertanggungjawabkan saat audit."
+            ),
+        )
+
+    row.keputusan_analis = payload.keputusan_analis
+    row.alasan = alasan or None
+    row.diputus_pada = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(row)
+
+    # Penyimpangan adalah tindakan yang perlu terlihat pengawas — dicatat.
+    if menyimpang:
+        audit_repo.catat(
+            db,
+            aktor=user.username,
+            aksi="menyimpang_dari_model",
+            target=f"penilaian#{row.id}",
+            nilai_lama=row.keputusan,
+            nilai_baru=row.keputusan_analis,
+        )
+        logger.warning(
+            "Analis %s menyimpang dari model pada penilaian #%s: %s -> %s",
+            user.username, row.id, row.keputusan, row.keputusan_analis,
+        )
+
+    return KeputusanAnalisResponse(
+        id=row.id,
+        keputusan_model=row.keputusan,
+        keputusan_analis=row.keputusan_analis,
+        menyimpang=menyimpang,
+        alasan=row.alasan,
+        diputus_pada=row.diputus_pada,
     )
 
 

@@ -24,6 +24,15 @@ class PredictionHistory(Base):
     dibuat_oleh: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     versi_model: Mapped[str | None] = mapped_column(String(32), nullable=True)
 
+    # --- Keputusan akhir analis (berbeda dari rekomendasi model) ---
+    #
+    # Model hanya MEREKOMENDASIKAN; yang memutuskan tetap manusia. Kolom ini
+    # merekam keputusan final beserta alasannya. Nullable karena penilaian bisa
+    # saja belum diputus, dan baris lama dibuat sebelum konsep ini ada.
+    keputusan_analis: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    alasan: Mapped[str | None] = mapped_column(Text, nullable=True)
+    diputus_pada: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
     # Ringkasan hasil
     keputusan: Mapped[str] = mapped_column(String(20), nullable=False)
     probabilitas_layak: Mapped[float] = mapped_column(Float, nullable=False)

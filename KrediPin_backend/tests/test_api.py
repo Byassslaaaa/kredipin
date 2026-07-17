@@ -491,3 +491,88 @@ def test_audit_tak_bisa_diubah_atau_dihapus(client, auth_admin):
     """
     assert client.post("/audit", json={}, headers=auth_admin).status_code == 405
     assert client.delete("/audit/1", headers=auth_admin).status_code in (404, 405)
+
+
+# ================== Keputusan Akhir Analis (saran #2) ==================
+
+def _penilaian_baru(client, auth):
+    """Buat satu penilaian dan kembalikan (id, keputusan_model)."""
+    d = client.post("/predict", json=INPUT_VALID, headers=auth).json()
+    return d["id_riwayat"], d["keputusan"]
+
+
+def test_setuju_model_tanpa_alasan_boleh(client, auth):
+    """Mengikuti rekomendasi model tidak perlu penjelasan."""
+    rid, model = _penilaian_baru(client, auth)
+    r = client.post(
+        f"/history/{rid}/keputusan", json={"keputusan_analis": model}, headers=auth
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["menyimpang"] is False
+    assert body["keputusan_analis"] == model
+
+
+def test_menyimpang_tanpa_alasan_ditolak(client, auth):
+    """
+    Inti saran #2: menyimpang itu SAH, tetapi harus dapat
+    dipertanggungjawabkan. Tanpa alasan, keputusan tidak dapat diaudit.
+    """
+    rid, model = _penilaian_baru(client, auth)
+    lawan = "Tidak Layak" if model == "Layak" else "Layak"
+
+    r = client.post(
+        f"/history/{rid}/keputusan", json={"keputusan_analis": lawan}, headers=auth
+    )
+    assert r.status_code == 422
+
+    # Alasan asal-asalan juga ditolak.
+    r = client.post(
+        f"/history/{rid}/keputusan",
+        json={"keputusan_analis": lawan, "alasan": "ok"},
+        headers=auth,
+    )
+    assert r.status_code == 422
+
+
+def test_menyimpang_dengan_alasan_diterima_dan_tercatat(client, auth, auth_admin):
+    rid, model = _penilaian_baru(client, auth)
+    lawan = "Tidak Layak" if model == "Layak" else "Layak"
+    alasan = "Dokumen penghasilan tidak dapat diverifikasi saat wawancara lapangan."
+
+    r = client.post(
+        f"/history/{rid}/keputusan",
+        json={"keputusan_analis": lawan, "alasan": alasan},
+        headers=auth,
+    )
+    assert r.status_code == 200
+    body = r.json()
+    assert body["menyimpang"] is True
+    assert body["keputusan_model"] == model
+    assert body["alasan"] == alasan
+
+    # Penyimpangan harus terlihat pengawas.
+    log = client.get("/audit?limit=50", headers=auth_admin).json()
+    assert any(
+        x["aksi"] == "menyimpang_dari_model" and x["target"] == f"penilaian#{rid}"
+        for x in log
+    )
+
+
+def test_hanya_pemilik_boleh_memutuskan(client, auth, auth_admin):
+    """
+    Need-to-know + pemisahan tugas: analis lain tidak boleh memutuskan penilaian
+    orang lain, dan admin sama sekali tidak menilai kredit.
+    """
+    rid, model = _penilaian_baru(client, auth)
+    r = client.post(
+        f"/history/{rid}/keputusan", json={"keputusan_analis": model}, headers=auth_admin
+    )
+    assert r.status_code == 403
+
+
+def test_putuskan_riwayat_tak_ada(client, auth):
+    r = client.post(
+        "/history/999999/keputusan", json={"keputusan_analis": "Layak"}, headers=auth
+    )
+    assert r.status_code == 404

@@ -310,3 +310,31 @@ class AuditItem(BaseModel):
     target: Optional[str] = None
     nilai_lama: Optional[str] = None
     nilai_baru: Optional[str] = None
+
+
+# ==================== Keputusan Akhir Analis ====================
+
+class KeputusanAnalisRequest(BaseModel):
+    """
+    Keputusan akhir analis atas satu penilaian.
+
+    `alasan` WAJIB bila keputusan berbeda dari rekomendasi model — divalidasi di
+    endpoint karena aturannya bergantung pada data prediksi (tidak diketahui
+    skema). Menyimpang dari model itu SAH, tetapi harus dapat
+    dipertanggungjawabkan: inilah yang membuat sistem tetap "alat bantu", bukan
+    penentu, sekaligus memberi bahan evaluasi bila model sering dilawan.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    keputusan_analis: Literal["Layak", "Tidak Layak"]
+    alasan: Optional[str] = Field(None, max_length=1000)
+
+
+class KeputusanAnalisResponse(BaseModel):
+    id: int
+    keputusan_model: str
+    keputusan_analis: str
+    menyimpang: bool
+    alasan: Optional[str] = None
+    diputus_pada: datetime

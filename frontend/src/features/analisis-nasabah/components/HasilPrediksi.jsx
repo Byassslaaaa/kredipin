@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Alert, Card, EmptyState, ProgressBar, Skeleton } from "@/components/ui";
 import Icon from "@/components/ui/Icon";
 import FaktorList from "@/components/common/FaktorList";
+import KeputusanAnalis from "./KeputusanAnalis";
 import { formatDateTime, formatPercent } from "@/utils/format";
 import { isMurniXgboost } from "@/utils/prediction";
 import styles from "./HasilPrediksi.module.css";
@@ -179,6 +180,13 @@ export default function HasilPrediksi({ data, loading, error }) {
           </div>
           <FaktorList faktor={data.faktor} />
         </motion.div>
+
+        {/* Keputusan akhir analis — model merekomendasikan, manusia memutuskan. */}
+        {data.id_riwayat != null && (
+          <motion.div variants={bagian}>
+            <KeputusanAnalis riwayatId={data.id_riwayat} keputusanModel={data.keputusan} />
+          </motion.div>
+        )}
 
         {/* Disclaimer */}
         <motion.div variants={bagian} className={styles.disclaimer}>

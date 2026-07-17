@@ -18,3 +18,12 @@ export async function postPredict(payload, { signal } = {}) {
   const { data } = await apiClient.post("/predict", payload, { signal });
   return data;
 }
+
+/**
+ * Catat keputusan AKHIR analis atas satu penilaian.
+ * Backend menolak 422 bila menyimpang dari model tanpa alasan memadai.
+ */
+export const putuskan = (riwayatId, keputusan_analis, alasan) =>
+  apiClient
+    .post(`/history/${riwayatId}/keputusan`, { keputusan_analis, alasan: alasan || null })
+    .then((r) => r.data);
