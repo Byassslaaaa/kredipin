@@ -31,7 +31,7 @@ export default function Stepper({ steps = [], current = 0, onStepClick }) {
               aria-current={state === "active" ? "step" : undefined}
             >
               <span className={styles.marker} aria-hidden="true">
-                {state === "done" ? <Icon name="check-circle" size={18} /> : <span>{i + 1}</span>}
+                {state === "done" ? <Icon name="check" size={18} /> : <span>{i + 1}</span>}
               </span>
               <span className={styles.label}>{label}</span>
             </Tag>

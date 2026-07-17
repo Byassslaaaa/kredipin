@@ -47,8 +47,8 @@ export default function UIShowcase() {
           <Button>Primary</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="ghost">Ghost</Button>
-          <Button variant="success" iconLeft="check-circle">Sukses</Button>
-          <Button variant="danger" iconLeft="x-circle">Hapus</Button>
+          <Button variant="success" iconLeft="check">Sukses</Button>
+          <Button variant="danger" iconLeft="x">Hapus</Button>
           <Button loading>Memuat</Button>
           <Button size="sm">Small</Button>
           <Button size="lg" iconRight="chevron-right">Large</Button>
@@ -57,8 +57,8 @@ export default function UIShowcase() {
 
       <Card title="Badges">
         <div className={styles.row}>
-          <Badge variant="success" icon="check-circle">Layak</Badge>
-          <Badge variant="danger" icon="x-circle">Tidak Layak</Badge>
+          <Badge variant="success" icon="check">Layak</Badge>
+          <Badge variant="danger" icon="x">Tidak Layak</Badge>
           <Badge variant="primary" dot>Inti</Badge>
           <Badge variant="warning">Peringatan</Badge>
           <Badge variant="info">Info</Badge>
@@ -69,7 +69,7 @@ export default function UIShowcase() {
       <div className={styles.grid4}>
         <StatCard label="Total Data" value="50.000" icon="database" tone="primary" hint="baris pinjaman" />
         <StatCard label="Akurasi" value="92,74" unit="%" icon="gauge" tone="success" trend={{ value: "tinggi", direction: "up" }} />
-        <StatCard label="Ditolak" value="22.071" icon="x-circle" tone="danger" />
+        <StatCard label="Ditolak" value="22.071" icon="x" tone="danger" />
         <StatCard label="Memuat" value="" icon="trending-up" tone="warning" loading />
       </div>
 

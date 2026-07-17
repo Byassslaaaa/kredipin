@@ -29,7 +29,7 @@ export default function HealthIndicator() {
           : "Sebagian layanan tidak tersedia."
       }
     >
-      <Icon name={putus ? "x-circle" : "alert-triangle"} size={14} />
+      <Icon name={putus ? "x" : "alert-triangle"} size={14} />
       <span className={styles.label}>{putus ? "Tidak terhubung" : "Layanan terbatas"}</span>
     </span>
   );

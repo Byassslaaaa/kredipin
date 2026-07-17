@@ -64,7 +64,7 @@ export default function PerformaModel() {
     return (
       <Card>
         <EmptyState
-          icon="x-circle"
+          icon="x"
           tone="danger"
           title="Data performa tidak tersedia"
           description={`${model.error?.message || "Gagal memuat."} Jalankan "npm run prepare-data".`}

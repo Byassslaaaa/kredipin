@@ -43,7 +43,7 @@ export default function EksplorasiData() {
     return (
       <Card>
         <EmptyState
-          icon="x-circle"
+          icon="x"
           tone="danger"
           title="Data eksplorasi tidak tersedia"
           description={`${error?.message || "Gagal memuat."} Jalankan "npm run prepare-data".`}
@@ -70,14 +70,14 @@ export default function EksplorasiData() {
         <StatCard
           label="Layak"
           value={formatNumber(data.totalLayak)}
-          icon="check-circle"
+          icon="check"
           tone="success"
           hint={`${formatPercent(data.totalLayak / data.total)} dari total`}
         />
         <StatCard
           label="Tidak Layak"
           value={formatNumber(data.totalTidakLayak)}
-          icon="x-circle"
+          icon="x"
           tone="danger"
           hint={`${formatPercent(data.totalTidakLayak / data.total)} dari total`}
         />

@@ -6,9 +6,9 @@ import styles from "./Toast.module.css";
 
 const ICONS = {
   info: "info",
-  success: "check-circle",
+  success: "check",
   warning: "alert-triangle",
-  danger: "x-circle",
+  danger: "x",
 };
 
 /**

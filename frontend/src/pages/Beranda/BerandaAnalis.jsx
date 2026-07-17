@@ -69,7 +69,7 @@ export default function BerandaAnalis() {
         <StatCard
           label="Direkomendasikan Layak"
           value={loading ? "" : formatNumber(ringkas.layak)}
-          icon="check-circle"
+          icon="check"
           tone="success"
           hint="oleh model"
           loading={loading}
@@ -77,7 +77,7 @@ export default function BerandaAnalis() {
         <StatCard
           label="Direkomendasikan Tolak"
           value={loading ? "" : formatNumber(ringkas.tolak)}
-          icon="x-circle"
+          icon="x"
           tone="danger"
           hint="oleh model"
           loading={loading}

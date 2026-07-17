@@ -39,7 +39,7 @@ function TombolSalin({ teks }) {
 
   return (
     <button type="button" className={styles.salin} onClick={salin}>
-      {tersalin && <Icon name="check-circle" size={12} />}
+      {tersalin && <Icon name="check" size={12} />}
       {tersalin ? "Tersalin" : "Salin"}
     </button>
   );
@@ -150,7 +150,7 @@ export default function ProsesColab() {
     return (
       <Card>
         <EmptyState
-          icon="x-circle"
+          icon="x"
           tone="danger"
           title="Data proses tidak tersedia"
           description={`${error?.message || "Gagal memuat."} Jalankan "npm run prepare-data".`}

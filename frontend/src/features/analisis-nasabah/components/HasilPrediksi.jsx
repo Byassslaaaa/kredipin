@@ -36,7 +36,7 @@ function ErrorPanel({ error }) {
   return (
     <Card>
       <EmptyState
-        icon="x-circle"
+        icon="x"
         tone="danger"
         title="Penilaian gagal diproses"
         description={error?.message || "Terjadi kesalahan saat memproses penilaian."}
@@ -116,7 +116,7 @@ export default function HasilPrediksi({ data, loading, error }) {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 380, damping: 18, delay: 0.1 }}
           >
-            <Icon name={layak ? "check-circle" : "x-circle"} size={26} />
+            <Icon name={layak ? "check" : "x"} size={26} />
           </motion.span>
           <div className={styles.verdictText}>
             <span className={styles.verdictLabel}>Keputusan Model</span>
@@ -155,7 +155,7 @@ export default function HasilPrediksi({ data, loading, error }) {
 
           {/* Keterangan kemurnian model */}
           <div className={`${styles.modelNote} ${murni ? styles.modelNoteMurni : styles.modelNoteAmbang}`}>
-            <Icon name={murni ? "check-circle" : "alert-triangle"} size={15} />
+            <Icon name={murni ? "check" : "alert-triangle"} size={15} />
             <p>
               {murni ? (
                 <>

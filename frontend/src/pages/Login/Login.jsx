@@ -111,7 +111,7 @@ export default function Login() {
           </div>
 
           {galat && (
-            <Alert variant="danger" icon="x-circle">
+            <Alert variant="danger" icon="x">
               {galat}
             </Alert>
           )}

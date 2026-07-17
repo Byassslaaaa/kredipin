@@ -35,7 +35,7 @@ export default function JejakAudit() {
       </Alert>
 
       {error && (
-        <Alert variant="danger" icon="x-circle" title="Gagal memuat jejak audit">
+        <Alert variant="danger" icon="x" title="Gagal memuat jejak audit">
           {error.message}
         </Alert>
       )}

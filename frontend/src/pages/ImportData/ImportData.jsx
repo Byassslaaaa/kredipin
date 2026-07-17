@@ -58,7 +58,7 @@ export default function ImportData() {
       )}
 
       {imp.stage === "error" && (
-        <Alert variant="danger" icon="x-circle" title="Gagal membaca file">
+        <Alert variant="danger" icon="x" title="Gagal membaca file">
           {imp.parseError}
         </Alert>
       )}

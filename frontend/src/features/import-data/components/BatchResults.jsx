@@ -59,11 +59,11 @@ function DoneView({ batch, onDownload, onReset }) {
       )}
 
       <div className={styles.kpis}>
-        <StatCard label="Layak" value={formatNumber(summary.layak)} icon="check-circle" tone="success" />
+        <StatCard label="Layak" value={formatNumber(summary.layak)} icon="check" tone="success" />
         <StatCard
           label="Tidak Layak"
           value={formatNumber(summary.tidakLayak)}
-          icon="x-circle"
+          icon="x"
           tone="danger"
         />
         <StatCard

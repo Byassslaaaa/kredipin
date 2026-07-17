@@ -75,6 +75,12 @@ const PATHS = {
       <path d="M18 6 6 18M6 6l12 12" />
     </>
   ),
+  // Centang polos tanpa lingkaran pengelilingnya (tampilan lebih bersih).
+  check: (
+    <>
+      <path d="M20 6 9 17l-5-5" />
+    </>
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="7" />
@@ -102,18 +108,6 @@ const PATHS = {
     <>
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
       <path d="m9 12 2 2 4-4" />
-    </>
-  ),
-  "check-circle": (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m9 12 2 2 4-4" />
-    </>
-  ),
-  "x-circle": (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m15 9-6 6M9 9l6 6" />
     </>
   ),
   "alert-triangle": (

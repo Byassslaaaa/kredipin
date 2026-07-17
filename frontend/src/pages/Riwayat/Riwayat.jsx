@@ -36,8 +36,8 @@ export default function Riwayat() {
 
       <div className={styles.kpiGrid}>
         <StatCard label="Ditampilkan" value={formatNumber(ringkasan.total)} icon="database" tone="primary" loading={loading} />
-        <StatCard label="Layak" value={formatNumber(ringkasan.layak)} icon="check-circle" tone="success" loading={loading} />
-        <StatCard label="Tidak Layak" value={formatNumber(ringkasan.tidakLayak)} icon="x-circle" tone="danger" loading={loading} />
+        <StatCard label="Layak" value={formatNumber(ringkasan.layak)} icon="check" tone="success" loading={loading} />
+        <StatCard label="Tidak Layak" value={formatNumber(ringkasan.tidakLayak)} icon="x" tone="danger" loading={loading} />
         <StatCard label="Rata-rata Probabilitas" value={formatPercent(ringkasan.avgProb)} icon="gauge" tone="primary" loading={loading} />
       </div>
 
@@ -62,7 +62,7 @@ export default function Riwayat() {
       >
         {error ? (
           <EmptyState
-            icon="x-circle"
+            icon="x"
             tone="danger"
             title="Gagal memuat riwayat"
             description={error.message}

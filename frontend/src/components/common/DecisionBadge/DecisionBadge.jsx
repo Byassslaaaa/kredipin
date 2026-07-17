@@ -9,7 +9,7 @@ export default function DecisionBadge({ keputusan, size = "md" }) {
   return (
     <Badge
       variant={layak ? "success" : "danger"}
-      icon={layak ? "check-circle" : "x-circle"}
+      icon={layak ? "check" : "x"}
       size={size}
     >
       {keputusan}

@@ -42,7 +42,7 @@ export default function KeputusanAnalis({ riwayatId, keputusanModel }) {
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
         <Alert
           variant={selesai.menyimpang ? "warning" : "success"}
-          icon={selesai.menyimpang ? "alert-triangle" : "check-circle"}
+          icon={selesai.menyimpang ? "alert-triangle" : "check"}
           title={`Keputusan tercatat: ${selesai.keputusan_analis}`}
         >
           {selesai.menyimpang ? (
@@ -83,7 +83,7 @@ export default function KeputusanAnalis({ riwayatId, keputusanModel }) {
               onClick={() => setPilihan(opsi)}
               aria-pressed={aktif}
             >
-              <Icon name={opsi === "Layak" ? "check-circle" : "x-circle"} size={18} />
+              <Icon name={opsi === "Layak" ? "check" : "x"} size={18} />
               <span className={styles.opsiLabel}>{opsi}</span>
               {sesuaiModel && <span className={styles.tag}>saran model</span>}
             </button>
@@ -116,7 +116,7 @@ export default function KeputusanAnalis({ riwayatId, keputusanModel }) {
       )}
 
       {galat && (
-        <Alert variant="danger" icon="x-circle">
+        <Alert variant="danger" icon="x">
           {galat}
         </Alert>
       )}

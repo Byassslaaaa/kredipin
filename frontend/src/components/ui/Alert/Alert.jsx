@@ -3,9 +3,9 @@ import styles from "./Alert.module.css";
 
 const ICONS = {
   info: "info",
-  success: "check-circle",
+  success: "check",
   warning: "alert-triangle",
-  danger: "x-circle",
+  danger: "x",
 };
 
 /**

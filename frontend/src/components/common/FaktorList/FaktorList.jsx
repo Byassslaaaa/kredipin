@@ -53,7 +53,7 @@ export default function FaktorList({ faktor = [] }) {
                 />
               </div>
               <span className={`${styles.arah} ${layak ? styles.arahLayak : styles.arahTolak}`}>
-                <Icon name={layak ? "check-circle" : "x-circle"} size={14} />
+                <Icon name={layak ? "check" : "x"} size={14} />
                 {layak ? "Layak" : "Tidak Layak"}
               </span>
             </div>

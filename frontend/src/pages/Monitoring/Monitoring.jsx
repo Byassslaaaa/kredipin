@@ -32,7 +32,7 @@ export default function Monitoring() {
   if (error || !data) {
     return (
       <Card>
-        <EmptyState icon="x-circle" tone="danger" title="Data pemantauan tidak tersedia"
+        <EmptyState icon="x" tone="danger" title="Data pemantauan tidak tersedia"
           description={error?.message || "Gagal memuat."} />
       </Card>
     );
@@ -66,7 +66,7 @@ export default function Monitoring() {
 
       <div className={styles.kpi}>
         <StatCard label="Total Penilaian" value={formatNumber(data.total_penilaian)} icon="database" tone="primary" hint="pengajuan diproses" />
-        <StatCard label="Sudah Diputus" value={formatNumber(data.sudah_diputus)} icon="check-circle" tone="success" hint="oleh analis" />
+        <StatCard label="Sudah Diputus" value={formatNumber(data.sudah_diputus)} icon="check" tone="success" hint="oleh analis" />
         <StatCard label="Menyimpang dari Model" value={formatNumber(data.menyimpang)} icon="alert-triangle" tone={data.menyimpang ? "warning" : "neutral"} hint="keputusan berbeda" />
         <StatCard label="Tingkat Penyimpangan" value={simpang == null ? "-" : formatPercent(simpang)} icon="trending-up" tone={waspada ? "danger" : "primary"} hint="sinyal drift" />
       </div>
