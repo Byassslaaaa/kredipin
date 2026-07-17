@@ -370,3 +370,79 @@ def test_admin_melihat_seluruh_riwayat(client, auth, auth_admin):
     r = client.get("/history?limit=100", headers=auth_admin)
     assert r.status_code == 200
     assert len(r.json()) >= 1
+
+
+# ======================= Kelola Pengguna (admin) =======================
+
+def test_analis_tak_boleh_kelola_pengguna(client, auth):
+    """Analis tidak boleh menaikkan haknya sendiri dengan membuat akun admin."""
+    assert client.get("/users", headers=auth).status_code == 403
+    assert client.post(
+        "/users",
+        json={"username": "penyusup", "nama": "Penyusup", "password": "rahasia123", "peran": "admin"},
+        headers=auth,
+    ).status_code == 403
+
+
+def test_admin_kelola_pengguna(client, auth_admin):
+    r = client.get("/users", headers=auth_admin)
+    assert r.status_code == 200
+    assert any(u["username"] == settings.SEED_ADMIN_USER for u in r.json())
+    # Hash password tidak boleh pernah ikut terkirim.
+    assert "password" not in r.text.lower()
+
+
+def test_admin_buat_pengguna_lalu_bisa_login(client, auth_admin):
+    baru = {"username": "analis2", "nama": "Analis Dua", "password": "rahasia123", "peran": "analis"}
+    r = client.post("/users", json=baru, headers=auth_admin)
+    assert r.status_code in (201, 409)  # 409 bila test dijalankan ulang
+
+    # Pengguna baru harus benar-benar dapat dipakai — bukan sekadar tersimpan.
+    masuk = client.post(
+        "/auth/login", json={"username": "analis2", "password": "rahasia123"}
+    )
+    assert masuk.status_code == 200
+    assert masuk.json()["user"]["peran"] == "analis"
+
+
+def test_username_ganda_ditolak(client, auth_admin):
+    payload = {"username": settings.SEED_ADMIN_USER, "nama": "Kembar", "password": "rahasia123"}
+    assert client.post("/users", json=payload, headers=auth_admin).status_code == 409
+
+
+def test_admin_tak_bisa_mengunci_dirinya_sendiri(client, auth_admin):
+    """
+    Penjagaan lockout: tanpa ini, satu klik keliru dapat menghilangkan SELURUH
+    akses admin dari sistem, dan tak seorang pun bisa memulihkannya lewat aplikasi.
+    """
+    me = client.get("/auth/me", headers=auth_admin).json()
+    rows = client.get("/users", headers=auth_admin).json()
+    saya = next(u for u in rows if u["username"] == me["username"])
+
+    assert client.patch(
+        f"/users/{saya['id']}", json={"aktif": False}, headers=auth_admin
+    ).status_code == 400
+    assert client.patch(
+        f"/users/{saya['id']}", json={"peran": "analis"}, headers=auth_admin
+    ).status_code == 400
+
+
+def test_nonaktifkan_pengguna_memutus_aksesnya(client, auth_admin):
+    """Status aktif dicek SETIAP request, bukan hanya saat login."""
+    client.post(
+        "/users",
+        json={"username": "cabut", "nama": "Akan Dicabut", "password": "rahasia123"},
+        headers=auth_admin,
+    )
+    tok = client.post(
+        "/auth/login", json={"username": "cabut", "password": "rahasia123"}
+    ).json()["access_token"]
+    h = {"Authorization": f"Bearer {tok}"}
+    assert client.get("/auth/me", headers=h).status_code == 200
+
+    rows = client.get("/users", headers=auth_admin).json()
+    uid = next(u["id"] for u in rows if u["username"] == "cabut")
+    client.patch(f"/users/{uid}", json={"aktif": False}, headers=auth_admin)
+
+    # Token lama harus langsung tidak berlaku, tanpa menunggu kedaluwarsa.
+    assert client.get("/auth/me", headers=h).status_code == 401

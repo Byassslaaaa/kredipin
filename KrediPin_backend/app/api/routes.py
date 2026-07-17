@@ -19,11 +19,12 @@ from app.db.repository import get_recent, save_prediction
 from app.ml.model_loader import ModelArtifacts, get_artifacts
 from app.ml.predictor import predict
 from app.auth.deps import get_current_user, require_admin
-from app.auth.security import buat_token, verify_password
+from app.auth.security import buat_token, hash_password, verify_password
 from app.db.models import User
 from app.schemas import (
     HealthResponse, HistoryItem, KebijakanResponse, LoginRequest, LoginResponse,
-    PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserInfo,
+    PredictRequest, PredictResponse, RootResponse, UbahAmbangRequest, UserBuatRequest,
+    UserInfo, UserItem, UserUbahRequest,
 )
 from sqlalchemy import select
 
@@ -86,6 +87,80 @@ async def login(payload: LoginRequest, db: Session = Depends(get_session)) -> Lo
 async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
     """Identitas pemilik token — dipakai frontend memulihkan sesi saat refresh."""
     return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
+
+
+@router.get("/users", response_model=list[UserItem], tags=["pengguna"])
+async def daftar_pengguna(
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> list[UserItem]:
+    """Daftar seluruh pengguna — khusus admin."""
+    rows = db.execute(select(User).order_by(User.id)).scalars().all()
+    return [UserItem.model_validate(r, from_attributes=True) for r in rows]
+
+
+@router.post("/users", response_model=UserItem, status_code=201, tags=["pengguna"])
+async def buat_pengguna(
+    payload: UserBuatRequest,
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> UserItem:
+    """Buat pengguna baru — khusus admin."""
+    ada = db.execute(select(User).where(User.username == payload.username)).scalar_one_or_none()
+    if ada:
+        raise HTTPException(status_code=409, detail="Username sudah dipakai.")
+
+    row = User(
+        username=payload.username,
+        nama=payload.nama,
+        password_hash=hash_password(payload.password),
+        peran=payload.peran,
+    )
+    db.add(row)
+    db.commit()
+    db.refresh(row)
+    logger.warning("Pengguna '%s' (%s) dibuat oleh %s", row.username, row.peran, admin.username)
+    return UserItem.model_validate(row, from_attributes=True)
+
+
+@router.patch("/users/{user_id}", response_model=UserItem, tags=["pengguna"])
+async def ubah_pengguna(
+    user_id: int,
+    payload: UserUbahRequest,
+    db: Session = Depends(get_session),
+    admin: User = Depends(require_admin),
+) -> UserItem:
+    """
+    Ubah pengguna — khusus admin.
+
+    Dua penjagaan terhadap penguncian diri (lockout): admin tidak boleh
+    menonaktifkan maupun menurunkan perannya sendiri. Tanpa ini, satu klik keliru
+    dapat menghilangkan SELURUH akses admin dari sistem, dan tak ada seorang pun
+    yang bisa memulihkannya lewat aplikasi.
+    """
+    row = db.get(User, user_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Pengguna tidak ditemukan.")
+
+    if row.id == admin.id:
+        if payload.aktif is False:
+            raise HTTPException(status_code=400, detail="Tidak dapat menonaktifkan akun sendiri.")
+        if payload.peran is not None and payload.peran != "admin":
+            raise HTTPException(status_code=400, detail="Tidak dapat menurunkan peran sendiri.")
+
+    if payload.nama is not None:
+        row.nama = payload.nama
+    if payload.peran is not None:
+        row.peran = payload.peran
+    if payload.aktif is not None:
+        row.aktif = payload.aktif
+    if payload.password is not None:
+        row.password_hash = hash_password(payload.password)
+
+    db.commit()
+    db.refresh(row)
+    logger.warning("Pengguna '%s' diubah oleh %s", row.username, admin.username)
+    return UserItem.model_validate(row, from_attributes=True)
 
 
 @router.get("/kebijakan/ambang", response_model=KebijakanResponse, tags=["kebijakan"])

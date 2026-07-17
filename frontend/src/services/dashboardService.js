@@ -32,3 +32,8 @@ export const getKebijakanAmbang = () => apiClient.get("/kebijakan/ambang").then(
 /** Ubah ambang kebijakan — khusus admin (backend menolak 403 selain admin). */
 export const putKebijakanAmbang = (ambang) =>
   apiClient.put("/kebijakan/ambang", { ambang }).then((r) => r.data);
+
+/** Kelola pengguna — seluruhnya khusus admin (backend menolak 403 selain admin). */
+export const getUsers = () => apiClient.get("/users").then((r) => r.data);
+export const createUser = (data) => apiClient.post("/users", data).then((r) => r.data);
+export const updateUser = (id, data) => apiClient.patch(`/users/${id}`, data).then((r) => r.data);

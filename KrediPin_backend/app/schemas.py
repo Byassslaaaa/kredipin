@@ -254,3 +254,47 @@ class UbahAmbangRequest(BaseModel):
     # Rentang sama dengan sebelumnya: 0 meloloskan semua, 1 menolak semua —
     # keduanya meniadakan model dan tidak punya makna bisnis.
     ambang: float = Field(..., ge=0.2, le=0.9)
+
+
+# ============================ Kelola Pengguna ============================
+
+Peran = Literal["analis", "admin"]
+
+
+class UserItem(BaseModel):
+    """Baris pengguna untuk daftar admin — TANPA password/hash."""
+
+    id: int
+    username: str
+    nama: str
+    peran: Peran
+    aktif: bool
+    created_at: datetime
+
+
+class UserBuatRequest(BaseModel):
+    """Buat pengguna baru (khusus admin)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    username: str = Field(..., min_length=3, max_length=64, pattern=r"^[a-z0-9._-]+$")
+    nama: str = Field(..., min_length=2, max_length=120)
+    password: str = Field(..., min_length=8, max_length=128)
+    peran: Peran = "analis"
+
+
+class UserUbahRequest(BaseModel):
+    """
+    Ubah pengguna. Semua opsional — hanya yang dikirim yang berubah.
+
+    Tidak ada endpoint HAPUS: pengguna dinonaktifkan, bukan dihapus. Menghapus
+    baris user akan memutus jejak audit (`dibuat_oleh` pada riwayat prediksi
+    menjadi menggantung), padahal justru itu yang dibutuhkan auditor.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    nama: Optional[str] = Field(None, min_length=2, max_length=120)
+    password: Optional[str] = Field(None, min_length=8, max_length=128)
+    peran: Optional[Peran] = None
+    aktif: Optional[bool] = None

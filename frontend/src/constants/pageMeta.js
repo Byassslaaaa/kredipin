@@ -32,6 +32,10 @@ export const PAGE_META = {
     title: "Riwayat Prediksi",
     subtitle: "Audit ringan prediksi terbaru",
   },
+  [ROUTES.pengguna]: {
+    title: "Kelola Pengguna",
+    subtitle: "Buat & atur akun analis dan admin",
+  },
   [ROUTES.dokumentasi]: {
     title: "Dokumentasi",
     subtitle: "Panduan sistem, metodologi, & kontrak API",
