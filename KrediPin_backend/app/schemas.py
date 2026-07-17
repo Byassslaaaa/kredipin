@@ -210,3 +210,31 @@ class ErrorResponse(BaseModel):
     error: str
     detail: Optional[object] = None
     status_code: int
+
+
+# ============================ Autentikasi ============================
+
+class LoginRequest(BaseModel):
+    """Kredensial login."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    username: str = Field(..., min_length=3, max_length=64)
+    password: str = Field(..., min_length=6, max_length=128)
+
+
+class UserInfo(BaseModel):
+    """Identitas pengguna — TANPA password/hash."""
+
+    username: str
+    nama: str
+    peran: str
+
+
+class LoginResponse(BaseModel):
+    """Token sesi + identitas pemiliknya."""
+
+    access_token: str
+    token_type: str = "bearer"
+    expires_in_minutes: int
+    user: UserInfo

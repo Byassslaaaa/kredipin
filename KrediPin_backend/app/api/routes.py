@@ -8,7 +8,7 @@ Definisi endpoint KrediPin.
 """
 import logging
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import __version__
@@ -17,9 +17,14 @@ from app.db.database import check_db, get_session
 from app.db.repository import get_recent, save_prediction
 from app.ml.model_loader import ModelArtifacts, get_artifacts
 from app.ml.predictor import predict
+from app.auth.deps import get_current_user
+from app.auth.security import buat_token, verify_password
+from app.db.models import User
 from app.schemas import (
-    HealthResponse, HistoryItem, PredictRequest, PredictResponse, RootResponse,
+    HealthResponse, HistoryItem, LoginRequest, LoginResponse, PredictRequest,
+    PredictResponse, RootResponse, UserInfo,
 )
+from sqlalchemy import select
 
 logger = logging.getLogger("krediPin")
 router = APIRouter()
@@ -57,6 +62,31 @@ async def health() -> HealthResponse:
     )
 
 
+@router.post("/auth/login", response_model=LoginResponse, tags=["auth"])
+async def login(payload: LoginRequest, db: Session = Depends(get_session)) -> LoginResponse:
+    """
+    Tukar username+password dengan token sesi.
+
+    Pesan galat sengaja SAMA untuk username tidak ada maupun password salah —
+    membedakannya akan membocorkan username mana yang terdaftar (user enumeration).
+    """
+    user = db.execute(select(User).where(User.username == payload.username)).scalar_one_or_none()
+    if user is None or not user.aktif or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Username atau password salah.")
+
+    return LoginResponse(
+        access_token=buat_token(user.username, user.peran),
+        expires_in_minutes=settings.TOKEN_EXPIRE_MINUTES,
+        user=UserInfo(username=user.username, nama=user.nama, peran=user.peran),
+    )
+
+
+@router.get("/auth/me", response_model=UserInfo, tags=["auth"])
+async def siapa_saya(user: User = Depends(get_current_user)) -> UserInfo:
+    """Identitas pemilik token — dipakai frontend memulihkan sesi saat refresh."""
+    return UserInfo(username=user.username, nama=user.nama, peran=user.peran)
+
+
 @router.post(
     "/predict",
     response_model=PredictResponse,
@@ -67,6 +97,7 @@ async def predict_endpoint(
     payload: PredictRequest,
     art: ModelArtifacts = Depends(get_artifacts),
     db: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
 ) -> PredictResponse:
     """
     Prediksi kelayakan pinjaman.
@@ -83,6 +114,7 @@ async def predict_endpoint(
         confidence=hasil["confidence"],
         threshold=hasil["threshold"],
         faktor=hasil["faktor"],
+        dibuat_oleh=user.username,
     )
 
     return PredictResponse(
@@ -98,7 +130,11 @@ async def predict_endpoint(
 
 
 @router.get("/history", response_model=list[HistoryItem], tags=["prediksi"])
-async def history(limit: int = 20, db: Session = Depends(get_session)) -> list[HistoryItem]:
+async def history(
+    limit: int = 20,
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_user),
+) -> list[HistoryItem]:
     """Ambil riwayat prediksi terbaru (default 20)."""
     limit = max(1, min(limit, 100))
     rows = get_recent(db, limit=limit)

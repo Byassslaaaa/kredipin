@@ -10,6 +10,11 @@ uvicorn[standard]==0.49.0
 pydantic==2.13.4
 pydantic-settings==2.14.2
 SQLAlchemy==2.0.51
+# Token sesi (JWT). Pustaka murni Python — sengaja menghindari ekstensi native
+# seperti bcrypt/cryptography, karena VM deployment terbukti rapuh terhadap
+# dependensi native (kasus numpy vs CPU tanpa x86-64-v2). Hashing password
+# memakai PBKDF2 dari stdlib (lihat app/auth/security.py).
+PyJWT==2.10.1
 
 # Inferensi model (HARUS cocok dengan versi saat training di Tahap 1)
 scikit-learn==1.8.0

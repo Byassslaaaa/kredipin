@@ -17,9 +17,12 @@ def save_prediction(
     confidence: float,
     threshold: float,
     faktor: list,
+    dibuat_oleh: str | None = None,
 ) -> PredictionHistory:
     """Simpan satu hasil prediksi ke database dan kembalikan recordnya."""
     record = PredictionHistory(
+        # Jejak audit: siapa yang menjalankan penilaian ini (saran #4).
+        dibuat_oleh=dibuat_oleh,
         keputusan=keputusan,
         probabilitas_layak=probabilitas_layak,
         confidence=confidence,

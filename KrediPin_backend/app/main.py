@@ -21,7 +21,7 @@ from app.core.rate_limit import RateLimitMiddleware
 from app.api.routes import router
 from app.config import settings
 from app.core.exceptions import register_exception_handlers
-from app.db.database import init_db
+from app.db.database import get_session_langsung, init_db
 from app.ml.model_loader import artifacts
 
 logging.basicConfig(
@@ -36,6 +36,18 @@ async def lifespan(app: FastAPI):
     """Startup: muat model sekali + siapkan database. Shutdown: bersih-bersih."""
     logger.info("Memulai %s v%s ...", settings.APP_NAME, settings.APP_VERSION)
     init_db()
+
+    # Seed pengguna awal — tanpa ini sistem terkunci total setelah autentikasi
+    # diaktifkan (tidak ada yang bisa login untuk membuat user pertama).
+    from app.auth.seed import seed_users
+    with get_session_langsung() as db:
+        seed_users(db)
+
+    if settings.SECRET_KEY.startswith("dev-only"):
+        logger.warning(
+            "SECRET_KEY masih memakai nilai default. WAJIB di-override lewat "
+            "environment pada deployment nyata — bila bocor, token palsu dapat dibuat."
+        )
     artifacts.load()  # model dimuat HANYA di sini (sekali)
     logger.info("Startup selesai. Ambang keputusan aktif: %.2f", settings.THRESHOLD)
     yield

@@ -7,6 +7,7 @@ TestClient memicu lifespan, sehingga model & database ikut diinisialisasi.
 import pytest
 from fastapi.testclient import TestClient
 
+from app.config import settings
 from app.main import app
 
 INPUT_VALID = {
@@ -39,6 +40,23 @@ def client():
         yield c
 
 
+@pytest.fixture(scope="module")
+def auth(client):
+    """
+    Header Authorization untuk endpoint terproteksi.
+
+    Memakai kredensial seed yang dibuat otomatis saat startup (lihat
+    app/auth/seed.py) — tanpa itu sistem terkunci total setelah autentikasi
+    diaktifkan.
+    """
+    r = client.post(
+        "/auth/login",
+        json={"username": settings.SEED_ANALIS_USER, "password": settings.SEED_ANALIS_PASSWORD},
+    )
+    assert r.status_code == 200, r.text
+    return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+
 def test_root(client):
     r = client.get("/")
     assert r.status_code == 200
@@ -54,8 +72,8 @@ def test_health(client):
     assert body["status"] == "ok"
 
 
-def test_predict_valid(client):
-    r = client.post("/predict", json=INPUT_VALID)
+def test_predict_valid(client, auth):
+    r = client.post("/predict", json=INPUT_VALID, headers=auth)
     assert r.status_code == 200
     body = r.json()
     assert body["keputusan"] in {"Layak", "Tidak Layak"}
@@ -67,16 +85,16 @@ def test_predict_valid(client):
     assert body["id_riwayat"] is not None
 
 
-def test_predict_threshold_override(client):
+def test_predict_threshold_override(client, auth):
     # 0.8 masih dalam rentang kebijakan yang diizinkan (0.2-0.9).
     payload = dict(INPUT_VALID, threshold=0.8)
-    r = client.post("/predict", json=payload)
+    r = client.post("/predict", json=payload, headers=auth)
     assert r.status_code == 200
     assert r.json()["threshold"] == 0.8
 
 
 @pytest.mark.parametrize("nilai", [0.0, 0.1, 0.95, 1.0])
-def test_predict_threshold_ekstrem_ditolak(client, nilai):
+def test_predict_threshold_ekstrem_ditolak(client, auth, nilai):
     """
     Ambang ekstrem harus ditolak.
 
@@ -84,11 +102,11 @@ def test_predict_threshold_ekstrem_ditolak(client, nilai):
     dinyatakan Layak (probabilitas >= 0 selalu benar), sehingga model
     ter-bypass total dan nasabah berisiko tinggi pun lolos.
     """
-    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai))
+    r = client.post("/predict", json=dict(INPUT_VALID, threshold=nilai, headers=auth))
     assert r.status_code == 422
 
 
-def test_rasio_kiriman_klien_diabaikan(client):
+def test_rasio_kiriman_klien_diabaikan(client, auth):
     """
     Regresi untuk celah keamanan: rasio adalah nilai TURUNAN, sehingga nilai
     kiriman klien harus diabaikan dan dihitung ulang di server.
@@ -97,7 +115,7 @@ def test_rasio_kiriman_klien_diabaikan(client):
     keputusan dari Layak (100%) menjadi Tidak Layak (0.3%) pada nasabah yang
     datanya sama persis.
     """
-    jujur = client.post("/predict", json=INPUT_VALID).json()
+    jujur = client.post("/predict", json=INPUT_VALID, headers=auth).json()
 
     # Kirim rasio yang bertentangan total dengan field dasarnya.
     ngawur = client.post(
@@ -115,41 +133,41 @@ def test_rasio_kiriman_klien_diabaikan(client):
     assert ngawur["probabilitas_layak"] == jujur["probabilitas_layak"]
 
 
-def test_confidence_mengikuti_keputusan(client):
+def test_confidence_mengikuti_keputusan(client, auth):
     """
     confidence harus menyatakan keyakinan pada KEPUTUSAN YANG DIAMBIL.
 
     Regresi: rumus lama max(p, 1-p) mengukur keyakinan pada argmax (0.5),
     sehingga salah arti begitu ambang digeser.
     """
-    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9)).json()
+    body = client.post("/predict", json=dict(INPUT_VALID, threshold=0.9, headers=auth)).json()
     p = body["probabilitas_layak"]
     harapan = p if body["keputusan"] == "Layak" else 1.0 - p
     assert abs(body["confidence"] - harapan) < 1e-4
 
 
-def test_predict_invalid_enum(client):
+def test_predict_invalid_enum(client, auth):
     bad = dict(INPUT_VALID, jaminan="Mungkin Ada")
-    r = client.post("/predict", json=bad)
+    r = client.post("/predict", json=bad, headers=auth)
     assert r.status_code == 422
     assert r.json()["error"].startswith("Validasi input gagal")
 
 
-def test_predict_out_of_range(client):
+def test_predict_out_of_range(client, auth):
     bad = dict(INPUT_VALID, skor_kredit=9999)
-    r = client.post("/predict", json=bad)
+    r = client.post("/predict", json=bad, headers=auth)
     assert r.status_code == 422
 
 
-def test_predict_extra_field(client):
+def test_predict_extra_field(client, auth):
     bad = dict(INPUT_VALID, kolom_aneh=123)
-    r = client.post("/predict", json=bad)
+    r = client.post("/predict", json=bad, headers=auth)
     assert r.status_code == 422
 
 
-def test_history(client):
-    client.post("/predict", json=INPUT_VALID)
-    r = client.get("/history?limit=5")
+def test_history(client, auth):
+    client.post("/predict", json=INPUT_VALID, headers=auth)
+    r = client.get("/history?limit=5", headers=auth)
     assert r.status_code == 200
     assert isinstance(r.json(), list)
 
@@ -184,3 +202,67 @@ def test_rate_limit_tidak_menyentuh_endpoint_lain(client):
     """Hanya /predict yang dibatasi; /health harus tetap bebas diakses."""
     for _ in range(10):
         assert client.get("/health").status_code == 200
+
+
+# ============================ Autentikasi ============================
+
+def test_predict_tanpa_token_ditolak(client):
+    """
+    Regresi: endpoint inferensi tidak boleh terbuka tanpa autentikasi.
+
+    Sebelum ada auth, siapa pun yang tahu URL dapat memprediksi dan membaca
+    riwayat keputusan nasabah lain.
+    """
+    assert client.post("/predict", json=INPUT_VALID).status_code == 401
+
+
+def test_history_tanpa_token_ditolak(client):
+    assert client.get("/history").status_code == 401
+
+
+def test_login_salah_password(client):
+    r = client.post(
+        "/auth/login",
+        json={"username": settings.SEED_ANALIS_USER, "password": "password-salah"},
+    )
+    assert r.status_code == 401
+
+
+def test_login_username_tidak_ada_pesannya_sama(client):
+    """
+    Pesan galat harus IDENTIK dengan kasus password salah — membedakannya akan
+    membocorkan username mana yang terdaftar (user enumeration).
+    """
+    a = client.post("/auth/login", json={"username": "hantu", "password": "apa-saja-123"})
+    b = client.post(
+        "/auth/login",
+        json={"username": settings.SEED_ANALIS_USER, "password": "password-salah"},
+    )
+    assert a.status_code == b.status_code == 401
+    assert a.json()["detail"] == b.json()["detail"]
+
+
+def test_token_palsu_ditolak(client):
+    r = client.post("/predict", json=INPUT_VALID, headers={"Authorization": "Bearer token.palsu.saja"})
+    assert r.status_code == 401
+
+
+def test_auth_me(client, auth):
+    r = client.get("/auth/me", headers=auth)
+    assert r.status_code == 200
+    assert r.json()["username"] == settings.SEED_ANALIS_USER
+    assert "password" not in r.text.lower()
+
+
+def test_prediksi_mencatat_pemiliknya(client, auth):
+    """Jejak audit (saran #4): riwayat harus tahu SIAPA yang memutuskan."""
+    from app.db.database import get_session_langsung
+    from app.db.models import PredictionHistory
+    from sqlalchemy import select
+
+    client.post("/predict", json=INPUT_VALID, headers=auth)
+    with get_session_langsung() as db:
+        baris = db.execute(
+            select(PredictionHistory).order_by(PredictionHistory.id.desc())
+        ).scalars().first()
+    assert baris.dibuat_oleh == settings.SEED_ANALIS_USER

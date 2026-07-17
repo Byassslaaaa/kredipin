@@ -58,6 +58,22 @@ class Settings(BaseSettings):
     # parsing (mendukung dua format: dipisah koma ATAU JSON list).
     # Default mencakup port fallback Vite (5173-5175) untuk localhost & 127.0.0.1,
     # sehingga dev server di port mana pun tidak terblokir CORS saat pengembangan.
+    # --- Autentikasi ---
+    #
+    # SECRET_KEY WAJIB di-override lewat environment pada deployment nyata.
+    # Nilai default hanya untuk pengembangan lokal; bila bocor, siapa pun dapat
+    # menerbitkan token palsu. Aplikasi memperingatkan saat startup bila masih
+    # memakai default di luar mode debug.
+    SECRET_KEY: str = "dev-only-ganti-di-produksi"
+    TOKEN_EXPIRE_MINUTES: int = 480  # 8 jam kerja
+
+    # Pengguna awal yang dibuat otomatis saat database masih kosong (seeding).
+    # Password default HARUS diganti setelah login pertama.
+    SEED_ADMIN_USER: str = "admin"
+    SEED_ADMIN_PASSWORD: str = "admin123"
+    SEED_ANALIS_USER: str = "analis"
+    SEED_ANALIS_PASSWORD: str = "analis123"
+
     # --- Rate limit /predict (per IP) ---
     #
     # Sengaja LONGGAR: fitur inti "Import Data Nasabah" melakukan N x POST

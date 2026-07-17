@@ -5,6 +5,7 @@ File database disimpan di folder `database/` (lihat config). `init_db()` membuat
 tabel saat startup, dan `get_session` adalah dependency FastAPI per-request.
 """
 import logging
+from contextlib import contextmanager
 from typing import Generator
 
 from sqlalchemy import create_engine
@@ -55,6 +56,21 @@ def check_db() -> bool:
 
 def get_session() -> Generator[Session, None, None]:
     """Dependency FastAPI: sediakan sesi DB lalu tutup otomatis."""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+@contextmanager
+def get_session_langsung() -> Generator[Session, None, None]:
+    """
+    Session untuk pemakaian DI LUAR request (mis. seeding saat startup).
+
+    get_session() adalah generator dependency FastAPI dan tidak dapat dipakai
+    sebagai context manager biasa, sehingga disediakan varian ini.
+    """
     db = SessionLocal()
     try:
         yield db
