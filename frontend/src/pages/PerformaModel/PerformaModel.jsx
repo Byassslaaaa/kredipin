@@ -41,7 +41,6 @@ export default function PerformaModel() {
   const colors = getChartColors();
 
   const topPerm = useMemo(() => (fi.data?.permutation || []).slice(0, 12), [fi.data]);
-  const topGain = useMemo(() => (fi.data?.gain || []).slice(0, 12), [fi.data]);
 
   if (model.loading || fi.loading) {
     return (
@@ -146,26 +145,6 @@ export default function PerformaModel() {
           horizontal
           height={Math.max(280, topPerm.length * 34 + 40)}
           valueFormatter={(v) => v.toFixed(3)}
-        />
-      </Card>
-
-      <Card
-        title="Feature Importance - Gain (bawaan XGBoost)"
-        subtitle="Kontribusi rata-rata pada pemecahan pohon, per kolom - 12 teratas"
-        icon="bar-chart"
-      >
-        <BarChart
-          labels={topGain.map((f) => prettifyFeature(f.fitur))}
-          datasets={[
-            {
-              label: "Gain importance",
-              data: topGain.map((f) => f.importance),
-              color: colors.success,
-            },
-          ]}
-          horizontal
-          height={Math.max(280, topGain.length * 34 + 40)}
-          valueFormatter={(v) => formatPercent(v)}
         />
       </Card>
 

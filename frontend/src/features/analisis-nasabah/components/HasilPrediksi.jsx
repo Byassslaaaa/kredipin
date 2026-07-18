@@ -144,10 +144,6 @@ export default function HasilPrediksi({ data, loading, error }) {
               <span className={`${styles.metricValue} num`}>{formatPercent(data.probabilitas_layak)}</span>
             </div>
             <div className={styles.metric}>
-              <span className={styles.metricLabel}>Confidence</span>
-              <span className={`${styles.metricValue} num`}>{formatPercent(data.confidence)}</span>
-            </div>
-            <div className={styles.metric}>
               <span className={styles.metricLabel}>Ambang Keputusan</span>
               <span className={`${styles.metricValue} num`}>{formatPercent(data.threshold)}</span>
             </div>
