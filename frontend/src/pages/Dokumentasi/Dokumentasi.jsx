@@ -21,11 +21,24 @@ const STEPS_IMPORT = [
 const ENDPOINTS = [
   { method: "GET", path: "/", fungsi: "Info aplikasi & daftar endpoint" },
   { method: "GET", path: "/health", fungsi: "Status model & database" },
-  { method: "POST", path: "/predict", fungsi: "Prediksi kelayakan + simpan riwayat" },
-  { method: "GET", path: "/history?limit=N", fungsi: "Riwayat prediksi terbaru" },
+  { method: "POST", path: "/auth/login", fungsi: "Masuk, menerbitkan token akses (berlaku 8 jam)" },
+  { method: "GET", path: "/auth/me", fungsi: "Identitas pemilik token (pemulihan sesi)" },
+  { method: "POST", path: "/predict", fungsi: "Prediksi kelayakan + simpan riwayat (khusus analis)" },
+  { method: "GET", path: "/history?limit=N", fungsi: "Riwayat: analis melihat miliknya, admin melihat seluruhnya" },
+  { method: "POST", path: "/history/{id}/keputusan", fungsi: "Catat keputusan akhir analis (alasan wajib bila menyimpang)" },
+  { method: "GET", path: "/kebijakan/ambang", fungsi: "Ambang keputusan yang berlaku" },
+  { method: "PUT", path: "/kebijakan/ambang", fungsi: "Ubah ambang keputusan (khusus admin, teraudit)" },
+  { method: "GET", path: "/monitoring", fungsi: "Volume prediksi & tingkat penyimpangan (khusus admin)" },
+  { method: "GET", path: "/audit", fungsi: "Jejak audit hanya-tambah (khusus admin)" },
+  { method: "GET", path: "/users", fungsi: "Daftar pengguna (khusus admin)" },
+  { method: "POST", path: "/users", fungsi: "Buat pengguna baru (khusus admin)" },
+  { method: "PATCH", path: "/users/{id}", fungsi: "Ubah peran/status pengguna (khusus admin)" },
 ];
 
 function aturanText(f) {
+  // Rasio adalah fitur TURUNAN: tidak diisi/dikirim klien, dihitung server dari
+  // field dasar. Ditandai agar tabel ini tidak terbaca seolah 20-duanya diinput.
+  if (f.derived) return "Dihitung otomatis oleh server";
   if (f.type === "select" || f.type === "radio") return f.options.join(", ");
   const range = `${f.min} – ${f.max.toLocaleString("id-ID")}`;
   return f.money ? `${range} (IDR)` : f.unit ? `${range} ${f.unit}` : range;
@@ -88,7 +101,12 @@ export default function Dokumentasi() {
       </Card>
       )}
 
-      <Card icon="file-text" title="Referensi Fitur Model" subtitle="20 fitur input (sesuai kontrak API)" padding="none">
+      <Card
+        icon="file-text"
+        title="Referensi Fitur Model"
+        subtitle="20 fitur model: 17 diisi analis, 3 rasio dihitung otomatis oleh server"
+        padding="none"
+      >
         <div className={styles.tableScroll}>
           <Table
             stickyHeader
@@ -128,9 +146,10 @@ export default function Dokumentasi() {
       <Card icon="shield-check" title="Catatan Teknis">
         <ul className={styles.bullets}>
           <li>Seluruh nilai uang dalam <strong>Rupiah (IDR)</strong>; tidak ada konversi ganda di sisi klien.</li>
-          <li><strong>Ambang keputusan</strong> default 0,5 dan dapat di-override per prediksi (probabilitas ≥ ambang → Layak).</li>
+          <li><strong>Ambang keputusan</strong> (probabilitas ≥ ambang → Layak) adalah <strong>kebijakan tersimpan</strong> yang berlaku seragam bagi seluruh analis, bukan preferensi per prediksi. Hanya admin yang dapat mengubahnya lewat <code>PUT /kebijakan/ambang</code>, dan perubahannya tercatat di jejak audit.</li>
+          <li><strong>Rasio keuangan dihitung server</strong> dari hutang, pinjaman, dan pendapatan. Nilai rasio yang dikirim klien diabaikan, sehingga angka yang dilihat analis selalu sama dengan yang dipakai model.</li>
           <li>Prediksi batch (Import) menjalankan endpoint <code>POST /predict</code> berulang dari sisi klien - bukan endpoint terpisah.</li>
-          <li>Setiap prediksi tersimpan ke riwayat (SQLite) dan dapat ditinjau di menu Riwayat.</li>
+          <li>Setiap prediksi tersimpan ke riwayat (SQLite) beserta pemiliknya, dan keputusan akhir analis dicatat terpisah dari rekomendasi model.</li>
         </ul>
       </Card>
       </>
