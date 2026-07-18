@@ -23,6 +23,14 @@ services:
       THRESHOLD: "0.5"
       # Same-origin lewat Nginx, jadi CORS praktis tidak terpakai; diisi untuk eksplisit.
       CORS_ORIGINS: "*"
+      # Rahasia tanda tangan JWT. Diisi dari file .env di root repo VM (untracked,
+      # dibaca otomatis oleh Docker Compose untuk interpolasi). Bila .env belum ada,
+      # fallback ke default dev agar deploy tetap jalan -- TAPI di produksi WAJIB diisi:
+      #   echo "SECRET_KEY=$(openssl rand -hex 32)" >> ~/kredipin/.env
+      SECRET_KEY: "${SECRET_KEY:-dev-only-ganti-di-produksi}"
+      # (Opsional) ganti password akun bawaan pada seed pertama; taruh juga di .env.
+      SEED_ADMIN_PASSWORD: "${SEED_ADMIN_PASSWORD:-admin123}"
+      SEED_ANALIS_PASSWORD: "${SEED_ANALIS_PASSWORD:-analis123}"
     volumes:
       - kredipin_db:/app/database
     restart: unless-stopped
