@@ -57,6 +57,8 @@ export default function EksplorasiData() {
       <Alert variant="info" icon="info">
         Eksplorasi atas <strong>{formatNumber(data.total)}</strong> baris data historis
         (telah dipra-agregasi dari <code>prediksi_lengkap.csv</code> menjadi ringkasan ringan).
+        Pengelompokan Layak/Tidak Layak di halaman ini memakai <strong>keputusan model</strong>
+        atas data tersebut, bukan label aktual <code>status_pinjaman</code>.
       </Alert>
 
       <div className={styles.kpiGrid}>
@@ -68,14 +70,14 @@ export default function EksplorasiData() {
           hint="baris data historis"
         />
         <StatCard
-          label="Layak"
+          label="Diprediksi Layak"
           value={formatNumber(data.totalLayak)}
           icon="check"
           tone="success"
           hint={`${formatPercent(data.totalLayak / data.total)} dari total`}
         />
         <StatCard
-          label="Tidak Layak"
+          label="Diprediksi Tidak Layak"
           value={formatNumber(data.totalTidakLayak)}
           icon="x"
           tone="danger"

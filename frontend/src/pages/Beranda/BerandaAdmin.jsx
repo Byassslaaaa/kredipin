@@ -48,12 +48,16 @@ export default function BerandaAdmin() {
           hint="baris data historis"
           loading={loading}
         />
+        {/* Angka ini berasal dari kolom `keputusan` (hasil skoring model atas
+            seluruh data), BUKAN dari label target `status_pinjaman`. Keduanya
+            berbeda (model memprediksi Layak sedikit lebih sering), jadi label
+            harus menyebut "prediksi" agar tidak terbaca sebagai fakta historis. */}
         <StatCard
-          label="Tingkat Kelayakan"
+          label="Tingkat Kelayakan (Prediksi)"
           value={loading ? "" : formatPercent(summary?.persentase_layak, { fromFraction: false })}
           icon="trending-up"
           tone="success"
-          hint="proporsi pengajuan layak"
+          hint="proporsi diprediksi layak oleh model"
           loading={loading}
         />
         <StatCard
@@ -77,8 +81,8 @@ export default function BerandaAdmin() {
       {/* Distribusi + Performa */}
       <div className={styles.twoCol}>
         <Card
-          title="Distribusi Keputusan"
-          subtitle="Komposisi hasil pada data historis"
+          title="Distribusi Keputusan Model"
+          subtitle="Hasil skoring model atas seluruh data historis"
           icon="bar-chart"
         >
           {loading ? (
