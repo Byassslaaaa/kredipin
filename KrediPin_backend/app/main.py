@@ -61,6 +61,11 @@ app = FastAPI(
     description=settings.APP_DESCRIPTION,
     version=settings.APP_VERSION,
     lifespan=lifespan,
+    # Alamat publik berbeda dari path yang dilihat aplikasi bila ada reverse
+    # proxy yang menghapus prefix (lihat ROOT_PATH di config.py). Ini hanya
+    # memengaruhi URL yang DIHASILKAN (docs, openapi.json, server "Try it out"),
+    # bukan pencocokan rute.
+    root_path=settings.ROOT_PATH,
 )
 
 # Rate limit dipasang LEBIH DULU dari CORS. Middleware Starlette berjalan

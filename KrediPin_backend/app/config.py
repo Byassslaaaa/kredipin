@@ -35,6 +35,16 @@ class Settings(BaseSettings):
     )
     APP_VERSION: str = "1.0.0"
 
+    # --- Prefix path saat berada di belakang reverse proxy ---
+    # Nginx produksi mem-proxy /api/* dan MENGHAPUS prefix "/api", sehingga
+    # aplikasi melihat "/docs" padahal alamat publiknya "/api/docs". Tanpa
+    # root_path, halaman Swagger menunjuk spec di "/openapi.json" (absolut dari
+    # root) yang tidak diproxy -> kena SPA fallback, Nginx balas index.html, dan
+    # Swagger gagal mem-parsing HTML sebagai YAML.
+    # Kosong saat dev (akses langsung ke :8000); diisi "/api" lewat environment
+    # pada deployment di belakang proxy.
+    ROOT_PATH: str = ""
+
     # --- Ambang keputusan (CONFIGURABLE) ---
     # Probabilitas_layak >= THRESHOLD  -> "Layak", selain itu "Tidak Layak".
     THRESHOLD: float = Field(default=0.5, ge=0.0, le=1.0)

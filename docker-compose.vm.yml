@@ -23,6 +23,9 @@ services:
       THRESHOLD: "0.5"
       # Same-origin lewat Nginx, jadi CORS praktis tidak terpakai; diisi untuk eksplisit.
       CORS_ORIGINS: "*"
+      # Nginx mem-proxy /api/* dan menghapus prefiksnya, jadi alamat publik
+      # aplikasi adalah /api. Tanpa ini, /api/docs gagal memuat openapi.json.
+      ROOT_PATH: "/api"
       # Rahasia tanda tangan JWT. Diisi dari file .env di root repo VM (untracked,
       # dibaca otomatis oleh Docker Compose untuk interpolasi). Bila .env belum ada,
       # fallback ke default dev agar deploy tetap jalan -- TAPI di produksi WAJIB diisi:
